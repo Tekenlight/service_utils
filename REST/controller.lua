@@ -248,6 +248,9 @@ rest_controller.handle_request = function (request, response)
 				else
 					flg = true;
 					obj, msg = msg_handler:from_json(json_input);
+					if (obj == nil) then
+						flg = false;
+					end
 				end
 			else
 				flg = false;
