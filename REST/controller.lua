@@ -165,7 +165,7 @@ local invoke_func = function(request, req_processor, func, url_parts, qp, obj)
 		begin_trans(uc);
 	end
 	error_handler.init();
-	if (http_method == 'GET') then
+	if (obj == nil) then
 		proc_stat, status, out_obj = pcall(req_processor[func], req_processor, uc, qp);
 	else
 		proc_stat, status, out_obj = pcall(req_processor[func], req_processor, uc, obj);
