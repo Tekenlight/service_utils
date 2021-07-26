@@ -206,11 +206,11 @@ local get_query_params = function(query)
 end
 
 rest_controller.handle_request = function (request, response)
+	local json_output, msg;
 	local flg, json_input = pcall(request.get_message_body_str, request);
 	local uri = URI_CLASS:new(request:get_uri());
 	local url_parts = split_path(uri);
 	local qp = get_query_params(uri:query());
-	local flg, json_output, msg;
 
 	local output_obj = {};
 
@@ -233,27 +233,38 @@ rest_controller.handle_request = function (request, response)
 
 	local req_processor = require(class_name);
 
-	local ns, name = req_processor:get_message_structure();
+	--local ns, name = req_processor:get_message_structure();
 	--local msg_handler = schema_processor:get_message_handler(name, ns);
 	local obj, msg;
-	if (json_input ~= nil) then
+	do
 		local t = req_processor.message[func][1];
-		if (t ~= nil) then
-			local msg_handler = schema_processor:get_message_handler(t.name, t.ns);
-			if (msg_handler == nil) then
-				obj = nil;
-				msg = "Unable to find message schema handler";
+		if (json_input ~= nil) then
+			if (t ~= nil) then
+				local msg_handler = schema_processor:get_message_handler(t.name, t.ns);
+				if (msg_handler == nil) then
+					flg = false;
+					obj = nil;
+					msg = "Unable to find message schema handler";
+				else
+					flg = true;
+					obj, msg = msg_handler:from_json(json_input);
+				end
 			else
-				obj, msg = msg_handler:from_json(json_input);
+				flg = false;
+				obj = nil;
+				msg = "Unable to derserialize JSON, schema not specified";
 			end
 		else
+			if (t ~= nil) then
+				flg = false;
+				msg = "NULL Message received, while expecting one";
+			else
+				flg = true;
+			end
 			obj = nil;
-			msg = "Unable to derserialize JSON, schema not specified";
 		end
-	else
-		obj = {};
 	end
-	if (obj == nil) then
+	if (not flg) then
 		output_obj.message = msg;
 		local flg, json_output, err = pcall(json_parser.encode, output_obj);
 		response:set_status(400);

@@ -307,6 +307,7 @@ ev_postgres_conn.begin = function(self)
 	return flg, msg;
 end
 
+--[=[
 ev_postgres_conn.get_systimestamp = function(self)
 	local stmt = self:prepare([[select now() at time zone 'UTC']]);
 	if (stmt == nil) then
@@ -316,6 +317,10 @@ ev_postgres_conn.get_systimestamp = function(self)
 	local flg, msg = stmt:execute();
 	local result = stmt:fetch_result();
 	return result[1];
+end
+--]=]
+ev_postgres_conn.get_systimestamp = function(self)
+	return du.now(true);
 end
 
 ev_postgres_conn.get_sequence_nextval = function(self, seq_name)
