@@ -228,6 +228,7 @@ rest_controller.handle_request = function (request, response)
 		output_obj.message = err;
 		local flg, json_output, err = pcall(json_parser.encode, output_obj);
 		response:write(json_output);
+		response:write('\n');
 		return ;
 	end
 
@@ -328,6 +329,7 @@ rest_controller.handle_request = function (request, response)
 			response:write(json_output);
 		end
 	end
+	response:write('\n');
 	return ;
 end
 
