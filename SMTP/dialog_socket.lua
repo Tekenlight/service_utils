@@ -127,6 +127,7 @@ end
 
 dialog_socket.send_string = function(self, string_data)
 	local size = string.len(string_data);
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, size);
 	if (size > 1024) then
 		return nil;
 	end
@@ -152,12 +153,26 @@ dialog_socket.send_message = function(self, str, arg1, arg2)
 	if (arg2 ~= nil) then string_data = string_data ..' '..arg2; end
 	string_data = string_data .. '\r\n';
 
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, string_data);
 	return self:send_string(string_data);
 end
 
 dialog_socket.start_tls = function(self)
 	netssl.connect_TLS(self.ss);
 	return ;
+end
+
+dialog_socket.transport_cms = function(self, cms)
+	local ret = platform.send_cms_on_socket(self.ss, cms);
+	if (ret <= 0) then
+		return false;
+	else
+		return true;
+	end
+end
+
+dialog_socket.close = function(self)
+	platform.close_tcp_connection(self.ss);
 end
 
 local mt = { __index = dialog_socket };
