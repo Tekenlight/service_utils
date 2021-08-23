@@ -230,16 +230,22 @@ smtp_client_session.close = function(self)
 	if (self.is_open) then
 		self:send_command('QUIT');
 		self.ds:close();
+		self.is_open = false;
 	end
 end
 
+local function cleanup(session)
+	session:close();
+end
+
+--local mt = { __index = smtp_client_session, __gc = cleanup };
 local mt = { __index = smtp_client_session };
 local smtp_client_session_factory = {};
 
 smtp_client_session_factory.new = function(host, port)
 	local nc = {};
 	nc = setmetatable(nc, mt);
-	local ss, msg = platform.make_tcp_connection(host, port);
+	local ss = platform.make_tcp_connection(host, port);
 	if (ss == nil) then
 		error('Unable to connect to connect to the SMT server '.. host..':'..port);
 	end

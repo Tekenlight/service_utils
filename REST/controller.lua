@@ -159,20 +159,30 @@ local invoke_func = function(request, req_processor, func, url_parts, qp, obj)
 		out_obj = { error_message = 'Unsupported HTTP method' };
 		return out_obj, 400;
 	end
-	local db_params = req_processor:get_db_connection_params();
-	uc.db_connections = make_db_connections(db_params);
-	if (false == begin_transaction(req_processor, func, uc)) then
-		begin_trans(uc);
+	local db_init_done = false;
+	if (nil ~= req_processor.get_db_connection_params) then
+		local db_params = req_processor:get_db_connection_params();
+		if (nil ~= db_params) then
+			uc.db_connections = make_db_connections(db_params);
+			if (false == begin_transaction(req_processor, func, uc)) then
+				begin_trans(uc);
+			end
+			db_init_done = true;
+		end
 	end
-	error_handler.init();
-	if (obj == nil) then
-		proc_stat, status, out_obj = pcall(req_processor[func], req_processor, uc, qp);
-	else
-		proc_stat, status, out_obj = pcall(req_processor[func], req_processor, uc, obj);
+	do
+		error_handler.init();
+		if (obj == nil) then
+			proc_stat, status, out_obj = pcall(req_processor[func], req_processor, uc, qp);
+		else
+			proc_stat, status, out_obj = pcall(req_processor[func], req_processor, uc, obj);
+		end
 	end
 	local message_validation_context = error_handler.reset_init();
-	local flg = end_transaction(req_processor, func, uc, status);
-	reset_db_connections(uc);
+	if (db_init_done) then
+		local flg = end_transaction(req_processor, func, uc, status);
+		reset_db_connections(uc);
+	end
 	if (not proc_stat) then
 		if (message_validation_context.status.success) then
 			message_validation_context.status.success = false;

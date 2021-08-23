@@ -1,0 +1,77 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+targetNamespace="http://evpoco.org" xmlns:ns="http://evpoco.org">
+
+    <xsd:simpleType name="email_id_type">
+        <xsd:annotation>
+            <xsd:documentation>
+                <description>RFC 3696
+                </description>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:token">
+            <xsd:maxLength value="320"/>
+            <xsd:pattern value="([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="user_name_type">
+        <xsd:annotation>
+            <xsd:documentation>
+                <description></description>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:token">
+            <xsd:maxLength value="256"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="recipient_type_type">
+        <xsd:annotation>
+            <xsd:documentation>
+                <description></description>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:float">
+            <xsd:pattern value="([0-9]+)"/>
+			<xsd:enumeration value="0"/>
+			<xsd:enumeration value="1"/>
+			<xsd:enumeration value="2"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+	<xsd:complexType name="recipient_dtls_type">
+		<xsd:sequence>
+			<xsd:element name="address" type="ns:email_id_type"/>
+			<xsd:element name="recipient_type" type="ns:recipient_type_type"/>
+			<xsd:element name="real_name" type="xsd:token" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="attachment_dtls_type">
+		<xsd:sequence>
+			<xsd:element name="name" type="xsd:token"/>
+			<xsd:element name="data" type="xsd:hexBinary"/>
+			<xsd:element name="content_type" type="xsd:token"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+    <xsd:group name="email_message_elements">
+        <xsd:sequence>
+            <xsd:element name="from" type="ns:email_id_type"/>
+			<xsd:element name="sender_name" type="ns:user_name_type" minOccurs="0"/>
+			<xsd:element name="recipients" type="ns:recipient_dtls_type" maxOccurs="unbounded"/>
+			<xsd:element name="password" type="xsd:string"/>
+			<xsd:element name="subject" type="xsd:token"/>
+			<xsd:element name="message_body" type="xsd:string"/>
+			<xsd:element name="attachments" type="ns:attachment_dtls_type" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:group>
+
+	<xsd:complexType name="email_message_type">
+		<xsd:group ref="ns:email_message_elements"/>
+	</xsd:complexType>
+
+	<xsd:element name="email_message" type="ns:email_message_type"/>
+
+
+</xsd:schema>
