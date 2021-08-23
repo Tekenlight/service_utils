@@ -9,15 +9,23 @@ local email_services = {
 	gmail_tls = { uri = 'smtp.gmail.com', port = '587' }
 };
 
-email_client.init = function(self, email_service, user_id, password)
+local init = function(self, email_service, user_id, password)
 	local smtp_c_f = require('service_utils.SMTP.smtp_client');
-	local smtp_c = smtp_c_f.new(email_services[email_service].uri, email_services[email_service].port);
+	local status, smtp_c = pcall(smtp_c_f.new, email_services[email_service].uri, email_services[email_service].port);
+	if (not status) then
+		error_handler.raise_error(-1, smtp_c, debug.getinfo(1));
+	end
 
-	if (not smtp_c:login('AUTH_LOGIN', user_id, password)) then
-		error_handler.raise_error(-1, 'login failed', debug.getinfo(1));
+	local status, msg = pcall(smtp_c.login, smtp_c, 'AUTH_LOGIN', user_id, password);
+	if (not status) then
+		error_handler.raise_error(-1, 'login failed:'..msg, debug.getinfo(1));
 		return false, nil;
 	end
 	return true, smtp_c;
+end
+
+local close = function(smtp_c)
+	smtp_c:close();
 end
 
 email_client.sendmail = function(self, email_message)
@@ -26,7 +34,7 @@ email_client.sendmail = function(self, email_message)
 		return false;
 	end
 
-	local status , smtp_c = self:init('gmail_tls', email_message.from, email_message.password);
+	local status , smtp_c = init(email_client, 'gmail_tls', email_message.from, email_message.password);
 	if (not status) then
 		return false;
 	end
@@ -54,8 +62,12 @@ email_client.sendmail = function(self, email_message)
 		mmf.add_attachment(mm, ffi.getptr(v.data.value), tonumber(v.data.size), v.name, v.content_type);
 	end
 
-	local ret, msg = smtp_c:send_message(mm);
-	smtp_c:close();
+	local status, ret, msg = pcall(smtp_c.send_message, smtp_c, mm);
+	if (not status) then
+		error_handler.raise_error(-1, ret, debug.getinfo(1));
+		return false;
+	end
+	close(smtp_c);
 
 	return true;
 end

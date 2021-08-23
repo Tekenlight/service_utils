@@ -58,9 +58,9 @@ targetNamespace="http://evpoco.org" xmlns:ns="http://evpoco.org">
     <xsd:group name="email_message_elements">
         <xsd:sequence>
             <xsd:element name="from" type="ns:email_id_type"/>
+			<xsd:element name="password" type="xsd:string"/>
 			<xsd:element name="sender_name" type="ns:user_name_type" minOccurs="0"/>
 			<xsd:element name="recipients" type="ns:recipient_dtls_type" maxOccurs="unbounded"/>
-			<xsd:element name="password" type="xsd:string"/>
 			<xsd:element name="subject" type="xsd:token"/>
 			<xsd:element name="message_body" type="xsd:string"/>
 			<xsd:element name="attachments" type="ns:attachment_dtls_type" maxOccurs="unbounded"/>
