@@ -242,10 +242,15 @@ end
 local mt = { __index = smtp_client_session };
 local smtp_client_session_factory = {};
 
-smtp_client_session_factory.new = function(host, port)
+smtp_client_session_factory.new = function(host, port, to_be_cached)
 	local nc = {};
 	nc = setmetatable(nc, mt);
-	local ss = platform.make_tcp_connection(host, port);
+	local ss = nil;
+	if ((nil == to_be_cached) or (not to_be_cached)) then
+		ss = platform.make_tcp_connection(host, port);
+	else
+		ss = platform.make_tcp_connection(host, port, to_be_cached);
+	end
 	if (ss == nil) then
 		error('Unable to connect to connect to the SMT server '.. host..':'..port);
 	end

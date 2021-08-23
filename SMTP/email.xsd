@@ -63,7 +63,7 @@ targetNamespace="http://evpoco.org" xmlns:ns="http://evpoco.org">
 			<xsd:element name="recipients" type="ns:recipient_dtls_type" maxOccurs="unbounded"/>
 			<xsd:element name="subject" type="xsd:token"/>
 			<xsd:element name="message_body" type="xsd:string"/>
-			<xsd:element name="attachments" type="ns:attachment_dtls_type" maxOccurs="unbounded"/>
+			<xsd:element name="attachments" type="ns:attachment_dtls_type" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
     </xsd:group>
 
