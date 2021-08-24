@@ -2,6 +2,11 @@ local ffi = require('ffi');
 local schema_processor = require("schema_processor");
 local error_handler = require("lua_schema.error_handler");
 local platform = require('platform');
+local properties_funcs = platform.properties_funcs();
+local lua_state_cached = properties_funcs.get_bool_property("evlhttprequesthandler.enableluafilecache");
+if (lua_state_cached == nil) then
+	lua_state_cached = false;
+end
 
 local email_client = {};
 
@@ -11,7 +16,7 @@ local email_services = {
 
 local make_connection = function(self, email_service, user_id, password)
 	local smtp_c_f = require('service_utils.SMTP.smtp_client');
-	local status, smtp_c = pcall(smtp_c_f.new, email_services[email_service].uri, email_services[email_service].port, true);
+	local status, smtp_c = pcall(smtp_c_f.new, email_services[email_service].uri, email_services[email_service].port, lua_state_cached);
 	if (not status) then
 		error_handler.raise_error(-1, smtp_c, debug.getinfo(1));
 	end
@@ -54,7 +59,9 @@ local init = function(self, email_service, user_id, password)
 end
 
 local close = function(smtp_c)
-	--smtp_c:close();
+	if (not lua_state_cached) then
+		smtp_c:close();
+	end
 end
 
 email_client.sendmail = function(self, email_message)
@@ -93,7 +100,8 @@ email_client.sendmail = function(self, email_message)
 		end
 	end
 
-	local status, ret, msg = pcall(smtp_c.send_message, smtp_c, mm);
+	--local status, ret, msg = pcall(smtp_c.send_message, smtp_c, mm);
+	local status, ret, msg = pcall(smtp_c.pipeline_send_message, smtp_c, mm);
 	if (not status) then
 		error_handler.raise_error(-1, ret, debug.getinfo(1));
 		return false;

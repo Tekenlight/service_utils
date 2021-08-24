@@ -162,6 +162,20 @@ smtp_client_session.send_command = function(self, command, arg1, arg2)
 	return ret, msg;
 end
 
+smtp_client_session.only_send_command = function(self, command, arg1, arg2)
+	local ret = self.ds:send_message(command, arg1, arg2);
+	local msg = nil;
+	if (nil == ret) then
+		error("Unable to send message");
+	end
+	return true;
+end
+
+smtp_client_session.only_receive_status = function(self)
+	local ret, msg = self.ds:receive_status_message();
+	return ret, msg;
+end
+
 smtp_client_session.send_commands = function(self, mail_message)
 	local ret = 0;
 	local msg = nil;
@@ -191,6 +205,7 @@ smtp_client_session.send_commands = function(self, mail_message)
 	end
 	for i,v in ipairs(recipients) do
 		local command = 'RCPT TO:'..'<'..v.address..'>';
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline, command);
 		ret, msg = self:send_command(command);
 		if (not is_positive_completion(ret)) then
 			print(debug.getinfo(1).source, debug.getinfo(1).currentline, ret, msg);
@@ -218,6 +233,122 @@ smtp_client_session.send_message = function(self, mail_message)
 
 	ret, msg = self.ds:receive_status_message();
 	if (not is_positive_completion(ret)) then
+		return false, msg;
+	end
+
+	return true, msg;
+end
+
+smtp_client_session.pipeline_send_commands = function(self, mail_message)
+	local ret = 0;
+	local msg = nil;
+	local sender = mmf.get_sender(mail_message);
+	if (sender == nil) then
+		msg = "sender cannot be nil";
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline, msg);
+		return false, msg;
+	end
+	local i, j = string.find(sender, "<.*>");
+	local f_sender = nil;
+	if (i ~= nil) then
+		f_sender = string.sub(sender, i, j);
+	else
+		f_sender = '<'..sender..'>';
+	end
+	self:only_send_command('MAIL FROM:', f_sender);
+	local recipients = mmf.get_recipients(mail_message);
+	if (recipients == nil or type(recipients) ~= 'table' or #recipients == 0) then
+		msg = "Atlease one recipient should be there";
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline, msg);
+		return false, msg;
+	end
+	for i,v in ipairs(recipients) do
+		local command = 'RCPT TO:'..'<'..v.address..'>';
+		self:only_send_command(command);
+	end
+	self:only_send_command('DATA');
+
+	return true, nil;
+end
+
+smtp_client_session.pipeline_receive_status_messages = function(self, mail_message)
+	local status = true;
+	local ret = 0;
+	local msg = nil;
+	local msg1 = nil;
+
+	ret, msg1 = self:only_receive_status();
+	-- FOR SENDER
+	if (not is_positive_completion(ret)) then
+		if (status) then status = false; end
+		if (nil == msg) then msg = msg1; end
+	end
+
+	local recipients = mmf.get_recipients(mail_message);
+	local fail_count = 0;
+	for i,v in ipairs(recipients) do
+		-- FOR RCPT TO
+		ret, msg1 = self:only_receive_status();
+		if (not is_positive_completion(ret)) then
+			print(debug.getinfo(1).source, debug.getinfo(1).currentline, ret, msg1);
+			if (nil == msg) then msg = msg1; end
+			fail_count = fail_count + 1;
+		end
+	end
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, fail_count);
+	if (fail_count == #recipients) then
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline, fail_count, #recipients);
+		if (status) then status = false; end
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline, status);
+	end
+
+	local data_status = true;
+	-- FOR DATA
+	ret, msg1 = self:only_receive_status();
+	if (not is_positive_intermediate(ret)) then
+		if (status) then status = false; end
+		if (nil == msg) then msg = msg1; end
+		data_status = false;
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline, status);
+		local ret, msg = self:send_command('RSET');
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	end
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, status, data_status);
+
+	if (status) then
+		return true, nil;
+	else
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline, data_status);
+		if (data_status) then
+			session:send_command(".");
+		end
+		return false, msg;
+	end
+end
+
+smtp_client_session.pipeline_send_message = function(self, mail_message)
+	local ret = 0;
+	local msg = nil;
+	ret, msg = self:pipeline_send_commands(mail_message);
+	if (not ret) then
+		return ret, msg;
+	end
+
+	ret, msg = self:pipeline_receive_status_messages(mail_message);
+	if (not ret) then
+		return false, msg;
+	end
+
+	-- TRANSMISSION
+	local cms = mmf.serialize_message(mail_message);
+	if (not self.ds:transport_cms(cms)) then
+		return false, 'Could not send mail message';
+	end
+
+	-- FOR TRANSMISSION
+	ret, msg = self:only_receive_status();
+	if (not is_positive_completion(ret)) then
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline, ret, msg);
 		return false, msg;
 	end
 
