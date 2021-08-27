@@ -1,6 +1,7 @@
 local platform = require('platform');
 local ffi = require('ffi');
 local netssl = require('libevlnetssl');
+local evclient = require('libevclient');
 
 ffi.cdef[[
 char * strcpy(char * dst, const char * src);
@@ -175,15 +176,50 @@ dialog_socket.close = function(self)
 	platform.close_tcp_connection(self.ss);
 end
 
-local mt = { __index = dialog_socket };
+
+dialog_socket.set_name = function(self, name)
+	self.name = name;
+end
+
+dialog_socket.set_socket_to_be_cached = function(self, flag)
+	if (flag == nil or type(flag) ~= 'boolean') then
+		error("dialog_socket.set_socket_to_be_cached : invalid inputs");
+		return false;
+	end
+	self.to_be_cached = flag;
+	platform.set_socket_managed(self.ss, flag);
+end
+
+dialog_socket.set_to_be_cached = function(self, flag)
+	if (flag == nil or type(flag) ~= 'boolean') then
+		error("dialog_socket.set_socket_to_be_cached : invalid inputs");
+		return false;
+	end
+	self.to_be_cached = flag;
+end
+
+local function cleanup(ds)
+	if ((ds.to_be_cached ~= nil) and ds.to_be_cached) then
+		local h = ds.host..':'..ds.port
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline, h);
+		evclient.add_to_pool(ds.conn_type, h, ds.name, ds.ss);
+	else
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+		ds:close();
+	end
+end
+
+local mt = { __index = dialog_socket,  __gc = cleanup };
+--local mt = { __index = dialog_socket };
 local dialog_socket_factory = {};
 
-dialog_socket_factory.new = function(ss, host, port)
+dialog_socket_factory.new = function(ss, conn_type, host, port)
 	local ds = {};
 	ds = setmetatable(ds, mt);
 	ds.ss = ss;
 	ds.host = host;
 	ds.port = port;
+	ds.conn_type = conn_type;
 	ds.input_buffer = {};
 	ds.input_buffer.size = 0;
 	ds.input_buffer.index = 0;

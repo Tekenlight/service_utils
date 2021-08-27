@@ -148,8 +148,13 @@ smtp_client_session.login = function(self, method, user_name, password)
 			return false, 'login method not suported';
 		end
 	end
-	return true;
 
+	self.ds:set_name(user_name);
+	return true;
+end
+
+smtp_client_session.set_socket_to_be_cached = function(self, flag)
+	self.ds:set_socket_to_be_cached(flag);
 end
 
 smtp_client_session.send_command = function(self, command, arg1, arg2)
@@ -373,23 +378,30 @@ end
 local mt = { __index = smtp_client_session };
 local smtp_client_session_factory = {};
 
-smtp_client_session_factory.new = function(host, port, to_be_cached)
+smtp_client_session_factory.new = function(conn_type, host, port)
 	local nc = {};
 	nc = setmetatable(nc, mt);
 	local ss = nil;
-	if ((nil == to_be_cached) or (not to_be_cached)) then
-		ss = platform.make_tcp_connection(host, port);
-	else
-		ss = platform.make_tcp_connection(host, port, to_be_cached);
-	end
+	ss = platform.make_tcp_connection(host, port);
 	if (ss == nil) then
 		error('Unable to connect to connect to the SMT server '.. host..':'..port);
 	end
-	nc.ds = sock_factory.new(ss, host, port);
+	nc.ds = sock_factory.new(ss, conn_type, host, port);
 	nc.is_open = false;
 	if (not init(nc)) then
 		return nil;
 	end
+	return nc;
+end
+
+smtp_client_session_factory.new_from_cached_ss = function(ss, conn_type, host, port, name)
+	local nc = {};
+	nc = setmetatable(nc, mt);
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	nc.ds = sock_factory.new(ss, conn_type, host, port);
+	nc.is_open = false;
+	nc.ds:set_name(name);
+	nc.ds:set_to_be_cached(true);
 	return nc;
 end
 

@@ -1,22 +1,25 @@
 local ffi = require('ffi');
 local schema_processor = require("schema_processor");
 local error_handler = require("lua_schema.error_handler");
+local smtp_c_f = require('service_utils.SMTP.smtp_client');
 local platform = require('platform');
+local evclient = require('libevclient');
 local properties_funcs = platform.properties_funcs();
-local lua_state_cached = properties_funcs.get_bool_property("evlhttprequesthandler.enableluafilecache");
-if (lua_state_cached == nil) then
-	lua_state_cached = false;
+local enablesmtpclientpool = properties_funcs.get_bool_property("evlhttprequesthandler.enablesmtpclientpool");
+if (enablesmtpclientpool == nil) then
+	enablesmtpclientpool = false;
 end
 
 local email_client = {};
+
+local conn_type = 'socket_connection_pool';
 
 local email_services = {
 	gmail_tls = { uri = 'smtp.gmail.com', port = '587' }
 };
 
 local make_connection = function(self, email_service, user_id, password)
-	local smtp_c_f = require('service_utils.SMTP.smtp_client');
-	local status, smtp_c = pcall(smtp_c_f.new, email_services[email_service].uri, email_services[email_service].port, lua_state_cached);
+	local status, smtp_c = pcall(smtp_c_f.new, conn_type, email_services[email_service].uri, email_services[email_service].port);
 	if (not status) then
 		error_handler.raise_error(-1, smtp_c, debug.getinfo(1));
 	end
@@ -27,39 +30,49 @@ local make_connection = function(self, email_service, user_id, password)
 		return false, nil;
 	end
 
+	if (enablesmtpclientpool) then
+		smtp_c:set_socket_to_be_cached(true);
+	end
+
 	return true, smtp_c;
 end
 local init = function(self, email_service, user_id, password)
-	local evpoco_service_cache = _G['EVPOVO_SERVICE_CACHE'];
-	if (evpoco_service_cache == nil) then
-		evpoco_service_cache = {};
-		_G['EVPOVO_SERVICE_CACHE'] = evpoco_service_cache;
+
+	local host = email_services[email_service].uri ..':'.. email_services[email_service].port;
+	local status, ss_ptr = pcall(evclient.get_from_pool, conn_type, host, user_id);
+	if (not status) then
+		error_handler.raise_error(-1, ss_ptr, debug.getinfo(1));
+		return false, nil;
 	end
+	
+	local ss = nil;
 
-	local evpoco_email_connections = evpoco_service_cache['EVPOCO_EMAIL_CONNECTIONS'];
-	if (evpoco_email_connections == nil) then
-		evpoco_email_connections = {};
-		evpoco_service_cache['EVPOCO_EMAIL_CONNECTIONS'] = evpoco_email_connections;
-	end
-
-	local key = email_service..':'..user_id;
-	local smtp_c = evpoco_email_connections[key];
-
-	local status = nil;
-	if (smtp_c == nil) then
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-		status, smtp_c = make_connection(self, email_service, user_id, password);
+	if (nil ~= ss_ptr) then
+		status, ss = pcall(platform.use_pooled_connection, ss_ptr);
 		if (not status) then
+			error_handler.raise_error(-1, ss, debug.getinfo(1));
 			return false, nil;
 		end
-		evpoco_email_connections[key] = smtp_c;
+		status, smtp_c = pcall(smtp_c_f.new_from_cached_ss, ss, conn_type, email_services[email_service].uri, email_services[email_service].port, user_id);
+		if (not status) then
+			error_handler.raise_error(-1, smtp_c, debug.getinfo(1));
+			return false, nil;
+		end
+	else
+		local status = nil;
+		if (smtp_c == nil) then
+			status, smtp_c = make_connection(self, email_service, user_id, password);
+			if (not status) then
+				return false, nil;
+			end
+		end
 	end
 
 	return true, smtp_c;
 end
 
 local close = function(smtp_c)
-	if (not lua_state_cached) then
+	if (not enablesmtpclientpool) then
 		smtp_c:close();
 	end
 end
@@ -106,7 +119,7 @@ email_client.sendmail = function(self, email_message)
 		error_handler.raise_error(-1, ret, debug.getinfo(1));
 		return false;
 	end
-	close(smtp_c);
+	--close(smtp_c);
 
 	return true;
 end
