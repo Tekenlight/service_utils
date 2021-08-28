@@ -370,6 +370,10 @@ smtp_client_session.close = function(self)
 	end
 end
 
+smtp_client_session.connetion_is_bad = function(self)
+	return self.ds:connetion_is_bad();
+end
+
 local function cleanup(session)
 	session:close();
 end

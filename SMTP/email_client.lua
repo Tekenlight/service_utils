@@ -116,10 +116,19 @@ email_client.sendmail = function(self, email_message)
 	--local status, ret, msg = pcall(smtp_c.send_message, smtp_c, mm);
 	local status, ret, msg = pcall(smtp_c.pipeline_send_message, smtp_c, mm);
 	if (not status) then
-		error_handler.raise_error(-1, ret, debug.getinfo(1));
-		return false;
+		local flg = smtp_c:connetion_is_bad();
+
+		if (smtp_c:connetion_is_bad()) then
+			status, smtp_c = make_connection(self, 'gmail_tls', email_message.from, email_message.password);
+			if (not status) then
+				return false;
+			end
+		end
+		status, ret = pcall(smtp_c.pipeline_send_message, smtp_c, mm);
+		if (not status) then
+			return false;
+		end
 	end
-	--close(smtp_c);
 
 	return true;
 end
