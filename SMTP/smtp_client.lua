@@ -210,7 +210,7 @@ smtp_client_session.send_commands = function(self, mail_message)
 	end
 	for i,v in ipairs(recipients) do
 		local command = 'RCPT TO:'..'<'..v.address..'>';
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline, command);
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, command);
 		ret, msg = self:send_command(command);
 		if (not is_positive_completion(ret)) then
 			print(debug.getinfo(1).source, debug.getinfo(1).currentline, ret, msg);
@@ -302,9 +302,9 @@ smtp_client_session.pipeline_receive_status_messages = function(self, mail_messa
 	end
 	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, fail_count);
 	if (fail_count == #recipients) then
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline, fail_count, #recipients);
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, fail_count, #recipients);
 		if (status) then status = false; end
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline, status);
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, status);
 	end
 
 	local data_status = true;
@@ -353,7 +353,7 @@ smtp_client_session.pipeline_send_message = function(self, mail_message)
 	-- FOR TRANSMISSION
 	ret, msg = self:only_receive_status();
 	if (not is_positive_completion(ret)) then
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline, ret, msg);
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, ret, msg);
 		return false, msg;
 	end
 
@@ -401,7 +401,7 @@ end
 smtp_client_session_factory.new_from_cached_ss = function(ss, conn_type, host, port, name)
 	local nc = {};
 	nc = setmetatable(nc, mt);
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	nc.ds = sock_factory.new(ss, conn_type, host, port);
 	nc.is_open = false;
 	nc.ds:set_name(name);

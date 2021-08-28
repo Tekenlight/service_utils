@@ -13,7 +13,7 @@ dialog_socket.send_bytes = function(self)
 	local buffer_element = self.output_buffer;
 	local status, ret = pcall(platform.send_data_on_socket, self.ss, ffi.getptr(buffer_element.buf), buffer_element.size);
 	if (not status or ret < 0) then
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		self.socket_in_error = true;
 		error(ret);
 	end
@@ -24,7 +24,7 @@ dialog_socket.receive_data = function(self)
 	local buffer_element = self.input_buffer;
 	local status, ret = pcall(platform.recv_data_from_socket, self.ss, ffi.getptr(buffer_element.buf), 1024);
 	if (not status or ret < 0) then
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		self.socket_in_error = true;
 		error(ret);
 	end
@@ -121,7 +121,7 @@ dialog_socket.receive_status_line = function(self, i_msg, limit)
 end
 
 dialog_socket.connetion_is_bad = function(self)
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline, self.socket_in_error);
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, self.socket_in_error);
 	return self.socket_in_error
 end
 
@@ -216,10 +216,10 @@ end
 local function cleanup(ds)
 	if (ds.to_be_cached and not ds.socket_in_error) then
 		local h = ds.host..':'..ds.port
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline, h);
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, h);
 		evclient.add_to_pool(ds.conn_type, h, ds.name, ds.ss);
 	else
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		ds:close();
 		platform.cleanup_stream_socket(ds.ss);
 	end
