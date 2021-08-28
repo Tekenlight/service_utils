@@ -179,17 +179,18 @@ local invoke_func = function(request, req_processor, func, url_parts, qp, obj)
 		end
 	end
 	local message_validation_context = error_handler.reset_init();
-	if (db_init_done) then
-		local flg = end_transaction(req_processor, func, uc, status);
-		reset_db_connections(uc);
-	end
 	if (not proc_stat) then
 		if (message_validation_context.status.success) then
 			message_validation_context.status.success = false;
 			message_validation_context.status.error_no = -1;
-			message_validation_context.status.message = "Unknown processing error";
+			--message_validation_context.status.message = "Unknown processing error";
+			message_validation_context.status.message = status; -- pcall returns the message as second return value
 		end
 		status = false;
+	end
+	if (db_init_done) then
+		local flg = end_transaction(req_processor, func, uc, status);
+		reset_db_connections(uc);
 	end
 	if (not status) then
 		out_obj = {};
