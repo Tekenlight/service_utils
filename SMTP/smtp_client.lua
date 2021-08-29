@@ -5,6 +5,7 @@ local platform = require('platform');
 local mmf = platform.mail_message_funcs();
 local nu = require('lua_schema.number_utils');
 local core_utils = require('lua_schema.core_utils');
+local error_handler = require("lua_schema.error_handler");
 
 ffi.cdef [[
 char * strcpy(char * dst, const char * src);
@@ -70,11 +71,13 @@ local function init(session)
 	end
 	if (not is_positive_completion(ret)) then
 		msg = 'Login failed:'..ret..':'..msg;;
+		error_handler.raise_error(-1, msg, debug.getinfo(1));
 		return false, msg;
 	end
 	ret, msg = session:send_command('STARTTLS');
 	if (not is_positive_completion(ret)) then
 		msg = 'TLS could not be initiated';
+		error_handler.raise_error(-1, msg, debug.getinfo(1));
 		return false, msg;
 	end
 	session.ds:start_tls();
@@ -85,6 +88,7 @@ end
 local function login_using_login(session, user_name, password)
 	local ret, response = session:send_command('AUTH LOGIN');
 	if (not is_positive_intermediate(ret)) then
+		error_handler.raise_error(-1, response, debug.getinfo(1));
 		return false, response;
 	end
 	local resp_msg = string.sub(response, 5);
@@ -94,31 +98,29 @@ local function login_using_login(session, user_name, password)
 
 	local b64_user_name = core_utils.str_base64_encode(user_name);
 	local b64_password = core_utils.str_base64_encode(password);
-	--[[
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline,
-		ffi.string(ffi.cast("char*", core_utils.base64_decode(b64_user_name).value)));
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline, '[Passord = '..
-		ffi.string(ffi.cast("char*", core_utils.base64_decode(b64_password).value)).. ']');
-	--]]
 
 	if (field == 'Username:') then
 		local ret, response = session:send_command(b64_user_name);
 		if (not is_positive_intermediate(ret)) then
+			error_handler.raise_error(-1, response, debug.getinfo(1));
 			return false, response;
 		end
 
 		ret, response = session:send_command(b64_password);
 		if (not is_positive_completion(ret)) then
+			error_handler.raise_error(-1, response, debug.getinfo(1));
 			return false, response;
 		end
 	else
 		local ret, response = session:send_command(b64_password);
 		if (not is_positive_completion(ret)) then
+			error_handler.raise_error(-1, response, debug.getinfo(1));
 			return false, response;
 		end
 
 		local ret, response = session:send_command(b64_user_name);
 		if (not is_positive_intermediate(ret)) then
+			error_handler.raise_error(-1, response, debug.getinfo(1));
 			return false, response;
 		end
 	end
@@ -128,24 +130,29 @@ end
 
 smtp_client_session.login = function(self, method, user_name, password)
 	if (smtp_client_session.login_methods[method] == nil) then
+		error_handler.raise_error(-1, 'Invalid method', debug.getinfo(1));
 		error('Invalid method');
 	end
 	--[[ TO BEGIN WITH LET US SUPPORT ONE METHOD ]]
 	if (smtp_client_session.login_methods[method] ~= smtp_client_session.login_methods.AUTH_LOGIN) then
 		local msg = 'Invalid method';
+		error_handler.raise_error(-1, msg, debug.getinfo(1));
 		return false, msg;
 	end
 	if (user_name == nil or type(user_name) ~= 'string') then
 		local msg = 'Invalid user_name';
+		error_handler.raise_error(-1, msg, debug.getinfo(1));
 		return false, msg;
 	end
 	if (password == nil or type(password) ~= 'string') then
 		local msg = 'Invalid user_name';
+		error_handler.raise_error(-1, msg, debug.getinfo(1));
 		return false, msg;
 	end
 	if (smtp_client_session.login_methods[method] == smtp_client_session.login_methods.AUTH_LOGIN) then
-		if (not login_using_login(self, user_name, password)) then
-			return false, 'login method not suported';
+		local status, response_msg = login_using_login(self, user_name, password);
+		if (not status) then
+			return status, response_msg
 		end
 	end
 
@@ -187,7 +194,7 @@ smtp_client_session.send_commands = function(self, mail_message)
 	local sender = mmf.get_sender(mail_message);
 	if (sender == nil) then
 		msg = "sender cannot be nil";
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline, msg);
+		error_handler.raise_error(-1, msg, debug.getinfo(1));
 		return false, msg;
 	end
 	local i, j = string.find(sender, "<.*>");
@@ -199,27 +206,26 @@ smtp_client_session.send_commands = function(self, mail_message)
 	end
 	ret, msg = self:send_command('MAIL FROM:', f_sender);
 	if (not is_positive_completion(ret)) then
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline, msg);
+		error_handler.raise_error(-1, msg, debug.getinfo(1));
 		return false, msg;
 	end
 	local recipients = mmf.get_recipients(mail_message);
 	if (recipients == nil or type(recipients) ~= 'table' or #recipients == 0) then
 		msg = "Atlease one recipient should be there";
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline, msg);
+		error_handler.raise_error(-1, msg, debug.getinfo(1));
 		return false, msg;
 	end
 	for i,v in ipairs(recipients) do
 		local command = 'RCPT TO:'..'<'..v.address..'>';
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, command);
 		ret, msg = self:send_command(command);
 		if (not is_positive_completion(ret)) then
-			print(debug.getinfo(1).source, debug.getinfo(1).currentline, ret, msg);
+			error_handler.raise_error(-1, msg, debug.getinfo(1));
 			return false, msg;
 		end
 	end
 	ret, msg = self:send_command('DATA');
 	if (not is_positive_intermediate(ret)) then
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline, ret, msg);
+		error_handler.raise_error(-1, msg, debug.getinfo(1));
 		return false, msg;
 	end
 
@@ -233,11 +239,13 @@ smtp_client_session.send_message = function(self, mail_message)
 
 	local cms = mmf.serialize_message(mail_message);
 	if (not self.ds:transport_cms(cms)) then
+		error_handler.raise_error(-1, 'Could not send mail message', debug.getinfo(1));
 		return false, 'Could not send mail message';
 	end
 
 	ret, msg = self.ds:receive_status_message();
 	if (not is_positive_completion(ret)) then
+		error_handler.raise_error(-1, msg, debug.getinfo(1));
 		return false, msg;
 	end
 
@@ -250,7 +258,7 @@ smtp_client_session.pipeline_send_commands = function(self, mail_message)
 	local sender = mmf.get_sender(mail_message);
 	if (sender == nil) then
 		msg = "sender cannot be nil";
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline, msg);
+		error_handler.raise_error(-1, msg, debug.getinfo(1));
 		return false, msg;
 	end
 	local i, j = string.find(sender, "<.*>");
@@ -264,7 +272,7 @@ smtp_client_session.pipeline_send_commands = function(self, mail_message)
 	local recipients = mmf.get_recipients(mail_message);
 	if (recipients == nil or type(recipients) ~= 'table' or #recipients == 0) then
 		msg = "Atlease one recipient should be there";
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline, msg);
+		error_handler.raise_error(-1, msg, debug.getinfo(1));
 		return false, msg;
 	end
 	for i,v in ipairs(recipients) do
@@ -295,16 +303,13 @@ smtp_client_session.pipeline_receive_status_messages = function(self, mail_messa
 		-- FOR RCPT TO
 		ret, msg1 = self:only_receive_status();
 		if (not is_positive_completion(ret)) then
-			print(debug.getinfo(1).source, debug.getinfo(1).currentline, ret, msg1);
 			if (nil == msg) then msg = msg1; end
 			fail_count = fail_count + 1;
 		end
 	end
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, fail_count);
+
 	if (fail_count == #recipients) then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, fail_count, #recipients);
 		if (status) then status = false; end
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, status);
 	end
 
 	local data_status = true;
@@ -314,19 +319,20 @@ smtp_client_session.pipeline_receive_status_messages = function(self, mail_messa
 		if (status) then status = false; end
 		if (nil == msg) then msg = msg1; end
 		data_status = false;
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline, status);
 		local ret, msg = self:send_command('RSET');
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+		if (not is_positive_completion(ret)) then
+			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			error(msg);
+		end
 	end
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, status, data_status);
 
 	if (status) then
 		return true, nil;
 	else
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline, data_status);
 		if (data_status) then
 			session:send_command(".");
 		end
+		error_handler.raise_error(-1, msg, debug.getinfo(1));
 		return false, msg;
 	end
 end
@@ -347,13 +353,14 @@ smtp_client_session.pipeline_send_message = function(self, mail_message)
 	-- TRANSMISSION
 	local cms = mmf.serialize_message(mail_message);
 	if (not self.ds:transport_cms(cms)) then
+		error_handler.raise_error(-1, 'Could not transfer mail message', debug.getinfo(1));
 		return false, 'Could not send mail message';
 	end
 
 	-- FOR TRANSMISSION
 	ret, msg = self:only_receive_status();
 	if (not is_positive_completion(ret)) then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, ret, msg);
+		error_handler.raise_error(-1, msg, debug.getinfo(1));
 		return false, msg;
 	end
 
@@ -401,11 +408,10 @@ end
 smtp_client_session_factory.new_from_cached_ss = function(ss, conn_type, host, port, name)
 	local nc = {};
 	nc = setmetatable(nc, mt);
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	nc.ds = sock_factory.new(ss, conn_type, host, port);
 	nc.is_open = false;
 	nc.ds:set_name(name);
-	nc.ds:set_to_be_cached(true);
+	nc.ds:set_socket_to_be_cached(true);
 	return nc;
 end
 

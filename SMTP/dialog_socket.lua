@@ -2,6 +2,7 @@ local platform = require('platform');
 local ffi = require('ffi');
 local netssl = require('libevlnetssl');
 local evclient = require('libevclient');
+local error_handler = require("lua_schema.error_handler");
 
 ffi.cdef[[
 char * strcpy(char * dst, const char * src);
@@ -12,8 +13,8 @@ local dialog_socket = {};
 dialog_socket.send_bytes = function(self)
 	local buffer_element = self.output_buffer;
 	local status, ret = pcall(platform.send_data_on_socket, self.ss, ffi.getptr(buffer_element.buf), buffer_element.size);
-	if (not status or ret < 0) then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	if (not status) then
+		error_handler.raise_error(-1, ret, debug.getinfo(1));
 		self.socket_in_error = true;
 		error(ret);
 	end
@@ -23,8 +24,8 @@ end
 dialog_socket.receive_data = function(self)
 	local buffer_element = self.input_buffer;
 	local status, ret = pcall(platform.recv_data_from_socket, self.ss, ffi.getptr(buffer_element.buf), 1024);
-	if (not status or ret < 0) then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	if (not status) then
+		error_handler.raise_error(-1, ret, debug.getinfo(1));
 		self.socket_in_error = true;
 		error(ret);
 	end
@@ -37,9 +38,7 @@ dialog_socket.peek = function(self)
 	if (buffer_element.index >= buffer_element.size) then
 		buffer_element.size = 0;
 		buffer_element.index = 0;
-		if (-1 == self:receive_data()) then
-			return nil;
-		end
+		self:receive_data();
 	end
 	local ch = buffer_element.buf[buffer_element.index];
 	return string.char(ch);
@@ -50,11 +49,7 @@ dialog_socket.get_ch = function(self)
 	if (buffer_element.index >= buffer_element.size) then
 		buffer_element.size = 0;
 		buffer_element.index = 0;
-		local ret = self:receive_data();
-		if (-1 == ret) then
-			return nil;
-		end
-		buffer_element.size = ret;
+		self:receive_data();
 	end
 	if (buffer_element.size == 0) then
 		return nil;
@@ -121,7 +116,6 @@ dialog_socket.receive_status_line = function(self, i_msg, limit)
 end
 
 dialog_socket.connetion_is_bad = function(self)
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, self.socket_in_error);
 	return self.socket_in_error
 end
 
@@ -143,8 +137,8 @@ end
 
 dialog_socket.send_string = function(self, string_data)
 	local size = string.len(string_data);
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, size);
 	if (size > 1024) then
+		error_handler.raise_error(-1, "Cannot send messages > 1024 bytes", debug.getinfo(1));
 		return nil;
 	end
 	local buffer_element = self.output_buffer;
@@ -156,12 +150,15 @@ end
 
 dialog_socket.send_message = function(self, str, arg1, arg2)
 	if (str == nil or type(str) ~= 'string') then
+		error_handler.raise_error(-1, "Invalid inputs", debug.getinfo(1));
 		error("Invalid inputs");
 	end
 	if ((arg1 ~= nil) and (type(arg1) ~= 'string')) then
+		error_handler.raise_error(-1, "Invalid inputs", debug.getinfo(1));
 		error("Invalid inputs");
 	end
 	if ((arg2 ~= nil) and (type(arg2) ~= 'string')) then
+		error_handler.raise_error(-1, "Invalid inputs", debug.getinfo(1));
 		error("Invalid inputs");
 	end
 	local string_data = str
@@ -169,7 +166,6 @@ dialog_socket.send_message = function(self, str, arg1, arg2)
 	if (arg2 ~= nil) then string_data = string_data ..' '..arg2; end
 	string_data = string_data .. '\r\n';
 
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, string_data);
 	return self:send_string(string_data);
 end
 
@@ -198,35 +194,24 @@ end
 
 dialog_socket.set_socket_to_be_cached = function(self, flag)
 	if (flag == nil or type(flag) ~= 'boolean') then
+		error_handler.raise_error(-1, "dialog_socket.set_socket_to_be_cached : invalid inputs", debug.getinfo(1));
 		error("dialog_socket.set_socket_to_be_cached : invalid inputs");
-		return false;
 	end
 	self.to_be_cached = flag;
 	platform.set_socket_managed(self.ss, flag);
 end
 
-dialog_socket.set_to_be_cached = function(self, flag)
-	if (flag == nil or type(flag) ~= 'boolean') then
-		error("dialog_socket.set_socket_to_be_cached : invalid inputs");
-		return false;
-	end
-	self.to_be_cached = flag;
-end
-
 local function cleanup(ds)
 	if (ds.to_be_cached and not ds.socket_in_error) then
 		local h = ds.host..':'..ds.port
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, h);
 		evclient.add_to_pool(ds.conn_type, h, ds.name, ds.ss);
 	else
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		ds:close();
 		platform.cleanup_stream_socket(ds.ss);
 	end
 end
 
 local mt = { __index = dialog_socket,  __gc = cleanup };
---local mt = { __index = dialog_socket };
 local dialog_socket_factory = {};
 
 dialog_socket_factory.new = function(ss, conn_type, host, port)

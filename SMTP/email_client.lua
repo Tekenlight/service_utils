@@ -22,6 +22,7 @@ local make_connection = function(self, email_service, user_id, password)
 	local status, smtp_c = pcall(smtp_c_f.new, conn_type, email_services[email_service].uri, email_services[email_service].port);
 	if (not status) then
 		error_handler.raise_error(-1, smtp_c, debug.getinfo(1));
+		error(smtp_c);
 	end
 
 	local status, msg = pcall(smtp_c.login, smtp_c, 'AUTH_LOGIN', user_id, password);
@@ -46,6 +47,7 @@ local init = function(self, email_service, user_id, password)
 	end
 	
 	local ss = nil;
+	local from_pool = false;
 
 	if (nil ~= ss_ptr) then
 		status, ss = pcall(platform.use_pooled_connection, ss_ptr);
@@ -58,6 +60,7 @@ local init = function(self, email_service, user_id, password)
 			error_handler.raise_error(-1, smtp_c, debug.getinfo(1));
 			return false, nil;
 		end
+		from_pool = true;
 	else
 		local status = nil;
 		if (smtp_c == nil) then
@@ -66,9 +69,10 @@ local init = function(self, email_service, user_id, password)
 				return false, nil;
 			end
 		end
+		from_pool = false;
 	end
 
-	return true, smtp_c;
+	return true, smtp_c, from_pool;
 end
 
 local close = function(smtp_c)
@@ -83,7 +87,7 @@ email_client.sendmail = function(self, email_message)
 		return false;
 	end
 
-	local status , smtp_c = init(email_client, 'gmail_tls', email_message.from, email_message.password);
+	local status , smtp_c, conn_from_pool = init(email_client, 'gmail_tls', email_message.from, email_message.password);
 	if (not status) then
 		return false;
 	end
@@ -116,16 +120,18 @@ email_client.sendmail = function(self, email_message)
 	--local status, ret, msg = pcall(smtp_c.send_message, smtp_c, mm);
 	local status, ret, msg = pcall(smtp_c.pipeline_send_message, smtp_c, mm);
 	if (not status) then
-		local flg = smtp_c:connetion_is_bad();
-
-		if (smtp_c:connetion_is_bad()) then
-			status, smtp_c = make_connection(self, 'gmail_tls', email_message.from, email_message.password);
+		if (conn_from_pool) then
+			if (smtp_c:connetion_is_bad()) then
+				status, smtp_c = make_connection(self, 'gmail_tls', email_message.from, email_message.password);
+				if (not status) then
+					return false;
+				end
+			end
+			status, ret = pcall(smtp_c.pipeline_send_message, smtp_c, mm);
 			if (not status) then
 				return false;
 			end
-		end
-		status, ret = pcall(smtp_c.pipeline_send_message, smtp_c, mm);
-		if (not status) then
+		else
 			return false;
 		end
 	end
