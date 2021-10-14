@@ -187,7 +187,6 @@ dialog_socket.close = function(self)
 	platform.close_tcp_connection(self.ss);
 end
 
-
 dialog_socket.set_name = function(self, name)
 	self.name = name;
 end
