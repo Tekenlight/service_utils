@@ -385,6 +385,10 @@ local function cleanup(session)
 	session:close();
 end
 
+smtp_client_session.release_connection = function(self)
+	self.ds:cleanup();
+end
+
 --local mt = { __index = smtp_client_session, __gc = cleanup };
 local mt = { __index = smtp_client_session };
 local smtp_client_session_factory = {};

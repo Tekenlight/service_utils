@@ -200,17 +200,24 @@ dialog_socket.set_socket_to_be_cached = function(self, flag)
 	platform.set_socket_managed(self.ss, flag);
 end
 
-local function cleanup(ds)
-	if (ds.to_be_cached and not ds.socket_in_error) then
-		local h = ds.host..':'..ds.port
-		evclient.add_to_pool(ds.conn_type, h, ds.name, ds.ss);
+dialog_socket.cleanup = function (self)
+	if (self.to_be_cached and not self.socket_in_error) then
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+		local h = self.host..':'..self.port
+		evclient.add_to_pool(self.conn_type, h, self.name, self.ss);
 	else
-		ds:close();
-		platform.cleanup_stream_socket(ds.ss);
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+		self:close();
+		platform.cleanup_stream_socket(self.ss);
 	end
 end
 
-local mt = { __index = dialog_socket,  __gc = cleanup };
+local ds_gc = function()
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+end
+
+local mt = { __index = dialog_socket,  __gc = ds_gc };
+--local mt = { __index = dialog_socket };
 local dialog_socket_factory = {};
 
 dialog_socket_factory.new = function(ss, conn_type, host, port)

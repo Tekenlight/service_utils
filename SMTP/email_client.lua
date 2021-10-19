@@ -39,6 +39,7 @@ local make_connection = function(self, email_service, user_id, password)
 end
 local init = function(self, email_service, user_id, password)
 
+	local smtp_c = nil;
 	local host = email_services[email_service].uri ..':'.. email_services[email_service].port;
 	local status, ss_ptr = pcall(evclient.get_from_pool, conn_type, host, user_id);
 	if (not status) then
@@ -122,6 +123,8 @@ email_client.sendmail = function(self, email_message)
 	if (not status) then
 		if (conn_from_pool) then
 			if (smtp_c:connetion_is_bad()) then
+				smtp_c:release_connection();
+				smtp_c = nil;
 				status, smtp_c = make_connection(self, 'gmail_tls', email_message.from, email_message.password);
 				if (not status) then
 					return false;
@@ -129,13 +132,16 @@ email_client.sendmail = function(self, email_message)
 			end
 			status, ret = pcall(smtp_c.pipeline_send_message, smtp_c, mm);
 			if (not status) then
+				smtp_c:release_connection();
 				return false;
 			end
 		else
+			smtp_c:release_connection();
 			return false;
 		end
 	end
 
+	smtp_c:release_connection();
 	return true;
 end
 
