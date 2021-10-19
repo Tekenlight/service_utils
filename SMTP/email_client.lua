@@ -84,7 +84,17 @@ end
 
 email_client.sendmail = function(self, email_message)
 	local msg_handler = schema_processor:get_message_handler('email_message', 'http://evpoco.org');
-	if (not msg_handler:is_valid(email_message)) then
+	if (msg_handler == nil) then
+		error_handler.raise_error(-1, "Could not locate message schema handler", debug.getinfo(1));
+		return false;
+	end
+
+	local stat, status = pcall(msg_handler.is_valid, msg_handler, email_message);
+	if (not stat) then
+		error_handler.raise_error(-1, status, debug.getinfo(1));
+		return false;
+	end
+	if (not status) then
 		return false;
 	end
 
@@ -118,8 +128,8 @@ email_client.sendmail = function(self, email_message)
 		end
 	end
 
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, smtp_c);
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, smtp_c.ds);
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline, smtp_c);
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline, smtp_c.ds);
 	--local status, ret, msg = pcall(smtp_c.send_message, smtp_c, mm);
 	local status, ret, msg = pcall(smtp_c.pipeline_send_message, smtp_c, mm);
 	if (not status) then
@@ -143,6 +153,7 @@ email_client.sendmail = function(self, email_message)
 		end
 	end
 
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline, smtp_c.ds);
 	smtp_c:release_connection();
 	return true;
 end
