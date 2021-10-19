@@ -202,18 +202,15 @@ end
 
 dialog_socket.cleanup = function (self)
 	if (self.to_be_cached and not self.socket_in_error) then
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		local h = self.host..':'..self.port
 		evclient.add_to_pool(self.conn_type, h, self.name, self.ss);
 	else
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		self:close();
 		platform.cleanup_stream_socket(self.ss);
 	end
 end
 
 local ds_gc = function()
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 end
 
 local mt = { __index = dialog_socket,  __gc = ds_gc };

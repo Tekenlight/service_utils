@@ -118,6 +118,8 @@ email_client.sendmail = function(self, email_message)
 		end
 	end
 
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, smtp_c);
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, smtp_c.ds);
 	--local status, ret, msg = pcall(smtp_c.send_message, smtp_c, mm);
 	local status, ret, msg = pcall(smtp_c.pipeline_send_message, smtp_c, mm);
 	if (not status) then
