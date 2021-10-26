@@ -25,7 +25,7 @@ targetNamespace="http://evpoco.tekenlight.org/message_rules" xmlns:ns="http://ev
 
 <xsd:complexType name="validation_type">
 	<xsd:attribute name="package" type="xsd:token" use="required"/>
-	<xsd:attribute name="name" type="xsd:token" use="required"/>
+	<xsd:attribute name="method" type="xsd:token" use="required"/>
 	<xsd:attribute name="inputs" type="xsd:token" use="required"/>
 </xsd:complexType>
 
