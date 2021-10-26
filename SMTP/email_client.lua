@@ -83,7 +83,7 @@ local close = function(smtp_c)
 end
 
 email_client.sendmail = function(self, email_message)
-	local msg_handler = schema_processor:get_message_handler('email_message', 'http://evpoco.org');
+	local msg_handler = schema_processor:get_message_handler('email_message', 'http://evpoco.tekenlight.org');
 	if (msg_handler == nil) then
 		error_handler.raise_error(-1, "Could not locate message schema handler", debug.getinfo(1));
 		return false;
