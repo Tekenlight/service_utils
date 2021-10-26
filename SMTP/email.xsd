@@ -1,5 +1,5 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-targetNamespace="http://evpoco.org" xmlns:ns="http://evpoco.org">
+targetNamespace="http://evpoco.tekenlight.org" xmlns:ns="http://evpoco.tekenlight.org">
 
     <xsd:simpleType name="email_id_type">
         <xsd:annotation>
