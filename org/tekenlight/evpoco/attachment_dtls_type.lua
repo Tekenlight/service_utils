@@ -21,16 +21,16 @@ function _factory:instantiate()
     return(o);
 end
 
-eh_cache.add('{http://evpoco.org}attachment_dtls_type', _factory);
+eh_cache.add('{http://evpoco.tekenlight.org}attachment_dtls_type', _factory);
 
 
 do
     element_handler.properties = {};
     element_handler.properties.element_type = 'C';
     element_handler.properties.content_type = 'C';
-    element_handler.properties.schema_type = '{http://evpoco.org}attachment_dtls_type';
+    element_handler.properties.schema_type = '{http://evpoco.tekenlight.org}attachment_dtls_type';
     element_handler.properties.q_name = {};
-    element_handler.properties.q_name.ns = 'http://evpoco.org'
+    element_handler.properties.q_name.ns = 'http://evpoco.tekenlight.org'
     element_handler.properties.q_name.local_name = 'attachment_dtls_type'
 
     -- No particle properties for a typedef
@@ -44,10 +44,10 @@ end
 do
     element_handler.properties.content_model = {
         group_type = 'S',
-        max_occurs = 1,
         top_level_group = true,
-        min_occurs = 1,
+        max_occurs = 1,
         generated_subelement_name = '_sequence_group',
+        min_occurs = 1,
         'name',
         'data',
         'content_type',

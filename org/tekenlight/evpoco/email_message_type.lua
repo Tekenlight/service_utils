@@ -21,16 +21,16 @@ function _factory:instantiate()
     return(o);
 end
 
-eh_cache.add('{http://evpoco.org}email_message_type', _factory);
+eh_cache.add('{http://evpoco.tekenlight.org}email_message_type', _factory);
 
 
 do
     element_handler.properties = {};
     element_handler.properties.element_type = 'C';
     element_handler.properties.content_type = 'C';
-    element_handler.properties.schema_type = '{http://evpoco.org}email_message_type';
+    element_handler.properties.schema_type = '{http://evpoco.tekenlight.org}email_message_type';
     element_handler.properties.q_name = {};
-    element_handler.properties.q_name.ns = 'http://evpoco.org'
+    element_handler.properties.q_name.ns = 'http://evpoco.tekenlight.org'
     element_handler.properties.q_name.local_name = 'email_message_type'
 
     -- No particle properties for a typedef
@@ -44,10 +44,10 @@ end
 do
     element_handler.properties.content_model = {
         group_type = 'S',
-        max_occurs = 1,
-        top_level_group = true,
-        min_occurs = 1,
         generated_subelement_name = '_sequence_group',
+        top_level_group = true,
+        max_occurs = 1,
+        min_occurs = 1,
         'from',
         'password',
         'sender_name',
@@ -148,7 +148,7 @@ element_handler.properties.subelement_properties['{}from'].type_of_simple = 'A';
             element_handler.properties.subelement_properties['{}from'].properties = {};
             element_handler.properties.subelement_properties['{}from'].properties.element_type = 'S';
             element_handler.properties.subelement_properties['{}from'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{}from'].properties.schema_type = '{http://evpoco.org}email_id_type';
+            element_handler.properties.subelement_properties['{}from'].properties.schema_type = '{http://evpoco.tekenlight.org}email_id_type';
             element_handler.properties.subelement_properties['{}from'].properties.bi_type = {};
             element_handler.properties.subelement_properties['{}from'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
             element_handler.properties.subelement_properties['{}from'].properties.bi_type.name = 'token';
@@ -192,123 +192,6 @@ element_handler.properties.subelement_properties['{}from'].type_of_simple = 'A';
         element_handler.properties.subelement_properties['{}from'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{}from'].particle_properties.min_occurs = 1;
         element_handler.properties.subelement_properties['{}from'].particle_properties.max_occurs = 1;
-    end
-
-    element_handler.properties.subelement_properties['{}message_body'] = {};
-    do
-element_handler.properties.subelement_properties['{}message_body'].super_element_content_type = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
-
-element_handler.properties.subelement_properties['{}message_body'].type_of_simple = 'A';
-
-        do
-            element_handler.properties.subelement_properties['{}message_body'].properties = {};
-            element_handler.properties.subelement_properties['{}message_body'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{}message_body'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{}message_body'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
-            element_handler.properties.subelement_properties['{}message_body'].properties.bi_type = {};
-            element_handler.properties.subelement_properties['{}message_body'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{}message_body'].properties.bi_type.name = 'string';
-            element_handler.properties.subelement_properties['{}message_body'].properties.bi_type.id = '1';
-            element_handler.properties.subelement_properties['{}message_body'].properties.attr = {};
-            element_handler.properties.subelement_properties['{}message_body'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{}message_body'].properties.attr._generated_attr = {};
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}message_body'].particle_properties = {};
-            element_handler.properties.subelement_properties['{}message_body'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{}message_body'].particle_properties.q_name.ns = '';
-            element_handler.properties.subelement_properties['{}message_body'].particle_properties.q_name.local_name = 'message_body';
-            element_handler.properties.subelement_properties['{}message_body'].particle_properties.generated_name = 'message_body';
-        end
-
-        -- Simple type properties
-        do
-            element_handler.properties.subelement_properties['{}message_body'].base = {};
-            element_handler.properties.subelement_properties['{}message_body'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{}message_body'].base.name = 'string';
-            element_handler.properties.subelement_properties['{}message_body'].local_facets = {};
-            element_handler.properties.subelement_properties['{}message_body'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{}message_body']);
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}message_body'].type_handler = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
-            element_handler.properties.subelement_properties['{}message_body'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{}message_body'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{}message_body'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{}message_body'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{}message_body'].parse_xml = basic_stuff.parse_xml;
-        end
-
-        element_handler.properties.subelement_properties['{}message_body'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{}message_body'].particle_properties.min_occurs = 1;
-        element_handler.properties.subelement_properties['{}message_body'].particle_properties.max_occurs = 1;
-    end
-
-    element_handler.properties.subelement_properties['{}sender_name'] = {};
-    do
-element_handler.properties.subelement_properties['{}sender_name'].super_element_content_type = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
-
-element_handler.properties.subelement_properties['{}sender_name'].type_of_simple = 'A';
-
-        do
-            element_handler.properties.subelement_properties['{}sender_name'].properties = {};
-            element_handler.properties.subelement_properties['{}sender_name'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{}sender_name'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{}sender_name'].properties.schema_type = '{http://evpoco.org}user_name_type';
-            element_handler.properties.subelement_properties['{}sender_name'].properties.bi_type = {};
-            element_handler.properties.subelement_properties['{}sender_name'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{}sender_name'].properties.bi_type.name = 'token';
-            element_handler.properties.subelement_properties['{}sender_name'].properties.bi_type.id = '0';
-            element_handler.properties.subelement_properties['{}sender_name'].properties.attr = {};
-            element_handler.properties.subelement_properties['{}sender_name'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{}sender_name'].properties.attr._generated_attr = {};
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}sender_name'].particle_properties = {};
-            element_handler.properties.subelement_properties['{}sender_name'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{}sender_name'].particle_properties.q_name.ns = '';
-            element_handler.properties.subelement_properties['{}sender_name'].particle_properties.q_name.local_name = 'sender_name';
-            element_handler.properties.subelement_properties['{}sender_name'].particle_properties.generated_name = 'sender_name';
-        end
-
-        -- Simple type properties
-        do
-            element_handler.properties.subelement_properties['{}sender_name'].base = {};
-            element_handler.properties.subelement_properties['{}sender_name'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{}sender_name'].base.name = 'token';
-            element_handler.properties.subelement_properties['{}sender_name'].local_facets = {};
-            element_handler.properties.subelement_properties['{}sender_name'].local_facets.max_length = 256;
-            element_handler.properties.subelement_properties['{}sender_name'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{}sender_name']);
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}sender_name'].type_handler = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
-            element_handler.properties.subelement_properties['{}sender_name'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{}sender_name'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{}sender_name'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{}sender_name'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{}sender_name'].parse_xml = basic_stuff.parse_xml;
-        end
-
-        element_handler.properties.subelement_properties['{}sender_name'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{}sender_name'].particle_properties.min_occurs = 0;
-        element_handler.properties.subelement_properties['{}sender_name'].particle_properties.max_occurs = 1;
-    end
-
-    do
-        element_handler.properties.subelement_properties['{}recipients'] = 
-            (basic_stuff.get_element_handler('http://evpoco.org', 'recipient_dtls_type'):
-            new_instance_as_local_element({ns = '', local_name = 'recipients', generated_name = 'recipients',
-                    root_element = false, min_occurs = 1, max_occurs = -1}));
-    end
-
-    do
-        element_handler.properties.subelement_properties['{}attachments'] = 
-            (basic_stuff.get_element_handler('http://evpoco.org', 'attachment_dtls_type'):
-            new_instance_as_local_element({ns = '', local_name = 'attachments', generated_name = 'attachments',
-                    root_element = false, min_occurs = 0, max_occurs = -1}));
     end
 
     element_handler.properties.subelement_properties['{}password'] = {};
@@ -360,6 +243,123 @@ element_handler.properties.subelement_properties['{}password'].type_of_simple = 
         element_handler.properties.subelement_properties['{}password'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{}password'].particle_properties.min_occurs = 1;
         element_handler.properties.subelement_properties['{}password'].particle_properties.max_occurs = 1;
+    end
+
+    do
+        element_handler.properties.subelement_properties['{}recipients'] = 
+            (basic_stuff.get_element_handler('http://evpoco.tekenlight.org', 'recipient_dtls_type'):
+            new_instance_as_local_element({ns = '', local_name = 'recipients', generated_name = 'recipients',
+                    root_element = false, min_occurs = 1, max_occurs = -1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{}attachments'] = 
+            (basic_stuff.get_element_handler('http://evpoco.tekenlight.org', 'attachment_dtls_type'):
+            new_instance_as_local_element({ns = '', local_name = 'attachments', generated_name = 'attachments',
+                    root_element = false, min_occurs = 0, max_occurs = -1}));
+    end
+
+    element_handler.properties.subelement_properties['{}sender_name'] = {};
+    do
+element_handler.properties.subelement_properties['{}sender_name'].super_element_content_type = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
+
+element_handler.properties.subelement_properties['{}sender_name'].type_of_simple = 'A';
+
+        do
+            element_handler.properties.subelement_properties['{}sender_name'].properties = {};
+            element_handler.properties.subelement_properties['{}sender_name'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{}sender_name'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{}sender_name'].properties.schema_type = '{http://evpoco.tekenlight.org}user_name_type';
+            element_handler.properties.subelement_properties['{}sender_name'].properties.bi_type = {};
+            element_handler.properties.subelement_properties['{}sender_name'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{}sender_name'].properties.bi_type.name = 'token';
+            element_handler.properties.subelement_properties['{}sender_name'].properties.bi_type.id = '0';
+            element_handler.properties.subelement_properties['{}sender_name'].properties.attr = {};
+            element_handler.properties.subelement_properties['{}sender_name'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{}sender_name'].properties.attr._generated_attr = {};
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}sender_name'].particle_properties = {};
+            element_handler.properties.subelement_properties['{}sender_name'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{}sender_name'].particle_properties.q_name.ns = '';
+            element_handler.properties.subelement_properties['{}sender_name'].particle_properties.q_name.local_name = 'sender_name';
+            element_handler.properties.subelement_properties['{}sender_name'].particle_properties.generated_name = 'sender_name';
+        end
+
+        -- Simple type properties
+        do
+            element_handler.properties.subelement_properties['{}sender_name'].base = {};
+            element_handler.properties.subelement_properties['{}sender_name'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{}sender_name'].base.name = 'token';
+            element_handler.properties.subelement_properties['{}sender_name'].local_facets = {};
+            element_handler.properties.subelement_properties['{}sender_name'].local_facets.max_length = 256;
+            element_handler.properties.subelement_properties['{}sender_name'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{}sender_name']);
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}sender_name'].type_handler = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
+            element_handler.properties.subelement_properties['{}sender_name'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{}sender_name'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{}sender_name'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{}sender_name'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{}sender_name'].parse_xml = basic_stuff.parse_xml;
+        end
+
+        element_handler.properties.subelement_properties['{}sender_name'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{}sender_name'].particle_properties.min_occurs = 0;
+        element_handler.properties.subelement_properties['{}sender_name'].particle_properties.max_occurs = 1;
+    end
+
+    element_handler.properties.subelement_properties['{}message_body'] = {};
+    do
+element_handler.properties.subelement_properties['{}message_body'].super_element_content_type = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
+
+element_handler.properties.subelement_properties['{}message_body'].type_of_simple = 'A';
+
+        do
+            element_handler.properties.subelement_properties['{}message_body'].properties = {};
+            element_handler.properties.subelement_properties['{}message_body'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{}message_body'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{}message_body'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
+            element_handler.properties.subelement_properties['{}message_body'].properties.bi_type = {};
+            element_handler.properties.subelement_properties['{}message_body'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{}message_body'].properties.bi_type.name = 'string';
+            element_handler.properties.subelement_properties['{}message_body'].properties.bi_type.id = '1';
+            element_handler.properties.subelement_properties['{}message_body'].properties.attr = {};
+            element_handler.properties.subelement_properties['{}message_body'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{}message_body'].properties.attr._generated_attr = {};
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}message_body'].particle_properties = {};
+            element_handler.properties.subelement_properties['{}message_body'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{}message_body'].particle_properties.q_name.ns = '';
+            element_handler.properties.subelement_properties['{}message_body'].particle_properties.q_name.local_name = 'message_body';
+            element_handler.properties.subelement_properties['{}message_body'].particle_properties.generated_name = 'message_body';
+        end
+
+        -- Simple type properties
+        do
+            element_handler.properties.subelement_properties['{}message_body'].base = {};
+            element_handler.properties.subelement_properties['{}message_body'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{}message_body'].base.name = 'string';
+            element_handler.properties.subelement_properties['{}message_body'].local_facets = {};
+            element_handler.properties.subelement_properties['{}message_body'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{}message_body']);
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}message_body'].type_handler = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
+            element_handler.properties.subelement_properties['{}message_body'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{}message_body'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{}message_body'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{}message_body'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{}message_body'].parse_xml = basic_stuff.parse_xml;
+        end
+
+        element_handler.properties.subelement_properties['{}message_body'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{}message_body'].particle_properties.min_occurs = 1;
+        element_handler.properties.subelement_properties['{}message_body'].particle_properties.max_occurs = 1;
     end
 
 end

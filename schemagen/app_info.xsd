@@ -1,0 +1,60 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+targetNamespace="http://evpoco.tekenlight.org/message_rules" xmlns:ns="http://evpoco.tekenlight.org/message_rules">
+
+<xsd:group name="inline_rule_type">
+	<xsd:sequence>
+		<xsd:element name="assertion">
+			<xsd:complexType>
+				<xsd:simpleContent>
+					<xsd:extension base="xsd:token">
+						<xsd:attribute name="condition" type="xsd:token"/>
+					</xsd:extension>
+				</xsd:simpleContent>
+			</xsd:complexType>
+		</xsd:element>
+		<xsd:element name="error" type="xsd:token"/>
+	</xsd:sequence>
+</xsd:group>
+
+<xsd:simpleType name="rule_type_type">
+	<xsd:restriction base="xsd:token">
+		<xsd:enumeration value="independent"/>
+		<xsd:enumeration value="dependent"/>
+	</xsd:restriction>
+</xsd:simpleType>
+
+<xsd:complexType name="validation_type">
+	<xsd:attribute name="package" type="xsd:token" use="required"/>
+	<xsd:attribute name="name" type="xsd:token" use="required"/>
+	<xsd:attribute name="inputs" type="xsd:token" use="required"/>
+</xsd:complexType>
+
+<xsd:complexType name="rule_type">
+	<xsd:choice>
+		<xsd:group ref="ns:inline_rule_type"/>
+		<xsd:element name="validation" type="ns:validation_type"/>
+	</xsd:choice>
+	<xsd:attribute name="type" type="ns:rule_type_type" use="required"/>
+</xsd:complexType>
+
+<xsd:complexType name="rules_type">
+	<xsd:sequence>
+		<xsd:element name="rule" type="ns:rule_type" maxOccurs="unbounded"/>
+	</xsd:sequence>
+</xsd:complexType>
+
+<xsd:complexType name="mappings_type">
+	<xsd:sequence>
+	</xsd:sequence>
+</xsd:complexType>
+
+<xsd:element name="appinfo">
+	<xsd:complexType>
+		<xsd:sequence>
+			<xsd:element name="rules" type="ns:rules_type"/>
+			<xsd:element name="mappings" type="ns:mappings_type" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:element>
+
+</xsd:schema>

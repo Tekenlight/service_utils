@@ -21,7 +21,7 @@ function _factory:instantiate()
     return(o);
 end
 
-eh_cache.add('{http://evpoco.org}recipient_type_type', _factory);
+eh_cache.add('{http://evpoco.tekenlight.org}recipient_type_type', _factory);
 
 
 element_handler.super_element_content_type = require('org.w3.2001.XMLSchema.float_handler'):instantiate();
@@ -32,9 +32,9 @@ do
     element_handler.properties = {};
     element_handler.properties.element_type = 'S';
     element_handler.properties.content_type = 'S';
-    element_handler.properties.schema_type = '{http://evpoco.org}recipient_type_type';
+    element_handler.properties.schema_type = '{http://evpoco.tekenlight.org}recipient_type_type';
     element_handler.properties.q_name = {};
-    element_handler.properties.q_name.ns = 'http://evpoco.org'
+    element_handler.properties.q_name.ns = 'http://evpoco.tekenlight.org'
     element_handler.properties.q_name.local_name = 'recipient_type_type'
     element_handler.properties.bi_type = {};
     element_handler.properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
