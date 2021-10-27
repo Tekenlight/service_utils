@@ -1,6 +1,7 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 targetNamespace="http://evpoco.tekenlight.org/message_rules" xmlns:ns="http://evpoco.tekenlight.org/message_rules">
 
+
 <xsd:group name="inline_rule_type">
 	<xsd:sequence>
 		<xsd:element name="assertion">
@@ -12,7 +13,17 @@ targetNamespace="http://evpoco.tekenlight.org/message_rules" xmlns:ns="http://ev
 				</xsd:simpleContent>
 			</xsd:complexType>
 		</xsd:element>
-		<xsd:element name="error" type="xsd:token"/>
+		<xsd:element name="error_def">
+			<xsd:complexType>
+				<xsd:sequence>
+					<xsd:choice>
+						<xsd:element name="error_code" type="xsd:token"/>
+						<xsd:element name="error_message" type="xsd:token"/>
+					</xsd:choice>
+					<xsd:element name="input" type="xsd:token" minOccurs="0" maxOccurs="unbounded"/>
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:element>
 	</xsd:sequence>
 </xsd:group>
 
