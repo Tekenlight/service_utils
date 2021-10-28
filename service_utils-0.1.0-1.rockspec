@@ -12,7 +12,7 @@ description = {
 }
 
 dependencies = {
-   "lua >= 5.1, < 5.5"
+   "lua > 5.2, < 5.5"
 }
 
 source = {
@@ -40,11 +40,11 @@ build = {
 		["org.tekenlight.evpoco.email_id_type"] = 'org/tekenlight/evpoco/email_id_type.lua',
 		["org.tekenlight.evpoco.attachment_dtls_type"] = 'org/tekenlight/evpoco/attachment_dtls_type.lua',
 
-		['org.tekenlight.evpoco.message_rules.appinfo'] = 'org/tekenlight/evpoco/message_rules/appinfo.lua',
+		['org.tekenlight.evpoco.message_rules.app_info'] = 'org/tekenlight/evpoco/message_rules/app_info.lua',
 		['org.tekenlight.evpoco.message_rules.mappings_type'] = 'org/tekenlight/evpoco/message_rules/mappings_type.lua',
 		['org.tekenlight.evpoco.message_rules.rule_type'] = 'org/tekenlight/evpoco/message_rules/rule_type.lua',
 		['org.tekenlight.evpoco.message_rules.rule_type_type'] = 'org/tekenlight/evpoco/message_rules/rule_type_type.lua',
-		['org.tekenlight.evpoco.message_rules.rules_type'] = 'org/tekenlight/evpoco/message_rules/rules_type.lua',
+		['org.tekenlight.evpoco.message_rules.rule_set_type'] = 'org/tekenlight/evpoco/message_rules/rule_set_type.lua',
 		['org.tekenlight.evpoco.message_rules.validation_type'] = 'org/tekenlight/evpoco/message_rules/validation_type.lua',
 
 		["service_utils.common.file_interface"] = 'common/file_interface.lua',

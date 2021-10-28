@@ -46,12 +46,15 @@ targetNamespace="http://evpoco.tekenlight.org/message_rules" xmlns:ns="http://ev
 		<xsd:element name="validation" type="ns:validation_type"/>
 	</xsd:choice>
 	<xsd:attribute name="type" type="ns:rule_type_type" use="required"/>
+	<xsd:attribute name="ref_element" type="xsd:token"/>
 </xsd:complexType>
 
-<xsd:complexType name="rules_type">
+<xsd:complexType name="rule_set_type">
 	<xsd:sequence>
 		<xsd:element name="rule" type="ns:rule_type" maxOccurs="unbounded"/>
 	</xsd:sequence>
+	<xsd:attribute name="package" type="xsd:token" use="required"/>
+	<xsd:attribute name="rule_set_name" type="xsd:token" use="required"/>
 </xsd:complexType>
 
 <xsd:complexType name="mappings_type">
@@ -59,10 +62,10 @@ targetNamespace="http://evpoco.tekenlight.org/message_rules" xmlns:ns="http://ev
 	</xsd:sequence>
 </xsd:complexType>
 
-<xsd:element name="appinfo">
+<xsd:element name="app_info">
 	<xsd:complexType>
 		<xsd:sequence>
-			<xsd:element name="rules" type="ns:rules_type"/>
+			<xsd:element name="rule_set" type="ns:rule_set_type" minOccurs="0"/>
 			<xsd:element name="mappings" type="ns:mappings_type" minOccurs="0"/>
 		</xsd:sequence>
 	</xsd:complexType>
