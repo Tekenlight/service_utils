@@ -118,7 +118,17 @@ return ]=]..package_parts[n]..[=[;
 			end
 			return true;
 		end
+]=];
+		if (v._attr.ref_element ~= nil) then
+			code = code ..[=[
 		validations_array[j].ref_element = ']=]..tostring(v._attr.ref_element)..[=[';
+]=];
+		else
+			code = code .. [=[
+		validations_array[j].ref_element = ]=]..tostring(v._attr.ref_element)..[=[;
+]=];
+		end
+		code = code ..[=[
 		validations_array[j].type = ']=]..tostring(v._attr.type)..[=[';
 		validations_array[j].argument = obj;
 		validations_array[j].addnl_argument = addnl_obj;
@@ -158,7 +168,17 @@ return ]=]..package_parts[n]..[=[;
 		end
 		return true;
 	end
+]=];
+		if (v._attr.ref_element ~= nil) then
+			code = code ..[=[
 	validations_array[j].ref_element = ']=]..tostring(v._attr.ref_element)..[=[';
+]=];
+		else
+			code = code .. [=[
+	validations_array[j].ref_element = ]=]..tostring(v._attr.ref_element)..[=[;
+]=];
+		end
+		code = code ..[=[
 	validations_array[j].type = ']=]..tostring(v._attr.type)..[=[';
 	validations_array[j].argument = obj;
 	validations_array[j].addnl_argument = addnl_obj;
@@ -171,7 +191,17 @@ return ]=]..package_parts[n]..[=[;
 				code = code..[=[
 	if (]=] .. v.validation._attr.condition..[=[) then
 		validations_array[j] = {};
+]=];
+		if (v._attr.ref_element ~= nil) then
+			code = code ..[=[
 		validations_array[j].ref_element = ']=]..tostring(v._attr.ref_element)..[=[';
+]=];
+		else
+			code = code .. [=[
+		validations_array[j].ref_element = ]=]..tostring(v._attr.ref_element)..[=[;
+]=];
+		end
+		code = code ..[=[
 		validations_array[j].type = ']=]..tostring(v._attr.type)..[=[';
 		local package = require(']=]..v.validation._attr.package..[=[');
 		validations_array[j].val_func = package[']=]..v.validation._attr.method..[=['];
@@ -183,7 +213,17 @@ return ]=]..package_parts[n]..[=[;
 			else
 				code = code .. [=[
 	validations_array[j] = {};
+]=];
+		if (v._attr.ref_element ~= nil) then
+			code = code ..[=[
 	validations_array[j].ref_element = ']=]..tostring(v._attr.ref_element)..[=[';
+]=];
+		else
+			code = code .. [=[
+	validations_array[j].ref_element = ]=]..tostring(v._attr.ref_element)..[=[;
+]=];
+		end
+		code = code ..[=[
 	validations_array[j].type = ']=]..tostring(v._attr.type)..[=[';
 	local package = require(']=]..v.validation._attr.package..[=[');
 	validations_array[j].val_func = package[']=]..v.validation._attr.method..[=['];

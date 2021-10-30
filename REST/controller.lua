@@ -201,6 +201,10 @@ local invoke_func = function(request, req_processor, func, url_parts, qp, obj)
 	if (not status) then
 		out_obj = {};
 		out_obj.error_message = message_validation_context.status.error_message;
+		if (message_validation_context.status.field_path ~= nil and
+			message_validation_context.status.field_path ~= '') then
+			out_obj.field_path = message_validation_context.status.field_path;
+		end
 	end
 	if ((not proc_stat) or (not status)) then ret = 500; end
 	return status, out_obj, ret;
