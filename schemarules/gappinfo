@@ -1,0 +1,19 @@
+#/usr/bin/sh
+
+if [ $# -ne 2 ]
+then
+	echo "Usage: gappingo <xsd_file_name> <module_name>"
+	exit 1
+fi
+
+file=$1
+module=$2
+echo "Generating "$file
+echo "--------------"
+echo "lua $HOME/.luarocks/share/lua/5.3/generate_appinfo.lua $file $module"
+lua $HOME/.luarocks/share/lua/5.3/generate_appinfo.lua $file $module
+if [ $? -ne 0 ]
+then
+	exit 1;
+fi
+

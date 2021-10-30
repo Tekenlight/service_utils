@@ -187,12 +187,12 @@ local invoke_func = function(request, req_processor, func, url_parts, qp, obj)
 	end
 	local message_validation_context = error_handler.reset_init();
 	if (not proc_stat) then
-		if (message_validation_context.status.success) then
-			message_validation_context.status.success = false;
-			message_validation_context.status.error_no = -1;
-			message_validation_context.status.error_message = status; -- pcall returns the message as second return value
-			status = false;
-		end
+		-- since there is a fatal error, it is a panic and thus
+		-- this error will override any other error that was previously generated.
+		message_validation_context.status.success = false;
+		message_validation_context.status.error_no = -1;
+		message_validation_context.status.error_message = status; -- pcall returns the message as second return value
+		status = false;
 	end
 	if (db_init_done) then
 		local flg = end_transaction(req_processor, func, uc, status);

@@ -57,6 +57,16 @@ build = {
 		["service_utils.db.ev_types"] = 'db/ev_types.lua',
 		["service_utils.db.rdbms_interface"] = 'db/rdbms_interface.lua',
 
-   }
+		["service_utils.validation.validate_map"] = 'schemarules/validate_map.lua',
+
+		["generate_appinfo"] = 'schemarules/generate_appinfo.lua',
+
+
+   },
+   install = {
+		bin = {
+			gappinfo = 'schemarules/gappinfo',
+		}
+	}
 }
 
