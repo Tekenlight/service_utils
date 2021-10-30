@@ -2,6 +2,7 @@ local URI_CLASS = require("uri");
 local cjson = require('cjson.safe');
 local schema_processor = require("schema_processor");
 local error_handler = require("lua_schema.error_handler");
+local properties_funcs = platform.properties_funcs();
 
 local rest_controller = {};
 
@@ -39,6 +40,12 @@ local function deduce_action(url_parts, qp)
 			path = path.."."..url_parts[i];
 		end
 	end
+
+	local app_base_path = properties_funcs.get_string_property("evluaserver.appBasePath");
+	if (app_base_path ~= nil) then
+		path = app_base_path.."."..path;
+	end
+
 	return path, url_parts[n];
 end
 
@@ -244,8 +251,6 @@ rest_controller.handle_request = function (request, response)
 
 	local req_processor = require(class_name);
 
-	--local ns, name = req_processor:get_message_structure();
-	--local msg_handler = schema_processor:get_message_handler(name, ns);
 	local obj, msg;
 	do
 		local t = req_processor.message[func][1];

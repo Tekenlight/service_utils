@@ -101,24 +101,24 @@ do
         element_handler.properties.attr._attr_properties['{}type'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}type']);
     end
     element_handler.properties.attr._generated_attr = {};
-    element_handler.properties.attr._generated_attr['type'] = '{}type';
     element_handler.properties.attr._generated_attr['ref_element'] = '{}ref_element';
+    element_handler.properties.attr._generated_attr['type'] = '{}type';
 end
 
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        max_occurs = 1,
         top_level_group = true,
+        max_occurs = 1,
         generated_subelement_name = '_choice_group',
-        group_type = 'C',
         min_occurs = 1,
+        group_type = 'C',
         {
-            max_occurs = 1,
             top_level_group = false,
+            max_occurs = 1,
             generated_subelement_name = '_sequence_group',
-            group_type = 'S',
             min_occurs = 1,
+            group_type = 'S',
             'assertion',
             'error_def',
         },
@@ -172,17 +172,17 @@ do
 -- element_handler.properties.subelement_properties['{}error_def'].properties.content_model
         do
             element_handler.properties.subelement_properties['{}error_def'].properties.content_model = {
-                max_occurs = 1,
                 top_level_group = true,
+                max_occurs = 1,
                 generated_subelement_name = '_sequence_group',
-                group_type = 'S',
                 min_occurs = 1,
+                group_type = 'S',
                 {
-                    max_occurs = 1,
                     top_level_group = false,
+                    max_occurs = 1,
                     generated_subelement_name = '_choice_group',
-                    group_type = 'C',
                     min_occurs = 1,
+                    group_type = 'C',
                     'error_code',
                     'error_message',
                 },
