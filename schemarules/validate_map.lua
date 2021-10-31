@@ -10,9 +10,22 @@ validate_map.run = function(context, map, data, additional_data)
 		if (val.type == 'independent') then
 			if (val.argument ~= nil) then
 				if (val.ref_element ~= nil) then error_handler.push_element(val.ref_element); end
-				local flg = val.val_func(context, val.argument, val.addnl_argument);
-				if (not flg) then
-					status = flg;
+				if (val.argument_type == 'scalar') then
+					local flg = val.val_func(context, val.argument, val.addnl_argument);
+					if (not flg) then
+						status = flg;
+					end
+				else
+					for i,v in ipairs(val.argument) do
+						error_handler.push_element('['..i..']');
+						do
+							local flg = val.val_func(context, val.argument[i], val.addnl_argument);
+							if (not flg) then
+								status = flg;
+							end
+						end
+						error_handler.pop_element();
+					end
 				end
 				if (val.ref_element ~= nil) then error_handler.pop_element(); end
 			end
@@ -26,15 +39,26 @@ validate_map.run = function(context, map, data, additional_data)
 	for i, val in ipairs(map) do
 		if (val.type == 'dependent') then
 			if (val.argument ~= nil) then
-				if (val.ref_element ~= nil) then
-					error_handler.push_element(val.ref_element);
-				end
-				local flg = val.val_func(context, val.argument, val.addnl_argument);
-				if (not flg) then
-					if (val.ref_element ~= nil) then
+				if (val.ref_element ~= nil) then error_handler.push_element(val.ref_element); end
+				if (val.argument_type == 'scalar') then
+					local flg = val.val_func(context, val.argument, val.addnl_argument);
+					if (not flg) then
+						if (val.ref_element ~= nil) then error_handler.pop_element(); end
+						return false;
+					end
+				else
+					for i,v in ipairs(val.argument) do
+						error_handler.push_element('['..i..']');
+						do
+							local flg = val.val_func(context, val.argument[i], val.addnl_argument);
+							if (not flg) then
+								error_handler.pop_element();
+								if (val.ref_element ~= nil) then error_handler.pop_element(); end
+								return false;
+							end
+						end
 						error_handler.pop_element();
 					end
-					return false;
 				end
 				if (val.ref_element ~= nil) then error_handler.pop_element(); end
 			end

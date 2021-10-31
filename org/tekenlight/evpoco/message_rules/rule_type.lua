@@ -108,16 +108,16 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        generated_subelement_name = '_choice_group',
-        min_occurs = 1,
-        top_level_group = true,
         max_occurs = 1,
+        min_occurs = 1,
+        generated_subelement_name = '_choice_group',
+        top_level_group = true,
         group_type = 'C',
         {
-            generated_subelement_name = '_sequence_group',
-            min_occurs = 1,
-            top_level_group = false,
             max_occurs = 1,
+            min_occurs = 1,
+            generated_subelement_name = '_sequence_group',
+            top_level_group = false,
             group_type = 'S',
             'assertion',
             'error_def',
@@ -149,6 +149,13 @@ end
 
 do
     element_handler.properties.subelement_properties = {};
+    do
+        element_handler.properties.subelement_properties['{}validation'] = 
+            (basic_stuff.get_element_handler('http://evpoco.tekenlight.org/message_rules', 'validation_type'):
+            new_instance_as_local_element({ns = '', local_name = 'validation', generated_name = 'validation',
+                    root_element = false, min_occurs = 1, max_occurs = 1}));
+    end
+
     element_handler.properties.subelement_properties['{}error_def'] = {};
     do
         do
@@ -172,16 +179,16 @@ do
 -- element_handler.properties.subelement_properties['{}error_def'].properties.content_model
         do
             element_handler.properties.subelement_properties['{}error_def'].properties.content_model = {
-                generated_subelement_name = '_sequence_group',
-                min_occurs = 1,
-                top_level_group = true,
                 max_occurs = 1,
+                min_occurs = 1,
+                generated_subelement_name = '_sequence_group',
+                top_level_group = true,
                 group_type = 'S',
                 {
-                    generated_subelement_name = '_choice_group',
-                    min_occurs = 1,
-                    top_level_group = false,
                     max_occurs = 1,
+                    min_occurs = 1,
+                    generated_subelement_name = '_choice_group',
+                    top_level_group = false,
                     group_type = 'C',
                     'error_code',
                     'error_message',
@@ -470,13 +477,6 @@ element_handler.properties.subelement_properties['{}assertion'].type_of_simple =
         element_handler.properties.subelement_properties['{}assertion'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{}assertion'].particle_properties.min_occurs = 1;
         element_handler.properties.subelement_properties['{}assertion'].particle_properties.max_occurs = 1;
-    end
-
-    do
-        element_handler.properties.subelement_properties['{}validation'] = 
-            (basic_stuff.get_element_handler('http://evpoco.tekenlight.org/message_rules', 'validation_type'):
-            new_instance_as_local_element({ns = '', local_name = 'validation', generated_name = 'validation',
-                    root_element = false, min_occurs = 1, max_occurs = 1}));
     end
 
 end

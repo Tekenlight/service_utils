@@ -34,10 +34,18 @@ targetNamespace="http://evpoco.tekenlight.org/message_rules" xmlns:ns="http://ev
 	</xsd:restriction>
 </xsd:simpleType>
 
+<xsd:simpleType name="argument_type_type">
+	<xsd:restriction base="xsd:token">
+		<xsd:enumeration value="scalar"/>
+		<xsd:enumeration value="array"/>
+	</xsd:restriction>
+</xsd:simpleType>
+
 <xsd:complexType name="validation_type">
 	<xsd:attribute name="condition" type="xsd:token"/>
 	<xsd:attribute name="package" type="xsd:token" use="required"/>
 	<xsd:attribute name="method" type="xsd:token" use="required"/>
+	<xsd:attribute name="argument_type" type="ns:argument_type_type" use="required"/>
 	<xsd:attribute name="argument" type="xsd:token" use="required"/>
 	<xsd:attribute name="addnl_argument" type="xsd:token"/>
 </xsd:complexType>
