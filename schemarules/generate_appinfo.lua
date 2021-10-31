@@ -131,6 +131,7 @@ return ]=]..package_parts[n]..[=[;
 		code = code ..[=[
 		validations_array[j].type = ']=]..tostring(v._attr.type)..[=[';
 		validations_array[j].argument = obj;
+		validations_array[j].argument_type = 'scalar';
 		validations_array[j].addnl_argument = addnl_obj;
 		j = j+1;
 	end
@@ -145,7 +146,7 @@ return ]=]..package_parts[n]..[=[;
 				local error_msg_inp_elements = '';
 				if (v.error_def.input ~= nil) then
 					for i,v in ipairs(v.error_def.input) do
-						error_msg_inp_elements = error_msg_inp_elements..', '..v;
+						error_msg_inp_elements = error_msg_inp_elements..', tostring('..v..')';
 					end
 				end
 				code = code ..[=[
@@ -181,6 +182,7 @@ return ]=]..package_parts[n]..[=[;
 		code = code ..[=[
 	validations_array[j].type = ']=]..tostring(v._attr.type)..[=[';
 	validations_array[j].argument = obj;
+	validations_array[j].argument_type = 'scalar';
 	validations_array[j].addnl_argument = addnl_obj;
 	j = j+1;
 
@@ -267,7 +269,11 @@ local function generate_appinfo_for_typedef(typedef, module_name, code_output)
 				print(msg);
 				return;
 			end
-			generate_validation_routine(app_info.rule_set, module_name, code_output);
+			if (app_info.rule_set ~= nil) then
+				for i, rule_set in ipairs(app_info.rule_set) do
+					generate_validation_routine(rule_set, module_name, code_output);
+				end
+			end
 		else
 			--error("Path ".."/ns:annotation/ns:appinfo/ns1:app_info".." not present in the document");
 			print("Path ".."/ns:annotation/ns:appinfo/ns1:app_info".." not present in the document");
@@ -295,7 +301,11 @@ local function generate_appinfo_for_element(element, module_name, code_output)
 				print(msg);
 				return;
 			end
-			generate_validation_routine(app_info.rule_set, module_name, code_output);
+			if (app_info.rule_set ~= nil) then
+				for i, rule_set in ipairs(app_info.rule_set) do
+					generate_validation_routine(rule_set, module_name, code_output);
+				end
+			end
 		else
 			--error("Path ".."/ns:annotation/ns:appinfo/ns1:app_info".." not present in the document");
 			print("Path ".."/ns:annotation/ns:appinfo/ns1:app_info".." not present in the document");
@@ -322,7 +332,11 @@ local function generate_appinfo_for_mgd(mgr_def, module_name, code_output)
 				print(msg);
 				return;
 			end
-			generate_validation_routine(app_info.rule_set, module_name, code_output);
+			if (app_info.rule_set ~= nil) then
+				for i, rule_set in ipairs(app_info.rule_set) do
+					generate_validation_routine(rule_set, module_name, code_output);
+				end
+			end
 		else
 			--error("Path ".."/ns:annotation/ns:appinfo/ns1:app_info".." not present in the document");
 			print("Path ".."/ns:annotation/ns:appinfo/ns1:app_info".." not present in the document");

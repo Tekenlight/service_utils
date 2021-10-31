@@ -75,7 +75,7 @@ targetNamespace="http://evpoco.tekenlight.org/message_rules" xmlns:ns="http://ev
 <xsd:element name="app_info">
 	<xsd:complexType>
 		<xsd:sequence>
-			<xsd:element name="rule_set" type="ns:rule_set_type" minOccurs="0"/>
+			<xsd:element name="rule_set" type="ns:rule_set_type" minOccurs="0" maxOccurs="unbounded"/>
 			<xsd:element name="mappings" type="ns:mappings_type" minOccurs="0"/>
 		</xsd:sequence>
 	</xsd:complexType>

@@ -10,12 +10,7 @@ validate_map.run = function(context, map, data, additional_data)
 		if (val.type == 'independent') then
 			if (val.argument ~= nil) then
 				if (val.ref_element ~= nil) then error_handler.push_element(val.ref_element); end
-				if (val.argument_type == 'scalar') then
-					local flg = val.val_func(context, val.argument, val.addnl_argument);
-					if (not flg) then
-						status = flg;
-					end
-				else
+				if (val.argument_type == 'array') then
 					for i,v in ipairs(val.argument) do
 						error_handler.push_element('['..i..']');
 						do
@@ -25,6 +20,11 @@ validate_map.run = function(context, map, data, additional_data)
 							end
 						end
 						error_handler.pop_element();
+					end
+				else
+					local flg = val.val_func(context, val.argument, val.addnl_argument);
+					if (not flg) then
+						status = flg;
 					end
 				end
 				if (val.ref_element ~= nil) then error_handler.pop_element(); end
@@ -40,13 +40,7 @@ validate_map.run = function(context, map, data, additional_data)
 		if (val.type == 'dependent') then
 			if (val.argument ~= nil) then
 				if (val.ref_element ~= nil) then error_handler.push_element(val.ref_element); end
-				if (val.argument_type == 'scalar') then
-					local flg = val.val_func(context, val.argument, val.addnl_argument);
-					if (not flg) then
-						if (val.ref_element ~= nil) then error_handler.pop_element(); end
-						return false;
-					end
-				else
+				if (val.argument_type == 'array') then
 					for i,v in ipairs(val.argument) do
 						error_handler.push_element('['..i..']');
 						do
@@ -58,6 +52,12 @@ validate_map.run = function(context, map, data, additional_data)
 							end
 						end
 						error_handler.pop_element();
+					end
+				else
+					local flg = val.val_func(context, val.argument, val.addnl_argument);
+					if (not flg) then
+						if (val.ref_element ~= nil) then error_handler.pop_element(); end
+						return false;
 					end
 				end
 				if (val.ref_element ~= nil) then error_handler.pop_element(); end
