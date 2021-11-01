@@ -1,4 +1,5 @@
 local URI_CLASS = require("uri");
+local util = require('uri._util');
 local cjson = require('cjson.safe');
 local schema_processor = require("schema_processor");
 local error_handler = require("lua_schema.error_handler");
@@ -218,8 +219,10 @@ local get_query_params = function(query)
 		return qp;
 	end
 
-	for i,v in ipairs((require "pl.stringx".split(query, '&'))) do
-		for p, q in string.gmatch(v, "([%w_]+)=([%w_]+)") do
+	local q = util.uri_decode(query);
+
+	for i,v in ipairs((require "pl.stringx".split(q, '&'))) do
+		for p, q in string.gmatch(v, "([^=]+)=([^=]+)") do
 			qp[p] = q;
 		end
 	end
