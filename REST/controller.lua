@@ -290,6 +290,7 @@ rest_controller.handle_request = function (request, response)
 			obj = nil;
 		end
 	end
+	local successfully_processed = false;
 	if (not flg) then
 		output_obj.message = msg;
 		local flg, json_output, err = pcall(json_parser.encode, output_obj);
@@ -320,22 +321,29 @@ rest_controller.handle_request = function (request, response)
 			response:set_hdr_field("X-msg", json_output);
 			response:write(json_output);
 		else
+			successfully_processed = true;
 			response:set_status(200);
 			if (req_processor.message[func][2] ~= nil) then
 				if (table_output ~= nil) then
 					local t = req_processor.message[func][2];
 					local msg_handler = schema_processor:get_message_handler(t.name, t.ns);
 					json_output, msg = msg_handler:to_json(table_output);
+					if (json_output ~= nil) then
+						successfully_processed = false;
+					end
 				else
+					-- OOPS function returned outut in an unexpected format
 					local msg = [=[Invalid output from function {]=]..class_name.."."..func..[=[}]=];
 					output_obj.message = msg;
 					msg = nil;
 					flg, json_output, msg = pcall(json_parser.encode, output_obj);
 					response:set_status(500);
+					successfully_processed = false;
 				end
 			else
 				if (table_output ~= nil) then
 					flg, json_output, msg = pcall(json_parser.encode, table_output);
+					if (not flg) then successfully_processed = false;
 				end
 			end
 			if (msg ~= nil) then
@@ -352,6 +360,16 @@ rest_controller.handle_request = function (request, response)
 		end
 	end
 	response:write('\n');
+	if (successfully_processed) then
+		--[[
+		-- POST_PROCESSING
+		--
+		-- THIS IS THE PLACE WHERE WE HAVE SENT RESPONSE FOR SUCCESSFUL PROCESSING
+		-- HERE IS WHERE WE SHOULD CARRYOUT POST PROCESSING EXECUTION, IT IT IS SET
+		--
+		--]]
+	end
+
 	return ;
 end
 
