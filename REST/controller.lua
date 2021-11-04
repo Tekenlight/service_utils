@@ -343,7 +343,7 @@ rest_controller.handle_request = function (request, response)
 			else
 				if (table_output ~= nil) then
 					flg, json_output, msg = pcall(json_parser.encode, table_output);
-					if (not flg) then successfully_processed = false;
+					if (not flg) then successfully_processed = false; end
 				end
 			end
 			if (msg ~= nil) then
