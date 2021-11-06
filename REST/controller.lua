@@ -260,34 +260,40 @@ rest_controller.handle_request = function (request, response)
 
 	local obj, msg;
 	do
-		local t = req_processor.message[func][1];
-		if (json_input ~= nil) then
-			if (t ~= nil) then
-				local msg_handler = schema_processor:get_message_handler(t.name, t.ns);
-				if (msg_handler == nil) then
+		if (req_processor.message[func] == nil) then
+			flg = false;
+			obj = nil;
+			msg = "Invalid function "..func;
+		else
+			local t = req_processor.message[func][1];
+			if (json_input ~= nil) then
+				if (t ~= nil) then
+					local msg_handler = schema_processor:get_message_handler(t.name, t.ns);
+					if (msg_handler == nil) then
+						flg = false;
+						obj = nil;
+						msg = "Unable to find message schema handler";
+					else
+						flg = true;
+						obj, msg = msg_handler:from_json(json_input);
+						if (obj == nil) then
+							flg = false;
+						end
+					end
+				else
 					flg = false;
 					obj = nil;
-					msg = "Unable to find message schema handler";
-				else
-					flg = true;
-					obj, msg = msg_handler:from_json(json_input);
-					if (obj == nil) then
-						flg = false;
-					end
+					msg = "Unable to derserialize JSON, schema not specified";
 				end
 			else
-				flg = false;
+				if (t ~= nil) then
+					flg = false;
+					msg = "NULL Message received, while expecting one";
+				else
+					flg = true;
+				end
 				obj = nil;
-				msg = "Unable to derserialize JSON, schema not specified";
 			end
-		else
-			if (t ~= nil) then
-				flg = false;
-				msg = "NULL Message received, while expecting one";
-			else
-				flg = true;
-			end
-			obj = nil;
 		end
 	end
 	local successfully_processed = false;

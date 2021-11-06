@@ -54,6 +54,7 @@ build = {
 
 		["service_utils.db.db_params"] = 'db/db_params.lua',
 		["service_utils.db.ev_postgres"] = 'db/ev_postgres.lua',
+		["service_utils.db.ev_redis"] = 'db/ev_redis.lua',
 		["service_utils.db.ev_types"] = 'db/ev_types.lua',
 		["service_utils.db.rdbms_interface"] = 'db/rdbms_interface.lua',
 
