@@ -25,6 +25,12 @@ local open_connetion_internal = function(host, port, dbname, user, password)
 end
 
 ev_redis_db.open_connetion = function(host, port, dbname, user, password)
+	assert(host ~= nil and type(host) == 'string');
+	assert(port ~= nil and type(port) == 'string');
+	assert(dbname ~= nil and type(dbname) == 'string');
+	assert(user ~= nil and type(user) == 'string');
+	assert(password ~= nil and type(password) == 'string');
+
 	local conn, msg = open_connetion_internal(host, port, dbname, user, password)
 	if (conn == nil) then
 		error("ERROR INITIATING CONNECTION:"..tostring(msg));
@@ -50,9 +56,8 @@ end
 
 local function valid_value(value)
 	assert(value ~= nil);
-	assert(( (type(value) == 'string')
-			or (type(value) == 'number')
-			or (type(value) == 'boolean')));
+	local tn = type(value);
+	assert(( (tn == 'string') or (tn == 'number') or (tn == 'boolean')));
 end
 
 ev_redis_connection.get = function(self, key)
@@ -73,7 +78,7 @@ ev_redis_connection.set = function(self, key, value)
 	valid_key(key);
 	valid_value(value);
 
-	local query = 'SET '..key..' '..value;
+	local query = 'SET '..key..' '..tostring(value);
 	local status, response, msg = self._conn:transceive(query);
 	if (not status) then
 		return status,  msg;
