@@ -87,6 +87,14 @@ ev_redis_connection.set = function(self, key, value)
 	end
 end
 
+--[[
+--The following three functions are added to be compliant to the
+--interface of a db connection as needed by the REST controller.
+--]]
+ev_redis_connection.begin = function(self, key, value) return; end
+ev_redis_connection.commit = function(self, key, value) return; end
+ev_redis_connection.rollback = function(self, key, value) return; end
+
 return ev_redis_db;
 
 
