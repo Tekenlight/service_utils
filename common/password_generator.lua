@@ -24,7 +24,7 @@ function pwd_gen.generate_pw()
 	local pool;
 	local r1, r2;
 
-	while (i < 20) do
+	while (i < 10) do
 		i = i + 1;
 		r1 = get_ran_num((#pwd_chars))
 		r1 = r1 + 1;
