@@ -55,14 +55,14 @@ local function make_db_connections(params)
 	for n, v in pairs(params) do
 		local db_access = require(v.handler);
 		local conn = db_access.open_connetion(table.unpack(v.params));
-		db_connections[n] = { db_type = v.db_type, conn = conn, handler = db_access };
+		db_connections[n] = { client_type = v.client_type, conn = conn, handler = db_access };
 	end
 	return db_connections;
 end
 
 local function begin_trans(uc)
 	for n, v in pairs(uc.db_connections) do
-		if (v.db_type == 'rdbms') then
+		if (v.client_type == 'rdbms') then
 			v.conn:begin();
 		end
 	end
@@ -70,7 +70,7 @@ end
 
 local function reset_db_connections(uc)
 	for n, v in pairs(uc.db_connections) do
-		if (v.db_type == 'rdbms') then
+		if (v.client_type == 'rdbms') then
 			if (v.conn.exec) then v.conn:end_tran(); end
 		end
 	end

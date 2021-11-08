@@ -37,6 +37,4 @@ function pwd_gen.generate_pw()
 	return pwd;
 end
 
-print(debug.getinfo(1).source, debug.getinfo(1).currentline, pwd_gen.generate_pw());
-
 return pwd_gen;
