@@ -82,7 +82,7 @@ local close = function(smtp_c)
 	end
 end
 
-email_client.sendmail = function(self, email_message)
+email_client.sendmail = function(self, email_service, email_message)
 	local msg_handler = schema_processor:get_message_handler('email_message', 'http://evpoco.tekenlight.org');
 	if (msg_handler == nil) then
 		error_handler.raise_error(-1, "Could not locate message schema handler", debug.getinfo(1));
@@ -98,7 +98,7 @@ email_client.sendmail = function(self, email_message)
 		return false;
 	end
 
-	local status , smtp_c, conn_from_pool = init(email_client, 'gmail_tls', email_message.from, email_message.password);
+	local status , smtp_c, conn_from_pool = init(email_client, email_service, email_message.from, email_message.password);
 	if (not status) then
 		return false;
 	end
@@ -135,7 +135,7 @@ email_client.sendmail = function(self, email_message)
 			if (smtp_c:connetion_is_bad()) then
 				smtp_c:release_connection();
 				smtp_c = nil;
-				status, smtp_c = make_connection(self, 'gmail_tls', email_message.from, email_message.password);
+				status, smtp_c = make_connection(self, email_service, email_message.from, email_message.password);
 				if (not status) then
 					return false;
 				end
