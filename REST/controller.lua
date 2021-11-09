@@ -173,7 +173,7 @@ local invoke_func = function(request, req_processor, func, url_parts, qp, obj)
 		if (nil ~= db_params) then
 			uc.db_connections = make_db_connections(db_params);
 			if (false == begin_transaction(req_processor, func, uc)) then
-				begin_trans(uc);
+				--begin_trans(uc);
 			end
 			db_init_done = true;
 		end
