@@ -12,7 +12,8 @@ validate_map.run = function(context, map, data, additional_data)
 				if (val.ref_element ~= nil) then error_handler.push_element(val.ref_element); end
 				if (val.argument_type == 'array') then
 					for i,v in ipairs(val.argument) do
-						error_handler.push_element('['..i..']');
+						--error_handler.push_element('['..i..']');
+						error_handler.push_element(i);
 						do
 							local flg = val.val_func(context, val.argument[i], val.addnl_argument);
 							if (not flg) then
@@ -42,7 +43,8 @@ validate_map.run = function(context, map, data, additional_data)
 				if (val.ref_element ~= nil) then error_handler.push_element(val.ref_element); end
 				if (val.argument_type == 'array') then
 					for i,v in ipairs(val.argument) do
-						error_handler.push_element('['..i..']');
+						--error_handler.push_element('['..i..']');
+						error_handler.push_element(i);
 						do
 							local flg = val.val_func(context, val.argument[i], val.addnl_argument);
 							if (not flg) then
