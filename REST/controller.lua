@@ -200,6 +200,9 @@ local invoke_func = function(request, req_processor, func, url_parts, qp, obj)
 		reset_db_connections(uc);
 	end
 	if (not status) then
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+		require 'pl.pretty'.dump(message_validation_context);
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		out_obj = {};
 		out_obj.error_message = message_validation_context.status.error_message;
 		if (message_validation_context.status.field_path ~= nil and
