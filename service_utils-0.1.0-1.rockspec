@@ -27,6 +27,8 @@ build = {
 
 		["service_utils.REST.controller"] = 'REST/controller.lua',
 
+		["service_utils.jwt.luajwt"] = 'jwt/luajwt.lua',
+
 		["service_utils.SMTP.dialog_socket"] = 'SMTP/dialog_socket.lua',
 		["service_utils.SMTP.email_client"] = 'SMTP/email_client.lua',
 		["service_utils.SMTP.mail_message"] = 'SMTP/mail_message.lua',
