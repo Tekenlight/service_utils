@@ -26,22 +26,7 @@ local function b64_encode_str(input)
 	return result
 end
 
-local function b64_decode(input)
---	input = input:gsub('\n', ''):gsub(' ', '')
-
-	local reminder = #input % 4
-
-	if reminder > 0 then
-		local padlen = 4 - reminder
-		input = input .. string.rep('=', padlen)
-	end
-
-	input = input:gsub('-','+'):gsub('_','/')
-
-	return core_utils.base64_decode(input)
-end
-
-local function b64_decode_str(input)
+local function url_decode(input)
 	local i = 1;
 	local len = string.len(input);
 	local b64_len = 0;
@@ -60,7 +45,16 @@ local function b64_decode_str(input)
 
 	input = input:gsub('-','+'):gsub('_','/')
 
-	return core_utils.str_base64_decode(input)
+	return input;
+end
+
+
+local function b64_decode(input)
+	return core_utils.base64_decode(url_decode(input))
+end
+
+local function b64_decode_str(input)
+	return core_utils.str_base64_decode(url_decode(input))
 end
 
 local function tokenize(str, div, len)
