@@ -83,7 +83,7 @@ function M.encode(data, key, alg)
 	if type(data) ~= 'table' then return nil, "Argument #1 must be table" end
 	if type(key) ~= 'string' then return nil, "Argument #2 must be string" end
 
-	alg = alg or "HS256" 
+	alg = alg or "HS256";
 
 	if not alg_sign[alg] then
 		return nil, "Algorithm not supported"
@@ -96,14 +96,17 @@ function M.encode(data, key, alg)
 		b64_encode_str(cjson.encode(data))
 	}
 
-	local signing_input = table.concat(segments, ".")
+	local signing_input = table.concat(segments, ".");
 
-	local signature = alg_sign[alg](signing_input, key)
+	local status, signature = pcall(alg_sign[alg], signing_input, key);
+	if (not status) then
+		return nil, signature;
+	end
 	local s = b64_encode_str(signature);
 
-	segments[#segments+1] = b64_encode_str(signature)
+	segments[#segments+1] = b64_encode_str(signature);
 
-	return table.concat(segments, ".")
+	return table.concat(segments, "."), nil;
 end
 
 function M.decode(data, key, verify)
