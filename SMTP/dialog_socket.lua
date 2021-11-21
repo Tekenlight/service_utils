@@ -6,7 +6,14 @@ local error_handler = require("lua_schema.error_handler");
 --[[
 --The below is done to ensure that libevpostgres.so remains loaded even when dlclose is called
 --]]
-local loaded, lib = pcall(ffi.load, 'libevclient.so');
+ffi.cdef[[
+void * open_so(const char * libname);
+]]
+local libname = 'libevclient.so';
+local loaded, lib = pcall(ffi.C.open_so, libname);
+if (not loaded) then
+	error("Could not load library [libevclient.so] : "..lib);
+end
 
 
 ffi.cdef[[
