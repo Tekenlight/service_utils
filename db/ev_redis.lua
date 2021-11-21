@@ -8,6 +8,10 @@ local loaded, evredis = pcall(evredis_init);
 if(not loaded) then
 	error("Could not load library");
 end
+--[[
+--The below is done to ensure that libevpostgres.so remains loaded even when dlclose is called
+--]]
+local loaded, lib = pcall(ffi.load, 'libevredis.so');
 
 local ev_redis_connection = { exec = false;};
 local ev_redis_db = {};

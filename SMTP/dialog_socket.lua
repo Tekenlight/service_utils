@@ -1,8 +1,13 @@
-local platform = require('platform');
 local ffi = require('ffi');
+local platform = require('platform');
 local netssl = require('libevlnetssl');
 local evclient = require('libevclient');
 local error_handler = require("lua_schema.error_handler");
+--[[
+--The below is done to ensure that libevpostgres.so remains loaded even when dlclose is called
+--]]
+local loaded, lib = pcall(ffi.load, 'libevclient.so');
+
 
 ffi.cdef[[
 char * strcpy(char * dst, const char * src);

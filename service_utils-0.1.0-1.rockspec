@@ -26,6 +26,7 @@ build = {
 		["service_utils.HTTP.generic_http_req_processor"] = 'HTTP/generic_http_req_processor.lua',
 
 		["service_utils.REST.controller"] = 'REST/controller.lua',
+		["service_utils.REST.client"] = 'REST/client.lua',
 
 		["service_utils.jwt.luajwt"] = 'jwt/luajwt.lua',
 

@@ -9,6 +9,11 @@ if(not loaded) then
 	error("Could not load library");
 end
 
+--[[
+--The below is done to ensure that libevpostgres.so remains loaded even when dlclose is called
+--]]
+local loaded, lib = pcall(ffi.load, 'libevpostgres.so');
+
 ffi.cdef[[
 
 struct lua_bind_variable_s {
@@ -170,6 +175,9 @@ ev_postgres_stmt.execute = function(self, ...)
 	end
 	local flg, msg = self._stmt.execute(self._stmt, table.unpack(args));
 	self._conn.exec = true;
+	if (not flg) then
+		error(msg);
+	end
 	return flg, msg;
 end
 
@@ -382,6 +390,7 @@ ev_postgres_conn.prepare = function(self, sql_stmt)
 	end
 	local p_stmt = { stmt_src = stmt_src, _stmt = c_p_stmt, _conn = self };
 	p_stmt = setmetatable(p_stmt, s_mt);
+	assert(p_stmt ~= nil);
 	return p_stmt;
 end
 
