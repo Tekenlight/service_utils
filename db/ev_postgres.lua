@@ -176,6 +176,7 @@ ev_postgres_stmt.execute = function(self, ...)
 	local flg, msg = self._stmt.execute(self._stmt, table.unpack(args));
 	self._conn.exec = true;
 	if (not flg) then
+		print(debug.traceback(1));
 		error(msg);
 	end
 	return flg, msg;
