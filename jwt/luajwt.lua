@@ -100,7 +100,8 @@ function M.encode(data, key, alg)
 
 	local status, signature = pcall(alg_sign[alg], signing_input, key);
 	if (not status) then
-		return nil, signature;
+		local err = signature;
+		return nil, err, nil;
 	end
 	local s = b64_encode_str(signature);
 
