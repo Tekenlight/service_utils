@@ -13,10 +13,10 @@ end
 --The below is done to ensure that libevpostgres.so remains loaded even when dlclose is called
 --]]
 ffi.cdef[[
-void * open_so(const char * libname);
+void * pin_loaded_so(const char * libname);
 ]]
 local libname = 'libevpostgres.so';
-local loaded, lib = pcall(ffi.C.open_so, libname);
+local loaded, lib = pcall(ffi.C.pin_loaded_so, libname);
 if (not loaded) then
 	error("Could not load library [libevpostgres.so] : "..lib);
 end
