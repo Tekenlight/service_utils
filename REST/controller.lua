@@ -301,7 +301,7 @@ rest_controller.handle_request = function (request, response)
 	end
 	local successfully_processed = false;
 	if (not flg) then
-		output_obj.message = msg;
+		output_obj.error_message = msg;
 		local flg, json_output, err = pcall(json_parser.encode, output_obj);
 		response:set_status(400);
 		response:set_chunked_trfencoding(true);
@@ -318,7 +318,7 @@ rest_controller.handle_request = function (request, response)
 			response:set_status(ret);
 			local out = table_output
 			if (out == nil) then
-				output_obj.message = "Unknown processing error";
+				output_obj.error_message = "Unknown processing error";
 			else
 				output_obj = table_output;
 			end
@@ -343,7 +343,7 @@ rest_controller.handle_request = function (request, response)
 				else
 					-- OOPS function returned outut in an unexpected format
 					local msg = [=[Invalid output from function {]=]..class_name.."."..func..[=[}]=];
-					output_obj.message = msg;
+					output_obj.error_message = msg;
 					msg = nil;
 					flg, json_output, msg = pcall(json_parser.encode, output_obj);
 					response:set_status(500);
@@ -356,7 +356,7 @@ rest_controller.handle_request = function (request, response)
 				end
 			end
 			if (msg ~= nil) then
-				output_obj.message = msg;
+				output_obj.error_message = msg;
 				flg, json_output, msg = pcall(json_parser.encode, output_obj);
 			end
 			if (json_output == nil or json_output == '') then
