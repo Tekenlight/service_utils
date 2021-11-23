@@ -189,7 +189,7 @@ local invoke_func = function(request, req_processor_interface, req_processor, fu
 		if (obj == nil) then
 			proc_stat, status, out_obj = pcall(req_processor[func], req_processor, uc, qp);
 		else
-			proc_stat, status, out_obj = pcall(req_processor[func], req_processor, uc, obj);
+			proc_stat, status, out_obj = pcall(req_processor[func], req_processor, uc, qp, obj);
 		end
 	end
 	local message_validation_context = error_handler.reset_init();
@@ -293,13 +293,8 @@ rest_controller.handle_request = function (request, response)
 
 	local obj, msg;
 	do
-		flg, qp = validate_query_params(req_processor_interface, qp, func);
-		if (not flg) then
-			flg = false;
-			obj = nil;
-			msg = qp;
-		--elseif (req_processor.message[func] == nil) then
-		elseif (req_processor_interface.methods[func] == nil) then
+		--if (req_processor.message[func] == nil) then
+		if (req_processor_interface.methods[func] == nil) then
 			flg = false;
 			obj = nil;
 			msg = "Invalid function "..func;
@@ -309,34 +304,41 @@ rest_controller.handle_request = function (request, response)
 			msg = "Invalid function "..func;
 		else
 			--local t = req_processor.message[func][1];
-			local t = req_processor_interface.methods[func].message.in_out[1];
-			if (json_input ~= nil) then
-				if (t ~= nil) then
-					local msg_handler = schema_processor:get_message_handler(t.decl_name, t.ns);
-					if (msg_handler == nil) then
+			flg, qp = validate_query_params(req_processor_interface, qp, func);
+			if (not flg) then
+				flg = false;
+				obj = nil;
+				msg = qp;
+			else
+				local t = req_processor_interface.methods[func].message.in_out[1];
+				if (json_input ~= nil) then
+					if (t ~= nil) then
+						local msg_handler = schema_processor:get_message_handler(t.decl_name, t.ns);
+						if (msg_handler == nil) then
+							flg = false;
+							obj = nil;
+							msg = "Unable to find message schema handler";
+						else
+							flg = true;
+							obj, msg = msg_handler:from_json(json_input);
+							if (obj == nil) then
+								flg = false;
+							end
+						end
+					else
 						flg = false;
 						obj = nil;
-						msg = "Unable to find message schema handler";
-					else
-						flg = true;
-						obj, msg = msg_handler:from_json(json_input);
-						if (obj == nil) then
-							flg = false;
-						end
+						msg = "Unable to derserialize JSON, schema not specified";
 					end
 				else
-					flg = false;
+					if (t ~= nil) then
+						flg = false;
+						msg = "NULL Message received, while expecting one";
+					else
+						flg = true;
+					end
 					obj = nil;
-					msg = "Unable to derserialize JSON, schema not specified";
 				end
-			else
-				if (t ~= nil) then
-					flg = false;
-					msg = "NULL Message received, while expecting one";
-				else
-					flg = true;
-				end
-				obj = nil;
 			end
 		end
 	end
