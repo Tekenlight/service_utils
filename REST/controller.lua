@@ -246,6 +246,9 @@ local function validate_query_params(req_processor_interface, qp, func)
 		local value = qp[v.name];
 		if (value ~= nil) then
 			value = msg_handler.type_handler:to_type(nil, qp[v.name]);
+			if (value == nil) then
+				return flg, msg;
+			end
 			local flg, msg = msg_handler:validate(value);
 			if (not flg) then
 				return flg, msg;
