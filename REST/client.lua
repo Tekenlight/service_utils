@@ -56,7 +56,7 @@ client.send_request = function (self, uri, headers, body)
 	return;
 end
 
-client.connext_TLS = function (self)
+client.connect_TLS = function (self)
 	netssl.connect_TLS(self._ss);
 end
 
