@@ -31,7 +31,7 @@ local function write_to_file(code_output)
 			os.execute(command);
 			i = i+1;
 		end
-		file_path = local_path..'/'..package_parts[n]..'.lua';
+		local file_path = local_path..'/'..package_parts[n]..'.lua';
 		local file = io.open(file_path, "w+");
 
 		file:write(package_content.top_portion);

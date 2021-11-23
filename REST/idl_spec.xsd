@@ -1,0 +1,52 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+targetNamespace="http://evpoco.tekenlight.org/idl_spec" xmlns:ns="http://evpoco.tekenlight.org/idl_spec">
+
+	<xsd:complexType name="error_response_type">
+		<xsd:sequence>
+			<xsd:element name="error_message" type="xsd:token"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:element name="error_response" type="ns:error_response_type"/>
+
+	<xsd:simpleType name="input_source_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="query_param"/>
+			<xsd:enumeration value="request_body"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:complexType name="input_dtls_type">
+		<xsd:attribute name="namespace" type="xsd:token" use="required"/>
+		<xsd:attribute name="decl_name" type="xsd:token" use="required"/>
+		<xsd:attribute name="name" type="xsd:token" use="required"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="output_dtls_type">
+		<xsd:attribute name="namespace" type="xsd:token" use="required"/>
+		<xsd:attribute name="decl_name" type="xsd:token" use="required"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="method_type">
+		<xsd:sequence>
+			<xsd:element name="query_param" type="ns:input_dtls_type" minOccurs="0"  maxOccurs="unbounded"/>
+			<xsd:element name="input" type="ns:input_dtls_type" minOccurs="0"/>
+			<xsd:element name="output" type="ns:output_dtls_type" minOccurs="0"/>
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:token" use="required"/>
+		<xsd:attribute name="transactional" type="xsd:boolean" use="required"/>
+		<xsd:attribute name="db_schema_name" type="xsd:token" use="optional"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="interface_type">
+		<xsd:sequence>
+			<xsd:element name="method" type="ns:method_type" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:token" use="required"/>
+		<xsd:attribute name="db_schema_name" type="xsd:token" use="required"/>
+		<xsd:attribute name="package" type="xsd:token" use="required"/>
+	</xsd:complexType>
+
+	<xsd:element name="interface" type="ns:interface_type"/>
+
+</xsd:schema>

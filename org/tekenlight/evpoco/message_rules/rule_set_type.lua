@@ -38,36 +38,6 @@ do
     element_handler.properties.attr = {};
     element_handler.properties.attr._attr_properties = {};
     do
-        element_handler.properties.attr._attr_properties['{}rule_set_name'] = {};
-
-        element_handler.properties.attr._attr_properties['{}rule_set_name'].base = {};
-        element_handler.properties.attr._attr_properties['{}rule_set_name'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}rule_set_name'].base.name = 'token';
-        element_handler.properties.attr._attr_properties['{}rule_set_name'].bi_type = {};
-        element_handler.properties.attr._attr_properties['{}rule_set_name'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}rule_set_name'].bi_type.name = 'token';
-        element_handler.properties.attr._attr_properties['{}rule_set_name'].bi_type.id = '16';
-        element_handler.properties.attr._attr_properties['{}rule_set_name'].properties = {};
-        element_handler.properties.attr._attr_properties['{}rule_set_name'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}token';
-        element_handler.properties.attr._attr_properties['{}rule_set_name'].properties.default = '';
-        element_handler.properties.attr._attr_properties['{}rule_set_name'].properties.fixed = false;
-        element_handler.properties.attr._attr_properties['{}rule_set_name'].properties.use = 'R';
-        element_handler.properties.attr._attr_properties['{}rule_set_name'].properties.form = 'U';
-
-        element_handler.properties.attr._attr_properties['{}rule_set_name'].particle_properties = {};
-        element_handler.properties.attr._attr_properties['{}rule_set_name'].particle_properties.q_name = {};
-        element_handler.properties.attr._attr_properties['{}rule_set_name'].particle_properties.q_name.ns = '';
-        element_handler.properties.attr._attr_properties['{}rule_set_name'].particle_properties.q_name.local_name = 'rule_set_name';
-        element_handler.properties.attr._attr_properties['{}rule_set_name'].particle_properties.generated_name = 'rule_set_name';
-
-        element_handler.properties.attr._attr_properties['{}rule_set_name'].type_handler = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
-
-        element_handler.properties.attr._attr_properties['{}rule_set_name'].super_element_content_type = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
-        element_handler.properties.attr._attr_properties['{}rule_set_name'].type_of_simple = 'A';
-        element_handler.properties.attr._attr_properties['{}rule_set_name'].local_facets = {}
-        element_handler.properties.attr._attr_properties['{}rule_set_name'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}rule_set_name']);
-    end
-    do
         element_handler.properties.attr._attr_properties['{}package'] = {};
 
         element_handler.properties.attr._attr_properties['{}package'].base = {};
@@ -97,17 +67,47 @@ do
         element_handler.properties.attr._attr_properties['{}package'].local_facets = {}
         element_handler.properties.attr._attr_properties['{}package'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}package']);
     end
+    do
+        element_handler.properties.attr._attr_properties['{}rule_set_name'] = {};
+
+        element_handler.properties.attr._attr_properties['{}rule_set_name'].base = {};
+        element_handler.properties.attr._attr_properties['{}rule_set_name'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}rule_set_name'].base.name = 'token';
+        element_handler.properties.attr._attr_properties['{}rule_set_name'].bi_type = {};
+        element_handler.properties.attr._attr_properties['{}rule_set_name'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}rule_set_name'].bi_type.name = 'token';
+        element_handler.properties.attr._attr_properties['{}rule_set_name'].bi_type.id = '16';
+        element_handler.properties.attr._attr_properties['{}rule_set_name'].properties = {};
+        element_handler.properties.attr._attr_properties['{}rule_set_name'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}token';
+        element_handler.properties.attr._attr_properties['{}rule_set_name'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}rule_set_name'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}rule_set_name'].properties.use = 'R';
+        element_handler.properties.attr._attr_properties['{}rule_set_name'].properties.form = 'U';
+
+        element_handler.properties.attr._attr_properties['{}rule_set_name'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}rule_set_name'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}rule_set_name'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}rule_set_name'].particle_properties.q_name.local_name = 'rule_set_name';
+        element_handler.properties.attr._attr_properties['{}rule_set_name'].particle_properties.generated_name = 'rule_set_name';
+
+        element_handler.properties.attr._attr_properties['{}rule_set_name'].type_handler = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
+
+        element_handler.properties.attr._attr_properties['{}rule_set_name'].super_element_content_type = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}rule_set_name'].type_of_simple = 'A';
+        element_handler.properties.attr._attr_properties['{}rule_set_name'].local_facets = {}
+        element_handler.properties.attr._attr_properties['{}rule_set_name'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}rule_set_name']);
+    end
     element_handler.properties.attr._generated_attr = {};
-    element_handler.properties.attr._generated_attr['package'] = '{}package';
     element_handler.properties.attr._generated_attr['rule_set_name'] = '{}rule_set_name';
+    element_handler.properties.attr._generated_attr['package'] = '{}package';
 end
 
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        generated_subelement_name = '_sequence_group',
-        max_occurs = 1,
         min_occurs = 1,
+        max_occurs = 1,
+        generated_subelement_name = '_sequence_group',
         top_level_group = true,
         group_type = 'S',
         'rule',

@@ -27,6 +27,7 @@ build = {
 
 		["service_utils.REST.controller"] = 'REST/controller.lua',
 		["service_utils.REST.client"] = 'REST/client.lua',
+		["idl_gen"] = 'REST/idl_gen.lua',
 
 		["service_utils.jwt.luajwt"] = 'jwt/luajwt.lua',
 
@@ -50,6 +51,15 @@ build = {
 		['org.tekenlight.evpoco.message_rules.rule_set_type'] = 'org/tekenlight/evpoco/message_rules/rule_set_type.lua',
 		['org.tekenlight.evpoco.message_rules.validation_type'] = 'org/tekenlight/evpoco/message_rules/validation_type.lua',
 
+		['org.tekenlight.evpoco.idl_spec.output_dtls_type'] = 'org/tekenlight/evpoco/idl_spec/output_dtls_type.lua',
+		['org.tekenlight.evpoco.idl_spec.method_type'] = 'org/tekenlight/evpoco/idl_spec/method_type.lua',
+		['org.tekenlight.evpoco.idl_spec.interface_type'] = 'org/tekenlight/evpoco/idl_spec/interface_type.lua',
+		['org.tekenlight.evpoco.idl_spec.interface'] = 'org/tekenlight/evpoco/idl_spec/interface.lua',
+		['org.tekenlight.evpoco.idl_spec.input_source_type'] = 'org/tekenlight/evpoco/idl_spec/input_source_type.lua',
+		['org.tekenlight.evpoco.idl_spec.input_dtls_type'] = 'org/tekenlight/evpoco/idl_spec/input_dtls_type.lua',
+		['org.tekenlight.evpoco.idl_spec.error_response_type'] = 'org/tekenlight/evpoco/idl_spec/error_response_type.lua',
+		['org.tekenlight.evpoco.idl_spec.error_response'] = 'org/tekenlight/evpoco/idl_spec/error_response.lua',
+
 		["service_utils.common.file_interface"] = 'common/file_interface.lua',
 		["service_utils.common.msg_literal"] = 'common/msg_literal.lua',
 		["service_utils.common.password_generator"] = 'common/password_generator.lua',
@@ -70,6 +80,7 @@ build = {
    install = {
 		bin = {
 			gappinfo = 'schemarules/gappinfo',
+			gidl = 'REST/gidl',
 		}
 	}
 }

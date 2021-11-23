@@ -76,11 +76,11 @@ local function reset_db_connections(uc)
 	end
 end
 
-local function begin_transaction(req_processor, func, uc)
+local function begin_transaction(req_processor_interface, func, uc)
 	local flg = false;
-	if (req_processor.transactional ~= nil
-		and req_processor.transactional[func] ~= nil
-		and req_processor.transactional[func][1] == true) then
+	if (req_processor_interface.methods[func].transactional ~= nil
+		and req_processor_interface.methods[func].transactional ~= nil
+		and req_processor_interface.methods[func].transactional == true) then
 
 		local i = 0;
 		local name = nil;
@@ -96,11 +96,11 @@ local function begin_transaction(req_processor, func, uc)
 			uc.db_connections[name].conn:begin();
 			flg = true;
 		elseif (i>1) then
-			if (req_processor.transactional[func][2] == nil) then
+			if (req_processor_interface.methods[func].db_schema_name == nil) then
 				error("CONNECTION NAME MUST BE SPECIFIED FOR "..func.." IF TRANSACTIONA CONTROL IS REQUIRED");
 				return false;
 			else
-				uc.db_connections[req_processor.transactional[func][2]].conn:begin();
+				uc.db_connections[req_processor_interface.methods[func].db_schema_name].conn:begin();
 				flg = true;
 			end
 		end
@@ -108,11 +108,16 @@ local function begin_transaction(req_processor, func, uc)
 	return flg;
 end
 
-local function end_transaction(req_processor, func, uc, status)
+local function end_transaction(req_processor_interface, func, uc, status)
 	local flg = false;
+	--[[
 	if (req_processor.transactional ~= nil
 		and req_processor.transactional[func] ~= nil
 		and req_processor.transactional[func][1] == true) then
+	--]]
+	if (req_processor_interface.methods[func].transactional ~= nil
+		and req_processor_interface.methods[func].transactional ~= nil
+		and req_processor_interface.methods[func].transactional == true) then
 
 		local i = 0;
 		local name = nil;
@@ -132,15 +137,16 @@ local function end_transaction(req_processor, func, uc, status)
 			end
 			flg = true;
 		elseif (i>1) then
-			if (req_processor.transactional[func][2] == nil) then
+			--if (req_processor.transactional[func][2] == nil) then
+			if (req_processor_interface.methods[func].db_schema_name == nil) then
 				error("CONNECTION NAME MUST BE SPECIFIED FOR "..func.." IF TRANSACTIONA CONTROL IS REQUIRED");
 				return false
 			else
 				if (status) then
-					uc.db_connections[req_processor.transactional[func][2]].conn:commit();
+					uc.db_connections[req_processor_interface.methods[func].db_schema_name].conn:commit();
 					flg = true;
 				else
-					uc.db_connections[req_processor.transactional[func][2]].conn:rollback();
+					uc.db_connections[req_processor_interface.methods[func].db_schema_name].conn:rollback();
 					flg = true;
 				end
 			end
@@ -157,7 +163,7 @@ local function prepare_uc(request)
 	return uc;
 end
 
-local invoke_func = function(request, req_processor, func, url_parts, qp, obj)
+local invoke_func = function(request, req_processor_interface, req_processor, func, url_parts, qp, obj)
 	local proc_stat, status, out_obj, flg;
 	local uc = prepare_uc(request);
 	local http_method = request:get_method();
@@ -168,11 +174,11 @@ local invoke_func = function(request, req_processor, func, url_parts, qp, obj)
 		return out_obj, 400;
 	end
 	local db_init_done = false;
-	if (nil ~= req_processor.get_db_connection_params) then
-		local db_params = req_processor:get_db_connection_params();
+	if (nil ~= req_processor_interface.get_db_connection_params) then
+		local db_params = req_processor_interface:get_db_connection_params();
 		if (nil ~= db_params) then
 			uc.db_connections = make_db_connections(db_params);
-			if (false == begin_transaction(req_processor, func, uc)) then
+			if (false == begin_transaction(req_processor_interface, func, uc)) then
 				--begin_trans(uc);
 			end
 			db_init_done = true;
@@ -196,7 +202,7 @@ local invoke_func = function(request, req_processor, func, url_parts, qp, obj)
 		status = false;
 	end
 	if (db_init_done) then
-		local flg = end_transaction(req_processor, func, uc, status);
+		local flg = end_transaction(req_processor_interface, func, uc, status);
 		reset_db_connections(uc);
 	end
 	if (not status) then
@@ -260,18 +266,26 @@ rest_controller.handle_request = function (request, response)
 	end
 
 	local req_processor = require(class_name);
+	local interface_class_name = class_name..'_interface';
+	local req_processor_interface = require(interface_class_name);
 
 	local obj, msg;
 	do
-		if (req_processor.message[func] == nil) then
+		--if (req_processor.message[func] == nil) then
+		if (req_processor_interface.methods[func] == nil) then
+			flg = false;
+			obj = nil;
+			msg = "Invalid function "..func;
+		elseif (req_processor_interface.methods[func].message == nil) then
 			flg = false;
 			obj = nil;
 			msg = "Invalid function "..func;
 		else
-			local t = req_processor.message[func][1];
+			--local t = req_processor.message[func][1];
+			local t = req_processor_interface.methods[func].message.in_out[1];
 			if (json_input ~= nil) then
 				if (t ~= nil) then
-					local msg_handler = schema_processor:get_message_handler(t.name, t.ns);
+					local msg_handler = schema_processor:get_message_handler(t.decl_name, t.ns);
 					if (msg_handler == nil) then
 						flg = false;
 						obj = nil;
@@ -310,7 +324,7 @@ rest_controller.handle_request = function (request, response)
 		response:set_hdr_field("X-msg", json_output);
 		response:write(json_output);
 	else
-		local status, table_output, ret = invoke_func(request, req_processor, func, url_parts, qp, obj)
+		local status, table_output, ret = invoke_func(request, req_processor_interface, req_processor, func, url_parts, qp, obj)
 		if (type(ret) ~= 'number' or ret < 200 or ret > 550) then
 			error('Invalid error code returned '..ret);
 		end
@@ -332,10 +346,11 @@ rest_controller.handle_request = function (request, response)
 		else
 			successfully_processed = true;
 			response:set_status(200);
-			if (req_processor.message[func][2] ~= nil) then
+			--if (req_processor.message[func][2] ~= nil) then
+			if (req_processor_interface.methods[func].message.in_out[2] ~= nil) then
 				if (table_output ~= nil) then
-					local t = req_processor.message[func][2];
-					local msg_handler = schema_processor:get_message_handler(t.name, t.ns);
+					local t = req_processor_interface.methods[func].message.in_out[2];
+					local msg_handler = schema_processor:get_message_handler(t.decl_name, t.ns);
 					json_output, msg = msg_handler:to_json(table_output);
 					if (json_output ~= nil) then
 						successfully_processed = false;
