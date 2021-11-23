@@ -238,6 +238,24 @@ local get_query_params = function(query)
 	return qp;
 end
 
+local function validate_query_params(req_processor_interface, qp, func)
+	local new_qp = {};
+	local query_params = req_processor_interface.methods[func].message.query_params;
+	for n,v in pairs(query_params) do
+		local msg_handler = schema_processor:get_message_handler(v.name, v.ns);
+		local value = qp[v.name];
+		if (value ~= nil) then
+			value = msg_handler.type_handler:to_type(nil, qp[v.name]);
+			local flg, msg = msg_handler:validate(value);
+			if (not flg) then
+				return flg, msg;
+			end
+			new_qp[v.name] = value;
+		end
+	end
+	return true, new_qp;
+end
+
 rest_controller.handle_request = function (request, response)
 	local json_output, msg;
 	local flg, json_input = pcall(request.get_message_body_str, request);
@@ -269,10 +287,16 @@ rest_controller.handle_request = function (request, response)
 	local interface_class_name = class_name..'_interface';
 	local req_processor_interface = require(interface_class_name);
 
+
 	local obj, msg;
 	do
-		--if (req_processor.message[func] == nil) then
-		if (req_processor_interface.methods[func] == nil) then
+		flg, qp = validate_query_params(req_processor_interface, qp, func);
+		if (not flg) then
+			flg = false;
+			obj = nil;
+			msg = qp;
+		--elseif (req_processor.message[func] == nil) then
+		elseif (req_processor_interface.methods[func] == nil) then
 			flg = false;
 			obj = nil;
 			msg = "Invalid function "..func;
