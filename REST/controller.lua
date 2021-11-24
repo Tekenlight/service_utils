@@ -254,6 +254,11 @@ local function validate_query_params(req_processor_interface, qp, func)
 				return flg, msg;
 			end
 			new_qp[v.name] = value;
+		else
+			if (v.mandatory ~= nil and v.mandatory) then
+				msg = 'Field {'..v.name..'} must be present in query params';
+				return false, msg;
+			end
 		end
 	end
 	return true, new_qp;

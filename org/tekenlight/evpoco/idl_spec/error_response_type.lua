@@ -43,11 +43,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        generated_subelement_name = '_sequence_group',
         top_level_group = true,
-        group_type = 'S',
-        max_occurs = 1,
         min_occurs = 1,
+        max_occurs = 1,
+        group_type = 'S',
+        generated_subelement_name = '_sequence_group',
         'error_message',
     };
 end

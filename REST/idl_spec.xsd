@@ -19,6 +19,7 @@ targetNamespace="http://evpoco.tekenlight.org/idl_spec" xmlns:ns="http://evpoco.
 	<xsd:complexType name="input_dtls_type">
 		<xsd:attribute name="namespace" type="xsd:token" use="required"/>
 		<xsd:attribute name="name" type="xsd:token" use="required"/>
+		<xsd:attribute name="mandatory" type="xsd:boolean"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="output_dtls_type">

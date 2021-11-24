@@ -38,34 +38,34 @@ do
     element_handler.properties.attr = {};
     element_handler.properties.attr._attr_properties = {};
     do
-        element_handler.properties.attr._attr_properties['{}namespace'] = {};
+        element_handler.properties.attr._attr_properties['{}mandatory'] = {};
 
-        element_handler.properties.attr._attr_properties['{}namespace'].base = {};
-        element_handler.properties.attr._attr_properties['{}namespace'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}namespace'].base.name = 'token';
-        element_handler.properties.attr._attr_properties['{}namespace'].bi_type = {};
-        element_handler.properties.attr._attr_properties['{}namespace'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}namespace'].bi_type.name = 'token';
-        element_handler.properties.attr._attr_properties['{}namespace'].bi_type.id = '16';
-        element_handler.properties.attr._attr_properties['{}namespace'].properties = {};
-        element_handler.properties.attr._attr_properties['{}namespace'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}token';
-        element_handler.properties.attr._attr_properties['{}namespace'].properties.default = '';
-        element_handler.properties.attr._attr_properties['{}namespace'].properties.fixed = false;
-        element_handler.properties.attr._attr_properties['{}namespace'].properties.use = 'R';
-        element_handler.properties.attr._attr_properties['{}namespace'].properties.form = 'U';
+        element_handler.properties.attr._attr_properties['{}mandatory'].base = {};
+        element_handler.properties.attr._attr_properties['{}mandatory'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}mandatory'].base.name = 'boolean';
+        element_handler.properties.attr._attr_properties['{}mandatory'].bi_type = {};
+        element_handler.properties.attr._attr_properties['{}mandatory'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}mandatory'].bi_type.name = 'boolean';
+        element_handler.properties.attr._attr_properties['{}mandatory'].bi_type.id = '15';
+        element_handler.properties.attr._attr_properties['{}mandatory'].properties = {};
+        element_handler.properties.attr._attr_properties['{}mandatory'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}boolean';
+        element_handler.properties.attr._attr_properties['{}mandatory'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}mandatory'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}mandatory'].properties.use = 'O';
+        element_handler.properties.attr._attr_properties['{}mandatory'].properties.form = 'U';
 
-        element_handler.properties.attr._attr_properties['{}namespace'].particle_properties = {};
-        element_handler.properties.attr._attr_properties['{}namespace'].particle_properties.q_name = {};
-        element_handler.properties.attr._attr_properties['{}namespace'].particle_properties.q_name.ns = '';
-        element_handler.properties.attr._attr_properties['{}namespace'].particle_properties.q_name.local_name = 'namespace';
-        element_handler.properties.attr._attr_properties['{}namespace'].particle_properties.generated_name = 'namespace';
+        element_handler.properties.attr._attr_properties['{}mandatory'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}mandatory'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}mandatory'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}mandatory'].particle_properties.q_name.local_name = 'mandatory';
+        element_handler.properties.attr._attr_properties['{}mandatory'].particle_properties.generated_name = 'mandatory';
 
-        element_handler.properties.attr._attr_properties['{}namespace'].type_handler = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}mandatory'].type_handler = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
 
-        element_handler.properties.attr._attr_properties['{}namespace'].super_element_content_type = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
-        element_handler.properties.attr._attr_properties['{}namespace'].type_of_simple = 'A';
-        element_handler.properties.attr._attr_properties['{}namespace'].local_facets = {}
-        element_handler.properties.attr._attr_properties['{}namespace'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}namespace']);
+        element_handler.properties.attr._attr_properties['{}mandatory'].super_element_content_type = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}mandatory'].type_of_simple = 'A';
+        element_handler.properties.attr._attr_properties['{}mandatory'].local_facets = {}
+        element_handler.properties.attr._attr_properties['{}mandatory'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}mandatory']);
     end
     do
         element_handler.properties.attr._attr_properties['{}name'] = {};
@@ -97,9 +97,40 @@ do
         element_handler.properties.attr._attr_properties['{}name'].local_facets = {}
         element_handler.properties.attr._attr_properties['{}name'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}name']);
     end
+    do
+        element_handler.properties.attr._attr_properties['{}namespace'] = {};
+
+        element_handler.properties.attr._attr_properties['{}namespace'].base = {};
+        element_handler.properties.attr._attr_properties['{}namespace'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}namespace'].base.name = 'token';
+        element_handler.properties.attr._attr_properties['{}namespace'].bi_type = {};
+        element_handler.properties.attr._attr_properties['{}namespace'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}namespace'].bi_type.name = 'token';
+        element_handler.properties.attr._attr_properties['{}namespace'].bi_type.id = '16';
+        element_handler.properties.attr._attr_properties['{}namespace'].properties = {};
+        element_handler.properties.attr._attr_properties['{}namespace'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}token';
+        element_handler.properties.attr._attr_properties['{}namespace'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}namespace'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}namespace'].properties.use = 'R';
+        element_handler.properties.attr._attr_properties['{}namespace'].properties.form = 'U';
+
+        element_handler.properties.attr._attr_properties['{}namespace'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}namespace'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}namespace'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}namespace'].particle_properties.q_name.local_name = 'namespace';
+        element_handler.properties.attr._attr_properties['{}namespace'].particle_properties.generated_name = 'namespace';
+
+        element_handler.properties.attr._attr_properties['{}namespace'].type_handler = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
+
+        element_handler.properties.attr._attr_properties['{}namespace'].super_element_content_type = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}namespace'].type_of_simple = 'A';
+        element_handler.properties.attr._attr_properties['{}namespace'].local_facets = {}
+        element_handler.properties.attr._attr_properties['{}namespace'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}namespace']);
+    end
     element_handler.properties.attr._generated_attr = {};
-    element_handler.properties.attr._generated_attr['namespace'] = '{}namespace';
     element_handler.properties.attr._generated_attr['name'] = '{}name';
+    element_handler.properties.attr._generated_attr['namespace'] = '{}namespace';
+    element_handler.properties.attr._generated_attr['mandatory'] = '{}mandatory';
 end
 
 -- element_handler.properties.content_model
