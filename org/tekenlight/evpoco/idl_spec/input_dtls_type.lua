@@ -38,36 +38,6 @@ do
     element_handler.properties.attr = {};
     element_handler.properties.attr._attr_properties = {};
     do
-        element_handler.properties.attr._attr_properties['{}decl_name'] = {};
-
-        element_handler.properties.attr._attr_properties['{}decl_name'].base = {};
-        element_handler.properties.attr._attr_properties['{}decl_name'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}decl_name'].base.name = 'token';
-        element_handler.properties.attr._attr_properties['{}decl_name'].bi_type = {};
-        element_handler.properties.attr._attr_properties['{}decl_name'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}decl_name'].bi_type.name = 'token';
-        element_handler.properties.attr._attr_properties['{}decl_name'].bi_type.id = '16';
-        element_handler.properties.attr._attr_properties['{}decl_name'].properties = {};
-        element_handler.properties.attr._attr_properties['{}decl_name'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}token';
-        element_handler.properties.attr._attr_properties['{}decl_name'].properties.default = '';
-        element_handler.properties.attr._attr_properties['{}decl_name'].properties.fixed = false;
-        element_handler.properties.attr._attr_properties['{}decl_name'].properties.use = 'R';
-        element_handler.properties.attr._attr_properties['{}decl_name'].properties.form = 'U';
-
-        element_handler.properties.attr._attr_properties['{}decl_name'].particle_properties = {};
-        element_handler.properties.attr._attr_properties['{}decl_name'].particle_properties.q_name = {};
-        element_handler.properties.attr._attr_properties['{}decl_name'].particle_properties.q_name.ns = '';
-        element_handler.properties.attr._attr_properties['{}decl_name'].particle_properties.q_name.local_name = 'decl_name';
-        element_handler.properties.attr._attr_properties['{}decl_name'].particle_properties.generated_name = 'decl_name';
-
-        element_handler.properties.attr._attr_properties['{}decl_name'].type_handler = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
-
-        element_handler.properties.attr._attr_properties['{}decl_name'].super_element_content_type = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
-        element_handler.properties.attr._attr_properties['{}decl_name'].type_of_simple = 'A';
-        element_handler.properties.attr._attr_properties['{}decl_name'].local_facets = {}
-        element_handler.properties.attr._attr_properties['{}decl_name'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}decl_name']);
-    end
-    do
         element_handler.properties.attr._attr_properties['{}namespace'] = {};
 
         element_handler.properties.attr._attr_properties['{}namespace'].base = {};
@@ -128,9 +98,8 @@ do
         element_handler.properties.attr._attr_properties['{}name'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}name']);
     end
     element_handler.properties.attr._generated_attr = {};
-    element_handler.properties.attr._generated_attr['name'] = '{}name';
-    element_handler.properties.attr._generated_attr['decl_name'] = '{}decl_name';
     element_handler.properties.attr._generated_attr['namespace'] = '{}namespace';
+    element_handler.properties.attr._generated_attr['name'] = '{}name';
 end
 
 -- element_handler.properties.content_model

@@ -54,7 +54,7 @@ for i, method in ipairs(idl_struct.method) do
 		code = code ..[=[
 ]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.message.query_params.]=]..qp._attr.name..[=[ = {};
 ]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.message.query_params.]=]..qp._attr.name..[=[.ns = ']=]..qp._attr.namespace..[=[';
-]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.message.query_params.]=]..qp._attr.name..[=[.name = ']=]..qp._attr.decl_name..[=[';
+]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.message.query_params.]=]..qp._attr.name..[=[.name = ']=]..qp._attr.name..[=[';
 
 ]=]
 		end
@@ -65,7 +65,6 @@ for i, method in ipairs(idl_struct.method) do
 ]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.message.in_out[1] = {};
 ]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.message.in_out[1].ns = ']=]..method.input._attr.namespace..[=[';
 ]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.message.in_out[1].name = ']=]..method.input._attr.name..[=[';
-]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.message.in_out[1].decl_name = ']=]..method.input._attr.decl_name..[=[';
 
 ]=]
 	else
@@ -79,7 +78,7 @@ for i, method in ipairs(idl_struct.method) do
 		code = code ..[=[
 ]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.message.in_out[2] = {};
 ]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.message.in_out[2].ns = ']=]..method.output._attr.namespace..[=[';
-]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.message.in_out[2].decl_name = ']=]..method.output._attr.decl_name..[=[';
+]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.message.in_out[2].name = ']=]..method.output._attr.name..[=[';
 
 ]=]
 	else

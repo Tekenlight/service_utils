@@ -313,7 +313,7 @@ rest_controller.handle_request = function (request, response)
 				local t = req_processor_interface.methods[func].message.in_out[1];
 				if (json_input ~= nil) then
 					if (t ~= nil) then
-						local msg_handler = schema_processor:get_message_handler(t.decl_name, t.ns);
+						local msg_handler = schema_processor:get_message_handler(t.name, t.ns);
 						if (msg_handler == nil) then
 							flg = false;
 							obj = nil;
@@ -379,7 +379,7 @@ rest_controller.handle_request = function (request, response)
 			if (req_processor_interface.methods[func].message.in_out[2] ~= nil) then
 				if (table_output ~= nil) then
 					local t = req_processor_interface.methods[func].message.in_out[2];
-					local msg_handler = schema_processor:get_message_handler(t.decl_name, t.ns);
+					local msg_handler = schema_processor:get_message_handler(t.name, t.ns);
 					json_output, msg = msg_handler:to_json(table_output);
 					if (json_output ~= nil) then
 						successfully_processed = false;
