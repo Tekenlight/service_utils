@@ -38,36 +38,6 @@ do
     element_handler.properties.attr = {};
     element_handler.properties.attr._attr_properties = {};
     do
-        element_handler.properties.attr._attr_properties['{}package'] = {};
-
-        element_handler.properties.attr._attr_properties['{}package'].base = {};
-        element_handler.properties.attr._attr_properties['{}package'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}package'].base.name = 'token';
-        element_handler.properties.attr._attr_properties['{}package'].bi_type = {};
-        element_handler.properties.attr._attr_properties['{}package'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}package'].bi_type.name = 'token';
-        element_handler.properties.attr._attr_properties['{}package'].bi_type.id = '16';
-        element_handler.properties.attr._attr_properties['{}package'].properties = {};
-        element_handler.properties.attr._attr_properties['{}package'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}token';
-        element_handler.properties.attr._attr_properties['{}package'].properties.default = '';
-        element_handler.properties.attr._attr_properties['{}package'].properties.fixed = false;
-        element_handler.properties.attr._attr_properties['{}package'].properties.use = 'R';
-        element_handler.properties.attr._attr_properties['{}package'].properties.form = 'U';
-
-        element_handler.properties.attr._attr_properties['{}package'].particle_properties = {};
-        element_handler.properties.attr._attr_properties['{}package'].particle_properties.q_name = {};
-        element_handler.properties.attr._attr_properties['{}package'].particle_properties.q_name.ns = '';
-        element_handler.properties.attr._attr_properties['{}package'].particle_properties.q_name.local_name = 'package';
-        element_handler.properties.attr._attr_properties['{}package'].particle_properties.generated_name = 'package';
-
-        element_handler.properties.attr._attr_properties['{}package'].type_handler = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
-
-        element_handler.properties.attr._attr_properties['{}package'].super_element_content_type = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
-        element_handler.properties.attr._attr_properties['{}package'].type_of_simple = 'A';
-        element_handler.properties.attr._attr_properties['{}package'].local_facets = {}
-        element_handler.properties.attr._attr_properties['{}package'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}package']);
-    end
-    do
         element_handler.properties.attr._attr_properties['{}db_schema_name'] = {};
 
         element_handler.properties.attr._attr_properties['{}db_schema_name'].base = {};
@@ -96,6 +66,36 @@ do
         element_handler.properties.attr._attr_properties['{}db_schema_name'].type_of_simple = 'A';
         element_handler.properties.attr._attr_properties['{}db_schema_name'].local_facets = {}
         element_handler.properties.attr._attr_properties['{}db_schema_name'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}db_schema_name']);
+    end
+    do
+        element_handler.properties.attr._attr_properties['{}package'] = {};
+
+        element_handler.properties.attr._attr_properties['{}package'].base = {};
+        element_handler.properties.attr._attr_properties['{}package'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}package'].base.name = 'token';
+        element_handler.properties.attr._attr_properties['{}package'].bi_type = {};
+        element_handler.properties.attr._attr_properties['{}package'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}package'].bi_type.name = 'token';
+        element_handler.properties.attr._attr_properties['{}package'].bi_type.id = '16';
+        element_handler.properties.attr._attr_properties['{}package'].properties = {};
+        element_handler.properties.attr._attr_properties['{}package'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}token';
+        element_handler.properties.attr._attr_properties['{}package'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}package'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}package'].properties.use = 'R';
+        element_handler.properties.attr._attr_properties['{}package'].properties.form = 'U';
+
+        element_handler.properties.attr._attr_properties['{}package'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}package'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}package'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}package'].particle_properties.q_name.local_name = 'package';
+        element_handler.properties.attr._attr_properties['{}package'].particle_properties.generated_name = 'package';
+
+        element_handler.properties.attr._attr_properties['{}package'].type_handler = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
+
+        element_handler.properties.attr._attr_properties['{}package'].super_element_content_type = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}package'].type_of_simple = 'A';
+        element_handler.properties.attr._attr_properties['{}package'].local_facets = {}
+        element_handler.properties.attr._attr_properties['{}package'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}package']);
     end
     do
         element_handler.properties.attr._attr_properties['{}name'] = {};
@@ -128,19 +128,20 @@ do
         element_handler.properties.attr._attr_properties['{}name'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}name']);
     end
     element_handler.properties.attr._generated_attr = {};
-    element_handler.properties.attr._generated_attr['name'] = '{}name';
     element_handler.properties.attr._generated_attr['package'] = '{}package';
+    element_handler.properties.attr._generated_attr['name'] = '{}name';
     element_handler.properties.attr._generated_attr['db_schema_name'] = '{}db_schema_name';
 end
 
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        top_level_group = true,
-        min_occurs = 1,
-        max_occurs = 1,
-        group_type = 'S',
         generated_subelement_name = '_sequence_group',
+        max_occurs = 1,
+        min_occurs = 1,
+        top_level_group = true,
+        group_type = 'S',
+        'documentation',
         'method',
     };
 end
@@ -149,6 +150,7 @@ end
 do
     element_handler.properties.content_fsa_properties = {
         {symbol_type = 'cm_begin', symbol_name = '_sequence_group', generated_symbol_name = '_sequence_group', min_occurs = 1, max_occurs = 1, cm = element_handler.properties.content_model}
+        ,{symbol_type = 'element', symbol_name = '{}documentation', generated_symbol_name = '{}documentation', min_occurs = 1, max_occurs = 1, wild_card_type = 0, generated_name = 'documentation', cm = element_handler.properties.content_model}
         ,{symbol_type = 'element', symbol_name = '{}method', generated_symbol_name = '{}method', min_occurs = 1, max_occurs = -1, wild_card_type = 0, generated_name = 'method', cm = element_handler.properties.content_model}
         ,{symbol_type = 'cm_end', symbol_name = '_sequence_group', generated_symbol_name = '_sequence_group', cm_begin_index = 1, cm = element_handler.properties.content_model}
     };
@@ -156,7 +158,8 @@ end
 
 do
     element_handler.properties.declared_subelements = {
-        '{}method'
+        '{}documentation'
+        ,'{}method'
     };
 end
 
@@ -169,11 +172,63 @@ do
                     root_element = false, min_occurs = 1, max_occurs = -1}));
     end
 
+    element_handler.properties.subelement_properties['{}documentation'] = {};
+    do
+element_handler.properties.subelement_properties['{}documentation'].super_element_content_type = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
+
+element_handler.properties.subelement_properties['{}documentation'].type_of_simple = 'A';
+
+        do
+            element_handler.properties.subelement_properties['{}documentation'].properties = {};
+            element_handler.properties.subelement_properties['{}documentation'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{}documentation'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{}documentation'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
+            element_handler.properties.subelement_properties['{}documentation'].properties.bi_type = {};
+            element_handler.properties.subelement_properties['{}documentation'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{}documentation'].properties.bi_type.name = 'string';
+            element_handler.properties.subelement_properties['{}documentation'].properties.bi_type.id = '1';
+            element_handler.properties.subelement_properties['{}documentation'].properties.attr = {};
+            element_handler.properties.subelement_properties['{}documentation'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{}documentation'].properties.attr._generated_attr = {};
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}documentation'].particle_properties = {};
+            element_handler.properties.subelement_properties['{}documentation'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{}documentation'].particle_properties.q_name.ns = '';
+            element_handler.properties.subelement_properties['{}documentation'].particle_properties.q_name.local_name = 'documentation';
+            element_handler.properties.subelement_properties['{}documentation'].particle_properties.generated_name = 'documentation';
+        end
+
+        -- Simple type properties
+        do
+            element_handler.properties.subelement_properties['{}documentation'].base = {};
+            element_handler.properties.subelement_properties['{}documentation'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{}documentation'].base.name = 'string';
+            element_handler.properties.subelement_properties['{}documentation'].local_facets = {};
+            element_handler.properties.subelement_properties['{}documentation'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{}documentation']);
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}documentation'].type_handler = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
+            element_handler.properties.subelement_properties['{}documentation'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{}documentation'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{}documentation'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{}documentation'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{}documentation'].parse_xml = basic_stuff.parse_xml;
+        end
+
+        element_handler.properties.subelement_properties['{}documentation'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{}documentation'].particle_properties.min_occurs = 1;
+        element_handler.properties.subelement_properties['{}documentation'].particle_properties.max_occurs = 1;
+    end
+
 end
 
 do
     element_handler.properties.generated_subelements = {
-        ['method'] = element_handler.properties.subelement_properties['{}method']
+        ['documentation'] = element_handler.properties.subelement_properties['{}documentation']
+        ,['method'] = element_handler.properties.subelement_properties['{}method']
     };
 end
 

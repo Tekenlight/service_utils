@@ -29,6 +29,7 @@ targetNamespace="http://evpoco.tekenlight.org/idl_spec" xmlns:ns="http://evpoco.
 
 	<xsd:complexType name="method_type">
 		<xsd:sequence>
+			<xsd:element name="documentation" type="xsd:string"/>
 			<xsd:element name="query_param" type="ns:input_dtls_type" minOccurs="0"  maxOccurs="unbounded"/>
 			<xsd:element name="input" type="ns:input_dtls_type" minOccurs="0"/>
 			<xsd:element name="output" type="ns:output_dtls_type" minOccurs="0"/>
@@ -40,6 +41,7 @@ targetNamespace="http://evpoco.tekenlight.org/idl_spec" xmlns:ns="http://evpoco.
 
 	<xsd:complexType name="interface_type">
 		<xsd:sequence>
+			<xsd:element name="documentation" type="xsd:string"/>
 			<xsd:element name="method" type="ns:method_type" maxOccurs="unbounded"/>
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:token" use="required"/>
