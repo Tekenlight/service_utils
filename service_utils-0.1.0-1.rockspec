@@ -25,6 +25,8 @@ build = {
    modules = {
 		["service_utils.HTTP.generic_http_req_processor"] = 'HTTP/generic_http_req_processor.lua',
 
+		["org.tekenlight.evpoco.idl_spec.host_config_rec"] = 'org/tekenlight/evpoco/idl_spec/host_config_rec.lua',
+		["org.tekenlight.evpoco.idl_spec.host_config_rec_type"] = 'org/tekenlight/evpoco/idl_spec/host_config_rec_type.lua',
 		["service_utils.REST.controller"] = 'REST/controller.lua',
 		["service_utils.REST.client"] = 'REST/client.lua',
 		["idl_gen"] = 'REST/idl_gen.lua',

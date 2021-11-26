@@ -57,6 +57,12 @@ local function valid_key(key)
 	assert(type(key) == 'string');
 end
 
+local function valid_score(score)
+	assert(score ~= nil);
+	assert((type(score) == 'number') or
+			(type(score) == 'string' and (score == '+inf' or score == '-inf')));
+end
+
 local function valid_self(self)
 	assert(self ~= nil);
 	assert(type(self) == 'table');
@@ -96,6 +102,41 @@ ev_redis_connection.set = function(self, key, value)
 		return status,  msg;
 	else
 		return status;
+	end
+end
+
+ev_redis_connection.zadd = function(self, key, score, value)
+	valid_self(self);
+	valid_key(key);
+	valid_score(score);
+	valid_value(value);
+
+	local query = 'ZADD '..key..' '..tostring(score)..' \"'..tostring(value)..'\"';
+	local status, response, msg = self._conn:transceive(query);
+	if (not status) then
+		return status,  msg;
+	else
+		return status;
+	end
+end
+
+ev_redis_connection.zrangebyscore = function(self, key, score1, score1_inclusive, score2, score2_inclusive)
+	valid_self(self);
+	valid_key(key);
+	valid_score(score1);
+	valid_score(score2);
+	assert(score1_inclusive ~= nil and type(score1_inclusive) == 'boolean');
+	assert(score2_inclusive ~= nil and type(score2_inclusive) == 'boolean');
+
+	if (score1_inclusive) then score1_inclusive = ''; else score1_inclusive = '('; end
+	if (score2_inclusive) then score2_inclusive = ''; else score2_inclusive = '('; end
+
+	local query = 'ZRANGEBYSCORE '..key..' '..score1_inclusive..tostring(score1)..' '..score2_inclusive..tostring(score2);
+	local status, response, msg = self._conn:transceive(query);
+	if (not status) then
+		return status, nil, msg;
+	else
+		return status, response;
 	end
 end
 

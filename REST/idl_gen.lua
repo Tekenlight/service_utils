@@ -31,7 +31,7 @@ local ]=]..class_name..[=[ = {};
 
 ]=]..class_name..[=[.get_db_connection_params = function(self)
 	local master_db_params = require("db_params");
-	return master_db_params:get_params(']=]..idl_struct._attr.db_schema_name..[=[');
+	return master_db_params:get_params(]=]..idl_struct._attr.db_schema_name..[=[);
 end
 
 ]=]..class_name..[=[.methods = {};
@@ -43,6 +43,7 @@ for i, method in ipairs(idl_struct.method) do
 ]=]..[=[
 ]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[ = {};
 ]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.transactional = ]=]..tostring(method._attr.transactional)..[=[;
+]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.db_schema_name = ']=]..tostring(method._attr.db_schema_name)..[=[';
 ]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.message = {};
 
 ]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.message.query_params = {};
