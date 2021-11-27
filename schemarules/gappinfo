@@ -1,4 +1,7 @@
 #/usr/bin/sh
+#
+echo "This utility is deprecated, please use gval"
+exit 1
 
 if [ $# -ne 2 ]
 then
