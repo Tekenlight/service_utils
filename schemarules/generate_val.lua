@@ -1,20 +1,8 @@
 local stringx = require("pl.stringx");
 local xmlua = require("xmlua")
-local mhf = require("schema_processor")
+local schema_processor = require("schema_processor")
 local xsd = xmlua.XSD.new();
 local xml = xmlua.XML;
-
-local get_path_and_class = function(package)
-	local package_parts = stringx.split(package, ".");
-	assert(#package_parts > 0);
-	local n = #package_parts;
-	local local_path = '.';
-	local i = 1;
-	local function_name = string.sub(rule_set._attr.package, stringx.rfind(rule_set._attr.package,'.')+1);
-	local package_name = string.sub(rule_set._attr.package, 1, stringx.rfind(rule_set._attr.package,'.')-1);
-
-	return package_name, function_name;
-end
 
 local function write_to_file(code_output)
 	for package, package_content in pairs(code_output) do
@@ -249,134 +237,39 @@ end
 	code_output[rule_set._attr.package].functions[count+1] = code;
 end
 
-local function generate_appinfo_for_typedef(typedef, ref_common_module_name, code_output)
-	require 'pl.pretty'.dump(typedef);
-	local annot = typedef.annot;
-	if (annot and annot ~= ffi.NULL) then
-		local nss = { ns = 'http://www.w3.org/2001/XMLSchema', ns1 = 'http://evpoco.tekenlight.org/message_rules' }
-		local annot_doc = xml.document_from_subtree(annot.content);
-		local roots = annot_doc:search("/ns:annotation/ns:appinfo/ns1:app_info", nss);
-		if (roots ~= nil and roots[1] ~= nil) then
-			local appinfo_doc = xml.document_from_subtree(roots[1].node);
-			local app_info_xml = (appinfo_doc:to_xml());
-			local mhf = require("schema_processor")
-			local ah = mhf:get_message_handler("app_info", "http://evpoco.tekenlight.org/message_rules")
-			local app_info, msg = ah:from_xml(app_info_xml);
-			if (app_info == nil) then
-				--error(msg);
-				print(msg);
-				return;
-			end
-			if (app_info.rule_set ~= nil) then
-				for i, rule_set in ipairs(app_info.rule_set) do
-					generate_validation_routine(rule_set, ref_common_module_name, code_output);
-				end
-			end
-		else
-			--error("Path ".."/ns:annotation/ns:appinfo/ns1:app_info".." not present in the document");
-			print("Path ".."/ns:annotation/ns:appinfo/ns1:app_info".." not present in the document");
-			return;
-		end
-	end
-
-end
-
-local function generate_appinfo_for_element(element, ref_common_module_name, code_output)
-	require 'pl.pretty'.dump(element);
-	local annot = element.annot;
-	if (annot and annot ~= ffi.NULL) then
-		local nss = { ns = 'http://www.w3.org/2001/XMLSchema', ns1 = 'http://evpoco.tekenlight.org/message_rules' }
-		local annot_doc = xml.document_from_subtree(annot.content);
-		local roots = annot_doc:search("/ns:annotation/ns:appinfo/ns1:app_info", nss);
-		if (roots ~= nil and roots[1] ~= nil) then
-			local appinfo_doc = xml.document_from_subtree(roots[1].node);
-			local app_info_xml = (appinfo_doc:to_xml());
-			local mhf = require("schema_processor")
-			local ah = mhf:get_message_handler("app_info", "http://evpoco.tekenlight.org/message_rules")
-			local app_info, msg = ah:from_xml(app_info_xml);
-			if (app_info == nil) then
-				--error(msg);
-				print(msg);
-				return;
-			end
-			if (app_info.rule_set ~= nil) then
-				for i, rule_set in ipairs(app_info.rule_set) do
-					generate_validation_routine(rule_set, ref_common_module_name, code_output);
-				end
-			end
-		else
-			--error("Path ".."/ns:annotation/ns:appinfo/ns1:app_info".." not present in the document");
-			print("Path ".."/ns:annotation/ns:appinfo/ns1:app_info".." not present in the document");
-			return;
-		end
-	end
-end
-
-local function generate_appinfo_for_mgd(mgr_def, ref_common_module_name, code_output)
-	require 'pl.pretty'.dump(mgr_def);
-	local annot = mgr_def.annot;
-	if (annot and annot ~= ffi.NULL) then
-		local nss = { ns = 'http://www.w3.org/2001/XMLSchema', ns1 = 'http://evpoco.tekenlight.org/message_rules' }
-		local annot_doc = xml.document_from_subtree(annot.content);
-		local roots = annot_doc:search("/ns:annotation/ns:appinfo/ns1:app_info", nss);
-		if (roots ~= nil and roots[1] ~= nil) then
-			local appinfo_doc = xml.document_from_subtree(roots[1].node);
-			local app_info_xml = (appinfo_doc:to_xml());
-			local mhf = require("schema_processor")
-			local ah = mhf:get_message_handler("app_info", "http://evpoco.tekenlight.org/message_rules")
-			local app_info, msg = ah:from_xml(app_info_xml);
-			if (app_info == nil) then
-				--error(msg);
-				print(msg);
-				return;
-			end
-			if (app_info.rule_set ~= nil) then
-				for i, rule_set in ipairs(app_info.rule_set) do
-					generate_validation_routine(rule_set, ref_common_module_name, code_output);
-				end
-			end
-		else
-			--error("Path ".."/ns:annotation/ns:appinfo/ns1:app_info".." not present in the document");
-			print("Path ".."/ns:annotation/ns:appinfo/ns1:app_info".." not present in the document");
-			return;
-		end
-	end
-end
-
 -- Main()
 --
 if (#arg ~= 2) then
-	error("Usage generate_schema <xsd_file> <ref_common_module_name>");
+	error("Usage generate_schema <app_info_xml_file> <ref_common_module_name>");
 	os.exit(-1);
 end
-local xsd_name = arg[1];
+local app_info_xml_name = arg[1];
 local ref_common_module_name = arg[2];
-local db_schema_user = arg[3];
 
 local code_output = {};
 
-local schema = xsd:parse(xsd_name);
+assert(app_info_xml_name ~= nil and type(app_info_xml_name) == 'string');
+local app_info_xml_file = io.open(app_info_xml_name, "r");
+assert(app_info_xml_file ~= nil);
 
-local elems = schema:get_element_decls();
-if (elems ~= nil) then
-	for _, v in ipairs(elems) do
-		generate_appinfo_for_element(v, ref_common_module_name, code_output);
+local app_info_xml_string = app_info_xml_file:read("a");
+app_info_xml_file:close();
+
+local app_info_msg_handler = schema_processor:get_message_handler("app_info", "http://evpoco.tekenlight.org/message_rules");
+local app_info, msg = app_info_msg_handler:from_xml(app_info_xml_string);
+
+if (app_info == nil) then
+	error(msg);
+end
+
+if (app_info.rule_set ~= nil) then
+	for i, rule_set in ipairs(app_info.rule_set) do
+		generate_validation_routine(rule_set, ref_common_module_name, code_output);
 	end
 end
 
-local types = schema:get_type_defs();
-if (types ~= nil) then
-	for _, v in ipairs(types) do
-		generate_appinfo_for_typedef(v, ref_common_module_name, code_output);
-	end
-end
-
-local mgr_defs = schema:get_model_group_defs();
-if (mgr_defs ~= nil) then
-	for _, v in ipairs(mgr_defs) do
-		generate_appinfo_for_mgd(v, ref_common_module_name, code_output);
-	end
-end
 
 write_to_file(code_output);
+
+
 

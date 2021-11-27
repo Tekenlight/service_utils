@@ -76,12 +76,14 @@ build = {
 		["service_utils.validation.validate_map"] = 'schemarules/validate_map.lua',
 
 		["generate_appinfo"] = 'schemarules/generate_appinfo.lua',
+		["generate_val"] = 'schemarules/generate_val.lua',
 
 
    },
    install = {
 		bin = {
 			gappinfo = 'schemarules/gappinfo',
+			gval = 'schemarules/gval',
 			gidl = 'REST/gidl',
 		}
 	}
