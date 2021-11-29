@@ -115,11 +115,15 @@ local n = #package_parts;
 local local_path = '.';
 local i = 1;
 while (i <= n) do
-	local_path = local_path..'/'..package_parts[i];;
+	local_path = local_path..'/'..package_parts[i];
 	local command = 'test ! -d '..local_path..' && mkdir '..local_path;
 	os.execute(command);
 	i = i+1;
 end
+local_path = local_path..'/idl';
+local command = 'test ! -d '..local_path..' && mkdir '..local_path;
+os.execute(command);
+
 local file_path = local_path..'/'..class_name..'.lua';
 local file = io.open(file_path, "w+");
 
