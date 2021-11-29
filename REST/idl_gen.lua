@@ -59,7 +59,7 @@ for i, method in ipairs(idl_struct.method) do
 ]=]
 			if (qp._attr.mandatory ~= nil and qp._attr.mandatory) then
 				code = code..[=[
-]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.message.query_params.]=]..qp._attr.name..[=[.mandatory = ']=]..tostring(qp._attr.mandatory)..[=[';
+]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.message.query_params.]=]..qp._attr.name..[=[.mandatory = ]=]..tostring(qp._attr.mandatory)..[=[;
 
 ]=]
 			else

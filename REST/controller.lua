@@ -26,11 +26,42 @@ function split_path(uri_obj)
 	return url_parts;
 end
 
+local function get_interface_class_path(url_parts)
+	if (#url_parts < 2) then
+		return nil;
+	end
+	local interface_path = nil;
+	local n = #url_parts;
+	local i = 0;
+	while (i < (n-2)) do
+		i = i + 1;
+		if (interface_path == nil) then
+			interface_path = url_parts[i];
+		else
+			interface_path = interface_path.."."..url_parts[i];
+		end
+	end
+	if (i>0) then
+		interface_path = interface_path..".".."idl";
+	else
+		interface_path = "idl";
+	end
+	i = i + 1;
+	interface_path = interface_path.."."..url_parts[i].."_interface";
+	local app_base_path = properties_funcs.get_string_property("evluaserver.appBasePath");
+	if (app_base_path ~= nil) then
+		interface_path = app_base_path.."."..interface_path;
+	end
+
+	return interface_path;
+end
+
 local function deduce_action(url_parts, qp)
 	if (#url_parts < 2) then
 		return nil;
 	end
 	local path = nil;
+	local interface_path = nil;
 	local n = #url_parts;
 	local i = 0;
 	while (i < (n-1)) do
@@ -292,7 +323,7 @@ rest_controller.handle_request = function (request, response)
 	end
 
 	local req_processor = require(class_name);
-	local interface_class_name = class_name..'_interface';
+	local interface_class_name = get_interface_class_path(url_parts);
 	local req_processor_interface = require(interface_class_name);
 
 
