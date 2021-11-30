@@ -62,6 +62,14 @@ build = {
 		['org.tekenlight.evpoco.idl_spec.error_response_type'] = 'org/tekenlight/evpoco/idl_spec/error_response_type.lua',
 		['org.tekenlight.evpoco.idl_spec.error_response'] = 'org/tekenlight/evpoco/idl_spec/error_response.lua',
 
+		['org.tekenlight.evpoco.tbl_spec.tbldef_type'] = 'org/tekenlight/evpoco/tbl_spec/tbldef_type.lua',
+		['org.tekenlight.evpoco.tbl_spec.tbldef'] = 'org/tekenlight/evpoco/tbl_spec/tbldef.lua',
+		['org.tekenlight.evpoco.tbl_spec.indexes_type'] = 'org/tekenlight/evpoco/tbl_spec/indexes_type.lua',
+		['org.tekenlight.evpoco.tbl_spec.index_type'] = 'org/tekenlight/evpoco/tbl_spec/index_type.lua',
+		['org.tekenlight.evpoco.tbl_spec.index_column_type'] = 'org/tekenlight/evpoco/tbl_spec/index_column_type.lua',
+		['org.tekenlight.evpoco.tbl_spec.columns_type'] = 'org/tekenlight/evpoco/tbl_spec/columns_type.lua',
+		['org.tekenlight.evpoco.tbl_spec.column_type'] = 'org/tekenlight/evpoco/tbl_spec/column_type.lua',
+
 		["service_utils.common.file_interface"] = 'common/file_interface.lua',
 		["service_utils.common.msg_literal"] = 'common/msg_literal.lua',
 		["service_utils.common.password_generator"] = 'common/password_generator.lua',
@@ -78,6 +86,8 @@ build = {
 		["generate_appinfo"] = 'schemarules/generate_appinfo.lua',
 		["generate_val"] = 'schemarules/generate_val.lua',
 
+		["tblgen"] = 'orm/tblgen.lua',
+
 
    },
    install = {
@@ -85,6 +95,7 @@ build = {
 			gappinfo = 'schemarules/gappinfo',
 			gval = 'schemarules/gval',
 			gidl = 'REST/gidl',
+			gtbl = 'orm/gtbl',
 		}
 	}
 }

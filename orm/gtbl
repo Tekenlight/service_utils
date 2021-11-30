@@ -1,0 +1,18 @@
+#/usr/bin/sh
+
+if [ $# -ne 1 ]
+then
+	echo "Usage: gidl <tbl_spec_file>"
+	exit 1
+fi
+
+file=$1
+echo "Generating TBL:"$file
+echo "--------------"
+echo "lua $HOME/.luarocks/share/lua/5.3/tblgen.lua $file"
+lua $HOME/.luarocks/share/lua/5.3/tblgen.lua $file
+if [ $? -ne 0 ]
+then
+	exit 1;
+fi
+
