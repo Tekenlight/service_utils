@@ -53,7 +53,7 @@ for i, method in ipairs(idl_struct.method) do
 	if (method.query_param ~= nil) then
 		for j, qp in ipairs(method.query_param) do
 			code = code ..[=[
-	]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.message.query_params.]=]..qp._attr.name..[=[ = {};
+]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.message.query_params.]=]..qp._attr.name..[=[ = {};
 ]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.message.query_params.]=]..qp._attr.name..[=[.ns = ']=]..qp._attr.namespace..[=[';
 ]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.message.query_params.]=]..qp._attr.name..[=[.name = ']=]..qp._attr.name..[=[';
 ]=]

@@ -87,6 +87,7 @@ build = {
 		["generate_val"] = 'schemarules/generate_val.lua',
 
 		["tblgen"] = 'orm/tblgen.lua',
+		["service_utils.orm.tao_factory"] = 'orm/tao_factory.lua',
 
 
    },

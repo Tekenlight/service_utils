@@ -4,6 +4,7 @@ local cjson = require('cjson.safe');
 local schema_processor = require("schema_processor");
 local error_handler = require("lua_schema.error_handler");
 local properties_funcs = platform.properties_funcs();
+local tao_factory = require('service_utils.orm.tao_factory');
 
 local rest_controller = {};
 
@@ -56,12 +57,35 @@ local function get_interface_class_path(url_parts)
 	return interface_path;
 end
 
+local function get_module_path(url_parts)
+	if (#url_parts < 2) then
+		return nil;
+	end
+	local path = nil;
+	local n = #url_parts;
+	local i = 0;
+	while (i < (n-2)) do
+		i = i + 1;
+		if (path == nil) then
+			path = url_parts[i];
+		else
+			path = path.."."..url_parts[i];
+		end
+	end
+
+	local app_base_path = properties_funcs.get_string_property("evluaserver.appBasePath");
+	if (app_base_path ~= nil) then
+		path = app_base_path.."."..path;
+	end
+
+	return path;
+end
+
 local function deduce_action(url_parts, qp)
 	if (#url_parts < 2) then
 		return nil;
 	end
 	local path = nil;
-	local interface_path = nil;
 	local n = #url_parts;
 	local i = 0;
 	while (i < (n-1)) do
@@ -186,17 +210,18 @@ local function end_transaction(req_processor_interface, func, uc, status)
 	return flg;
 end
 
-local function prepare_uc(request)
+local function prepare_uc(request, url_parts)
 	local uc = require('service_utils.common.user_context').new();
 
 	uc.uid = ffi.cast("int64_t", 1);
+	uc.module_path = get_module_path(url_parts);
 
 	return uc;
 end
 
 local invoke_func = function(request, req_processor_interface, req_processor, func, url_parts, qp, obj)
 	local proc_stat, status, out_obj, flg;
-	local uc = prepare_uc(request);
+	local uc = prepare_uc(request, url_parts);
 	local http_method = request:get_method();
 	local ret = 200;
 
@@ -204,6 +229,7 @@ local invoke_func = function(request, req_processor_interface, req_processor, fu
 		out_obj = { error_message = 'Unsupported HTTP method' };
 		return out_obj, 400;
 	end
+	tao_factory.init(uc);
 	local db_init_done = false;
 	if (nil ~= req_processor_interface.get_db_connection_params) then
 		local db_params = req_processor_interface:get_db_connection_params();
