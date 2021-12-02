@@ -83,14 +83,14 @@ ev_postgres_stmt.affected = function(self, ...)
 	return out;
 end
 
-ev_postgres_stmt.execute = function(self, ...)
+ev_postgres_stmt.vexecute = function(self, col_count, inp_args, return_errors)
 	local args = {};
 	local strings = {}; -- This is to ensure, no loss of data due to gc
 	local ints = {}; -- This is to ensure, no loss of data due to gc
-	local inp_args = {...}
 	local i = 1;
-	while (i <= #inp_args) do
-		v = select(i, table.unpack(inp_args));
+	while (i <= col_count) do
+		--v = select(i, table.unpack(inp_args));
+		v = inp_args[i];
 		if (type(v) == 'nil') then
 			local nullptr = ffi.new("void *", 0);
 			local bind_var = ffi.new("lua_bind_variable_s", 0);
@@ -157,7 +157,6 @@ ev_postgres_stmt.execute = function(self, ...)
 				ffi.istype("uint16_t", v) or
 				ffi.istype("uint32_t", v)
 				) then
-				print(debug.getinfo(1).source, debug.getinfo(1).currentline, i);
 				error("Datatype (unsigned or 8 bit integer), not supported by PostgreSQL");
 				return false, "Datatype (unsigned or 8 bit integer), not supported by PostgreSQL";
 			else
@@ -183,10 +182,19 @@ ev_postgres_stmt.execute = function(self, ...)
 	local flg, msg = self._stmt.execute(self._stmt, table.unpack(args));
 	self._conn.exec = true;
 	if (not flg) then
-		print(debug.traceback(1));
-		error(msg);
+		if (return_errors ~= nil and return_errors == true) then
+			return false, msg;
+		else
+			print(debug.traceback(1));
+			error(msg);
+		end
 	end
 	return flg, msg;
+end
+
+ev_postgres_stmt.execute = function(self, ...)
+	local inp_args = {...};
+	return self.vexecute(self, #inp_args, inp_args, false);
 end
 
 local split_field = function(s)

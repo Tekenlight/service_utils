@@ -53,8 +53,8 @@ for i, v in ipairs(tbl_struct.columns.column) do
 	end
 end
 if (tbl_def.col_props.internal_id) then
-	tbl_def.auto_col_names[#tbl_def.auto_col_names+1] = 'id';
-	tbl_def.auto_columns.id = { ['datatype'] = 'record_id_type'};
+	tbl_def.id_column_name = 'id';
+	tbl_def.id_column = { ['datatype'] = 'record_id_type'};
 end
 if (tbl_def.col_props.soft_del) then
 	tbl_def.auto_col_names[#tbl_def.auto_col_names+1] = 'deleted';
