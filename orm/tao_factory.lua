@@ -44,11 +44,13 @@ tao_factory.open = function(context, schema_name, tbl_name)
 		end
 		l_open_tbls[tbl_name] = tbl_def;
 	end
+	tbl_def = l_open_tbls[tbl_name];
 	local obj = {};
 	obj = setmetatable(obj, mt);
 	obj.conn = context.db_connections[schema_name].conn;
 	assert(obj.conn ~= nil);
 	obj.tbl_def = tbl_def;
+	assert(obj.tbl_def ~= nil);
 	return obj;
 end
 

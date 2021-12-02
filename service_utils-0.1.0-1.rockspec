@@ -88,7 +88,7 @@ build = {
 
 		["tblgen"] = 'orm/tblgen.lua',
 		["service_utils.orm.tao_factory"] = 'orm/tao_factory.lua',
-
+		["service_utils.orm.mapping_util"] = 'orm/mapping_util.lua',
 
    },
    install = {
