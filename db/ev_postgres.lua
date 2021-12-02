@@ -83,12 +83,12 @@ ev_postgres_stmt.affected = function(self, ...)
 	return out;
 end
 
-ev_postgres_stmt.vexecute = function(self, col_count, inp_args, return_errors)
+ev_postgres_stmt.vexecute = function(self, inp_count, inp_args, return_errors)
 	local args = {};
 	local strings = {}; -- This is to ensure, no loss of data due to gc
 	local ints = {}; -- This is to ensure, no loss of data due to gc
 	local i = 1;
-	while (i <= col_count) do
+	while (i <= inp_count) do
 		--v = select(i, table.unpack(inp_args));
 		v = inp_args[i];
 		if (type(v) == 'nil') then

@@ -39,6 +39,7 @@ tbl_def.auto_col_names = {};
 tbl_def.declared_columns = {};
 tbl_def.auto_columns = {};
 tbl_def.key_col_names = {};
+tbl_def.non_key_col_names = {};
 
 for i, v in ipairs(tbl_struct.columns.column) do
 	if (reserved_column_names[v._attr.name] ~= nil) then
@@ -50,6 +51,9 @@ for i, v in ipairs(tbl_struct.columns.column) do
 	if (v._attr.key_column ~= nil and v._attr.key_column) then
 		local n = #tbl_def.key_col_names;
 		tbl_def.key_col_names[n+1] = v._attr.name;
+	else
+		local n = #(tbl_def.non_key_col_names);
+		tbl_def.non_key_col_names[n+1] = v._attr.name;
 	end
 end
 if (tbl_def.col_props.internal_id) then
@@ -237,7 +241,7 @@ do
 
 end
 
-tbl_def.update_stmt = stmt;
+tbl_def.update_stmt = nil;
 stmt = nil;
 
 do
@@ -272,6 +276,8 @@ if (tbl_def.col_props.soft_del) then
 	stmt = stmt.."SET deleted=?";
 
 	if (tbl_def.col_props.update_fields) then
+		stmt = stmt..", update_uid=?";
+		stmt = stmt..", update_time=?";
 		stmt = stmt..", version=?";
 	end
 	stmt = stmt .. "\n";
@@ -285,6 +291,11 @@ if (tbl_def.col_props.soft_del) then
 		else
 			stmt = stmt.." "..col.."=?";
 		end
+	end
+	if (flg) then
+		stmt = stmt.." AND deleted=?";
+	else
+		stmt = stmt.." deleted=?";
 	end
 	if (tbl_def.col_props.update_fields) then
 		if (flg) then
