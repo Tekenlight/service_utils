@@ -168,17 +168,20 @@ local function prepare_update_stmt(context, conn, tbl_def, obj)
 	stmt = "UPDATE " .. tbl_def.tbl_props.database_schema .. "." .. tbl_def.tbl_props.name .. "\n";
 	stmt = stmt.."SET ";
 	local count = 0;
+	local j = 0;
 	for i, col in ipairs(tbl_def.non_key_col_names) do
 		if (obj[col] ~= nil) then
+			j = j + 1;
 			count = count + 1;
 			inputs[count] = obj[col];
-			if (i ~= 1) then
+			if (j ~= 1) then
 				stmt = stmt..", "..col .. "=?";
 			else
 				stmt = stmt..col .. "=?";
 			end
 		end
 	end
+	j = nil;
 	if (count == 0) then
 		error("None of the columns for table ["..tbl_def.tbl_props.database_schema .. "." .. tbl_def.tbl_props.name.."] present in the input object");
 	end
