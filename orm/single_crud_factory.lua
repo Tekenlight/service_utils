@@ -102,7 +102,7 @@ single_crud.delete = function (self, context, obj)
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 
 	local flg, msg;
-	if (tao.tbl_def.soft_del) then
+	if (tao.tbl_def.col_props.soft_del) then
 		flg, msg = tao:logdel(context, obj);
 	else
 		flg, msg = tao:delete(context, obj);
@@ -120,7 +120,7 @@ end
 single_crud.undelete = function (self, context, obj)
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 
-	if (not tao.tbl_def.soft_del) then
+	if (not tao.tbl_def.col_props.soft_del) then
 		error("["..tao.tbl_def.tbl_props.database_schema .. "." .. tao.tbl_def.tbl_props.name.."]:".. " does not support soft delete");
 	end
 
