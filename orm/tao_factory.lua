@@ -1,4 +1,5 @@
 local ffi = require('ffi');
+local schema_processor = require("schema_processor");
 local tao = {}
 
 local function get_qualified_table_name(context, tbl_name)
@@ -162,22 +163,62 @@ tao.insert = function(self, context, obj)
 	return true;
 end
 
-local function prepare_update_stmt(context, conn, tbl_def, obj)
+local function prepare_update_stmt(context, conn, tbl_def, obj, obj_meta)
+	local elem_handler;
+	if (obj_meta ~= nil) then
+		assert(type(obj_meta) == 'table');
+		assert(obj_meta.elem ~= nil and type(obj_meta.elem) == 'string');
+		assert(obj_meta.elem_ns == nil or type(obj_meta.elem_ns) == 'string');
+		elem_handler = schema_processor:get_message_handler(obj_meta.elem, obj_meta.elem_ns);
+		assert(elem_handler ~= nil);
+	end
 	local inputs = {};
 	local stmt = nil;
 	stmt = "UPDATE " .. tbl_def.tbl_props.database_schema .. "." .. tbl_def.tbl_props.name .. "\n";
 	stmt = stmt.."SET ";
 	local count = 0;
 	local j = 0;
-	for i, col in ipairs(tbl_def.non_key_col_names) do
-		if (obj[col] ~= nil) then
-			j = j + 1;
-			count = count + 1;
-			inputs[count] = obj[col];
-			if (j ~= 1) then
-				stmt = stmt..", "..col .. "=?";
+	if (elem_handler == nil) then
+		for i, col in ipairs(tbl_def.non_key_col_names) do
+			if (obj[col] ~= nil) then
+				j = j + 1;
+				count = count + 1;
+				inputs[count] = obj[col];
+				if (j ~= 1) then
+					stmt = stmt..", "..col .. "=?";
+				else
+					stmt = stmt..col .. "=?";
+				end
 			else
-				stmt = stmt..col .. "=?";
+				j = j + 1;
+				if (j ~= 1) then
+					stmt = stmt..", "..col .. "=NULL";
+				else
+					stmt = stmt..col .. "=NULL";
+				end
+			end
+		end
+	else
+		local elems = elem_handler.properties.generated_subelements;
+		for i, col in ipairs(tbl_def.non_key_col_names) do
+			if (elems[col] ~= nil and elems[col].properties.content_type == 'S') then
+				if (obj[col] ~= nil) then
+					j = j + 1;
+					count = count + 1;
+					inputs[count] = obj[col];
+					if (j ~= 1) then
+						stmt = stmt..", "..col .. "=?";
+					else
+						stmt = stmt..col .. "=?";
+					end
+				else
+					j = j + 1;
+					if (j ~= 1) then
+						stmt = stmt..", "..col .. "=NULL";
+					else
+						stmt = stmt..col .. "=NULL";
+					end
+				end
 			end
 		end
 	end
@@ -223,9 +264,15 @@ local function prepare_update_stmt(context, conn, tbl_def, obj)
 	return stmt, inputs;
 end
 
-tao.update = function(self, context, obj)
+tao.update = function(self, context, obj, obj_meta)
 	assert(context ~= nil and type(context) == 'table');
 	assert(obj ~= nil and type(obj) == 'table');
+	if (obj_meta ~= nil) then
+		assert(type(obj_meta) == 'table');
+		assert(obj_meta.elem ~= nil and type(obj_meta.elem) == 'string');
+		assert(obj_meta.elem_ns == nil or type(obj_meta.elem_ns) == 'string');
+		elem_handler = schema_processor:get_message_handler(obj_meta.elem, obj_meta.elem_ns);
+	end
 	local tbl_def = self.tbl_def;
 	assert_key_columns_present(context, tbl_def, obj);
 	if (tbl_def.col_props.update_fields == true) then
@@ -235,7 +282,7 @@ tao.update = function(self, context, obj)
 	local conn = self.conn;
 	assert(conn ~= nil);
 
-	local query_stmt, inputs = prepare_update_stmt(context, conn, tbl_def, obj);
+	local query_stmt, inputs = prepare_update_stmt(context, conn, tbl_def, obj, obj_meta);
 
 	local stmt = conn:prepare(query_stmt);
 	local flg, msg = stmt:vexecute(#inputs, inputs, true)
@@ -248,6 +295,11 @@ tao.update = function(self, context, obj)
 		return false, msg;
 	end
 	return true, nil;
+end
+
+tao.update_using_meta = function(self, context, obj, obj_meta)
+	assert(obj_meta ~= nil);
+	return self:update(context, obj, obj_meta);
 end
 
 tao.delete = function(self, context, obj)

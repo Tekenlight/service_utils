@@ -2,7 +2,7 @@ local schema_processor = require("schema_processor");
 local mapping_util = {};
 
 mapping_util.copy_elements = function(ns, element, from_obj)
-	assert(ns ~= nil and type(ns) == 'string');
+	assert(ns == nil or type(ns) == 'string');
 	assert(element ~= nil and type(element) == 'string');
 	assert(from_obj ~= nil and type(from_obj) == 'table');
 

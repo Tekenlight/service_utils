@@ -87,7 +87,7 @@ end
 single_crud.modify = function (self, context, obj)
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 
-	local flg, msg = tao:update(context, obj);
+	local flg, msg = tao:update_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
 	if (not flg) then
 		local key_params_str = get_key_params_str(tao, obj);
 		local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
