@@ -542,5 +542,14 @@ tao.undelete = function(self, context, obj)
 	return logical_del_or_undel(context, conn, 'U', tbl_def, obj);
 end
 
+tao.get_list = function(self, context, query_params)
+	assert(context ~= nil and type(context) == 'table');
+	assert(obj ~= nil and type(obj) == 'table');
+	local tbl_def = self.tbl_def;
+	assert(tbl_def ~= nil);
+
+	assert(1 ~= 1);
+end
+
 
 return tao_factory;
