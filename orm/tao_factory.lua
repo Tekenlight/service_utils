@@ -361,7 +361,7 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 	return stmt, inputs, count;
 end
 
-tao.update = function(self, context, obj, col_map)
+tao.raw_update = function(self, context, obj, col_map)
 	assert(context ~= nil and type(context) == 'table');
 	assert(obj ~= nil and type(obj) == 'table');
 	if (col_map ~= nil) then
@@ -391,10 +391,16 @@ tao.update = function(self, context, obj, col_map)
 	return true, nil;
 end
 
+tao.update = function(self, context, obj, col_map)
+	assert(col_map ~= nil and type(col_map) == 'table');
+
+	return self:raw_update(context, obj, col_map);
+end
+
 tao.update_using_meta = function(self, context, obj, obj_meta)
 	assert(obj_meta ~= nil);
 	local col_map = get_column_map_from_obj_meta(context, self.tbl_def, obj_meta)
-	return self:update(context, obj, col_map);
+	return self:raw_update(context, obj, col_map);
 end
 
 tao.delete = function(self, context, obj)
