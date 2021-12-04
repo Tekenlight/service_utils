@@ -21,9 +21,9 @@ tao_factory.init = function(context)
 	context.open_tbls = {};
 end
 
-tao_factory.open = function(context, schema_name, tbl_name)
+tao_factory.open = function(context, db_name, tbl_name)
 	assert(context ~= nil and type(context) == 'table');
-	assert(schema_name ~= nil and type(schema_name) == 'string');
+	assert(db_name ~= nil and type(db_name) == 'string');
 	assert(tbl_name ~= nil and type(tbl_name) == 'string');
 	local l_open_tbls = context.open_tbls;
 	assert(l_open_tbls ~= nil);
@@ -38,8 +38,8 @@ tao_factory.open = function(context, schema_name, tbl_name)
 	tbl_def = l_open_tbls[tbl_name];
 	local obj = {};
 	obj = setmetatable(obj, mt);
-	obj.conn = context.db_connections[schema_name].conn;
-	assert(obj.conn ~= nil);
+	obj.db_name = db_name;
+	assert(context:get_connection(db_name) ~= nil);
 	obj.tbl_def = tbl_def;
 	assert(obj.tbl_def ~= nil);
 	return obj;
@@ -126,7 +126,7 @@ tao.select = function(self, context, ...)
 			end
 		end
 	end
-	local conn = self.conn;
+	local conn = context:get_connection(self.db_name);
 	assert(conn ~= nil);
 
 	local stmt = conn:prepare(tbl_def.select_stmt);
@@ -166,7 +166,7 @@ tao.selupd = function(self, context, ...)
 			end
 		end
 	end
-	local conn = self.conn;
+	local conn = context:get_connection(self.db_name);
 	assert(conn ~= nil);
 
 	local stmt = conn:prepare(tbl_def.selupd_stmt);
@@ -198,7 +198,7 @@ tao.insert = function(self, context, obj, col_map)
 	local tbl_def = self.tbl_def;
 	assert_key_columns_present(context, tbl_def, obj, col_map);
 
-	local conn = self.conn;
+	local conn = context:get_connection(self.db_name);
 	assert(conn ~= nil);
 
 	local stmt = conn:prepare(tbl_def.insert_stmt);
@@ -373,7 +373,7 @@ tao.raw_update = function(self, context, obj, col_map)
 		assert_version_column_present(context, tbl_def, obj, col_map);
 	end
 
-	local conn = self.conn;
+	local conn = context:get_connection(self.db_name);
 	assert(conn ~= nil);
 
 	local query_stmt, inputs, count = prepare_update_stmt(context, conn, tbl_def, obj, col_map);
@@ -423,7 +423,7 @@ tao.delete = function(self, context, obj)
 		inputs[count] = obj.version;;
 	end
 
-	local conn = self.conn;
+	local conn = context:get_connection(self.db_name);
 	assert(conn ~= nil);
 
 	local stmt = conn:prepare(tbl_def.delete_stmt);
@@ -520,7 +520,7 @@ tao.logdel = function(self, context, obj)
 		assert_version_column_present(context, tbl_def, obj);
 	end
 
-	local conn = self.conn;
+	local conn = context:get_connection(self.db_name);
 	assert(conn ~= nil);
 
 	return logical_del_or_undel(context, conn, 'D', tbl_def, obj);
@@ -536,7 +536,7 @@ tao.undelete = function(self, context, obj)
 		assert_version_column_present(context, tbl_def, obj);
 	end
 
-	local conn = self.conn;
+	local conn = context:get_connection(self.db_name);
 	assert(conn ~= nil);
 
 	return logical_del_or_undel(context, conn, 'U', tbl_def, obj);
