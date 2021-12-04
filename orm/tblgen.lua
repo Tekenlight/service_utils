@@ -155,8 +155,44 @@ do
 		end
 	end
 end
-
 tbl_def.select_stmt = stmt;
+
+local stmt = nil;
+do
+	stmt = "SELECT";
+	local flg = false;
+	for i, col in ipairs(tbl_def.declared_col_names) do
+		flg = true;
+		if (i ~= 1) then
+			stmt = stmt..", "..col;
+		else
+			stmt = stmt.." "..col;
+		end
+	end
+	for i, col in ipairs(tbl_def.auto_col_names) do
+		if (flg) then
+			stmt = stmt..", "..col;
+		else
+			stmt = stmt.." "..col;
+		end
+	end
+	stmt = stmt .. "\n";
+	stmt = stmt .. "FROM " .. tbl_def.tbl_props.database_schema .. "." .. tbl_def.tbl_props.name .. "\n";
+	stmt = stmt .. "WHERE";
+
+	for i, col in ipairs(tbl_def.key_col_names) do
+		if (i ~= 1) then
+			stmt = stmt.." AND "..col.."=?";
+		else
+			stmt = stmt.." "..col.."=?";
+		end
+	end
+
+	stmt = stmt .. "\n";
+	stmt = stmt .. " FOR UPDATE"
+end
+tbl_def.selupd_stmt = stmt;
+
 stmt = nil;
 do
 	stmt = "INSERT INTO " .. tbl_def.tbl_props.database_schema .. "." .. tbl_def.tbl_props.name .. "\n";
@@ -197,8 +233,8 @@ do
 	stmt = stmt..")";
 
 end
-
 tbl_def.insert_stmt = stmt;
+
 stmt = nil;
 do
 	stmt = "UPDATE " .. tbl_def.tbl_props.database_schema .. "." .. tbl_def.tbl_props.name .. "\n";
@@ -267,10 +303,9 @@ do
 	end
 
 end
-
 tbl_def.delete_stmt = stmt;
-stmt = nil;
 
+stmt = nil;
 if (tbl_def.col_props.soft_del) then
 	stmt = "UPDATE " .. tbl_def.tbl_props.database_schema .. "." .. tbl_def.tbl_props.name .. "\n";
 	stmt = stmt.."SET deleted=?";
@@ -307,11 +342,10 @@ if (tbl_def.col_props.soft_del) then
 
 
 end
-
 tbl_def.logdel_stmt = stmt;
 tbl_def.undelete_stmt = stmt;
-stmt = nil;
 
+stmt = nil;
 
 local package_parts = stringx.split(tbl_struct._attr.package, ".");
 assert(#package_parts > 0);

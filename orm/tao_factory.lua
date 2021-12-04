@@ -151,6 +151,46 @@ tao.select = function(self, context, ...)
 	return out;
 end
 
+tao.selupd = function(self, context, ...)
+	assert(context ~= nil and type(context) == 'table');
+	local tbl_def = self.tbl_def;
+	local obj = {};
+	local inp_args = {...};
+	do
+		local n = #inp_args;
+		local v = nil;
+		for i,col in ipairs(tbl_def.key_col_names) do
+			v = select(i, table.unpack(inp_args));
+			if (v == nil) then
+				error("Parameter:["..i.."]:["..col.."] cannot be NULL")
+			end
+		end
+	end
+	local conn = self.conn;
+	assert(conn ~= nil);
+
+	local stmt = conn:prepare(tbl_def.selupd_stmt);
+	stmt:execute(table.unpack({...}));
+	local result = stmt:fetch_result();
+	if (result == nil) then
+		local params_string = "[";
+		local v = nil;
+		for i,col in ipairs(tbl_def.key_col_names) do
+			if (i ~= 1) then
+				params_string = params_string .. ", ";
+			end
+			v = select(i, table.unpack(inp_args));
+			params_string = params_string ..  col.."="..v;
+		end
+		params_string = params_string .. "]";
+		local msg = "Record not found for "..params_string;
+		return nil, msg;
+	end
+
+	local out = stmt.map(result, tbl_def.selected_col_names);
+	return out;
+end
+
 tao.insert = function(self, context, obj, col_map)
 	assert(col_map == nil or type(col_map) == 'table');
 	assert(context ~= nil and type(context) == 'table');
