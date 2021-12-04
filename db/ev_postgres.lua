@@ -411,5 +411,17 @@ ev_postgres_conn.prepare = function(self, sql_stmt)
 	return p_stmt;
 end
 
+ev_postgres_conn.get_seq_nextval = function(self, seq_name)
+	assert(seq_name ~= nil and type(seq_name) == 'string');
+	local stmt = self:prepare([=[ SELECT nextval(']=]..seq_name..[=[') ]=]);
+	stmt:execute();
+	local result = stmt:fetch_result();
+	if (result == nil) then
+		local msg = "Invalid DB OBJ ["..seq_name.."]";
+		error(msg);
+	end
+	return result[1];
+end
+
 return ev_postgres_db;
 
