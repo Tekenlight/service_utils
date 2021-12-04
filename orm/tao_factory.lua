@@ -263,6 +263,11 @@ local function get_column_map_from_obj_meta(context, tbl_def, obj_meta)
 			out[col] = col;
 		end
 	end
+	if (tbl_def.col_props.update_fields == true) then
+		if (elems.version ~= nil and elems.version.properties.content_type == 'S') then
+			out.version = 'version';;
+		end
+	end
 	return out;
 end
 
@@ -349,7 +354,7 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 	end
 	if (tbl_def.col_props.update_fields) then
 		count = count + 1;
-		inputs[count] = obj.version;;
+		inputs[count] = get_element_val_from_obj(obj, 'version', col_map);
 		stmt = stmt.." AND version" .. "=?";
 	end
 
