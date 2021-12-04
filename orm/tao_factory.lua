@@ -55,10 +55,52 @@ tao_factory.open = function(context, schema_name, tbl_name)
 	return obj;
 end
 
-local function assert_key_columns_present(context, tbl_def, obj)
-	for i, col in ipairs(tbl_def.key_col_names) do
-		if (obj[col] == nil) then
-			error("Key column ["..col.."] must be present in the input object");
+local function val_of_elem_in_obj(obj, name)
+	assert(obj ~= nil and type(obj) == 'table');
+	assert(name ~= nil and type(name) == 'string');
+	assert(string.match(name, "%[") == nil);
+	assert(string.match(name, "%]") == nil);
+	local names = require "pl.stringx".split(name, '.')
+	local val = obj;
+	for i,v in ipairs(names) do
+		if (val[v] == nil) then
+			val = nil;
+			break;
+		end
+		val = val[v];
+	end
+
+	return val;
+
+end
+
+local function get_element_val_from_obj(obj, name, col_map)
+	if (col_map == nil) then
+		return obj[name];
+	else
+		local obj_col_name = col_map[name];
+		assert(obj_col_name ~= nil and type(obj_col_name) == 'string');
+		local val = val_of_elem_in_obj(obj, obj_col_name);
+		return val;
+	end
+end
+
+local function assert_key_columns_present(context, tbl_def, obj, col_map)
+	assert(col_map == nil or type(col_map) == 'table');
+	if (col_map == nil) then
+		for i, col in ipairs(tbl_def.key_col_names) do
+			if (obj[col] == nil) then
+				error("Key column ["..col.."] must be present in the input object");
+			end
+		end
+	else
+		for i, col in ipairs(tbl_def.key_col_names) do
+			local obj_col_name = col_map[col];
+			assert(obj_col_name ~= nil and type(obj_col_name) == 'string');
+			local val = val_of_elem_in_obj(obj, obj_col_name);
+			if (val == nil) then
+				error("Key column ["..obj_col_name.."] must be present in the input object");
+			end
 		end
 	end
 end
@@ -109,11 +151,12 @@ tao.select = function(self, context, ...)
 	return out;
 end
 
-tao.insert = function(self, context, obj)
+tao.insert = function(self, context, obj, col_map)
+	assert(col_map == nil or type(col_map) == 'table');
 	assert(context ~= nil and type(context) == 'table');
 	assert(obj ~= nil and type(obj) == 'table');
 	local tbl_def = self.tbl_def;
-	assert_key_columns_present(context, tbl_def, obj);
+	assert_key_columns_present(context, tbl_def, obj, col_map);
 
 	local conn = self.conn;
 	assert(conn ~= nil);
@@ -140,7 +183,8 @@ tao.insert = function(self, context, obj)
 	for i, col in ipairs(tbl_def.declared_col_names) do
 		count = count + 1;
 		if (obj[col] ~= nil) then
-			inputs[count] = obj[col];
+			--inputs[count] = obj[col];
+			inputs[count] = get_element_val_from_obj(obj, col, col_map)
 		else
 			inputs[count] = nil;
 		end
@@ -163,14 +207,34 @@ tao.insert = function(self, context, obj)
 	return true;
 end
 
-local function prepare_update_stmt(context, conn, tbl_def, obj, obj_meta)
+local function get_column_map_from_obj_meta(context, tbl_def, obj_meta)
+	assert(obj_meta ~= nil);
+	assert(tbl_def ~= nil);
+	local out = {};
 	local elem_handler;
-	if (obj_meta ~= nil) then
-		assert(type(obj_meta) == 'table');
-		assert(obj_meta.elem ~= nil and type(obj_meta.elem) == 'string');
-		assert(obj_meta.elem_ns == nil or type(obj_meta.elem_ns) == 'string');
-		elem_handler = schema_processor:get_message_handler(obj_meta.elem, obj_meta.elem_ns);
-		assert(elem_handler ~= nil);
+	assert(type(obj_meta) == 'table');
+	assert(obj_meta.elem ~= nil and type(obj_meta.elem) == 'string');
+	assert(obj_meta.elem_ns == nil or type(obj_meta.elem_ns) == 'string');
+	elem_handler = schema_processor:get_message_handler(obj_meta.elem, obj_meta.elem_ns);
+	assert(elem_handler ~= nil);
+	local elems = elem_handler.properties.generated_subelements;
+	for i, col in ipairs(tbl_def.declared_col_names) do
+		if (elems[col] ~= nil and elems[col].properties.content_type == 'S') then
+			out[col] = col;
+		end
+	end
+	return out;
+end
+
+tao.insert_using_meta = function(self, context, obj, obj_meta)
+	assert(obj_meta ~= nil);
+	local col_map = get_column_map_from_obj_meta(context, self.tbl_def, obj_meta)
+	return self:insert(context, obj, col_map);
+end
+
+local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
+	if (col_map ~= nil) then
+		assert(type(col_map) == 'table');
 	end
 	local inputs = {};
 	local stmt = nil;
@@ -178,46 +242,31 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, obj_meta)
 	stmt = stmt.."SET ";
 	local count = 0;
 	local j = 0;
-	if (elem_handler == nil) then
+	if (col_map == nil) then
+		-- Update all non-key columns
 		for i, col in ipairs(tbl_def.non_key_col_names) do
-			if (obj[col] ~= nil) then
+			j = j + 1;
+			count = count + 1;
+			inputs[count] = obj[col];
+			if (j ~= 1) then
+				stmt = stmt..", "..col .. "=?";
+			else
+				stmt = stmt..col .. "=?";
+			end
+		end
+	else
+		-- Update mapped non-key columns
+		for i, col in ipairs(tbl_def.non_key_col_names) do
+			local obj_col_name = col_map[col];
+			if (obj_col_name ~= nil) then
+				local val = val_of_elem_in_obj(obj, obj_col_name);
 				j = j + 1;
 				count = count + 1;
-				inputs[count] = obj[col];
+				inputs[count] = val;
 				if (j ~= 1) then
 					stmt = stmt..", "..col .. "=?";
 				else
 					stmt = stmt..col .. "=?";
-				end
-			else
-				j = j + 1;
-				if (j ~= 1) then
-					stmt = stmt..", "..col .. "=NULL";
-				else
-					stmt = stmt..col .. "=NULL";
-				end
-			end
-		end
-	else
-		local elems = elem_handler.properties.generated_subelements;
-		for i, col in ipairs(tbl_def.non_key_col_names) do
-			if (elems[col] ~= nil and elems[col].properties.content_type == 'S') then
-				if (obj[col] ~= nil) then
-					j = j + 1;
-					count = count + 1;
-					inputs[count] = obj[col];
-					if (j ~= 1) then
-						stmt = stmt..", "..col .. "=?";
-					else
-						stmt = stmt..col .. "=?";
-					end
-				else
-					j = j + 1;
-					if (j ~= 1) then
-						stmt = stmt..", "..col .. "=NULL";
-					else
-						stmt = stmt..col .. "=NULL";
-					end
 				end
 			end
 		end
@@ -248,7 +297,10 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, obj_meta)
 
 	for i, col in ipairs(tbl_def.key_col_names) do
 		count = count + 1;
-		inputs[count] = obj[col];
+		local obj_col_name = col_map[col];
+		assert(obj_col_name ~= nil);
+		inputs[count] = val_of_elem_in_obj(obj, obj_col_name);
+		assert(inputs[count] ~= nil);
 		if (i ~= 1) then
 			stmt = stmt.." AND "..col.."=?";
 		else
@@ -261,20 +313,17 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, obj_meta)
 		stmt = stmt.." AND version" .. "=?";
 	end
 
-	return stmt, inputs;
+	return stmt, inputs, count;
 end
 
-tao.update = function(self, context, obj, obj_meta)
+tao.update = function(self, context, obj, col_map)
 	assert(context ~= nil and type(context) == 'table');
 	assert(obj ~= nil and type(obj) == 'table');
-	if (obj_meta ~= nil) then
-		assert(type(obj_meta) == 'table');
-		assert(obj_meta.elem ~= nil and type(obj_meta.elem) == 'string');
-		assert(obj_meta.elem_ns == nil or type(obj_meta.elem_ns) == 'string');
-		elem_handler = schema_processor:get_message_handler(obj_meta.elem, obj_meta.elem_ns);
+	if (col_map ~= nil) then
+		assert(type(col_map) == 'table');
 	end
 	local tbl_def = self.tbl_def;
-	assert_key_columns_present(context, tbl_def, obj);
+	assert_key_columns_present(context, tbl_def, obj, col_map);
 	if (tbl_def.col_props.update_fields == true) then
 		assert_version_column_present(context, tbl_def, obj);
 	end
@@ -282,10 +331,14 @@ tao.update = function(self, context, obj, obj_meta)
 	local conn = self.conn;
 	assert(conn ~= nil);
 
-	local query_stmt, inputs = prepare_update_stmt(context, conn, tbl_def, obj, obj_meta);
+	local query_stmt, inputs, count = prepare_update_stmt(context, conn, tbl_def, obj, col_map);
+	print(query_stmt);
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	require 'pl.pretty'.dump(inputs);
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 
 	local stmt = conn:prepare(query_stmt);
-	local flg, msg = stmt:vexecute(#inputs, inputs, true)
+	local flg, msg = stmt:vexecute(count, inputs, true)
 	if (not flg) then
 		return false, msg;
 	end
@@ -299,7 +352,8 @@ end
 
 tao.update_using_meta = function(self, context, obj, obj_meta)
 	assert(obj_meta ~= nil);
-	return self:update(context, obj, obj_meta);
+	local col_map = get_column_map_from_obj_meta(context, self.tbl_def, obj_meta)
+	return self:update(context, obj, col_map);
 end
 
 tao.delete = function(self, context, obj)

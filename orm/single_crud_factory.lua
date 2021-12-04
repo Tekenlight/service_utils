@@ -74,7 +74,7 @@ end
 single_crud.add = function (self, context, obj)
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 
-	if (not tao:insert(context, obj)) then
+	if (not tao:insert_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns})) then
 		local key_params_str = get_key_params_str(tao, obj);
 		local msg = messages:format('RECORD_INSERTION_FAILED', key_params_str);
 		error_handler.raise_error(-1, msg, debug.getinfo(1));

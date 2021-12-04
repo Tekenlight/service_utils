@@ -91,6 +91,7 @@ ev_postgres_stmt.vexecute = function(self, inp_count, inp_args, return_errors)
 	while (i <= inp_count) do
 		--v = select(i, table.unpack(inp_args));
 		v = inp_args[i];
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, i.." of ["..inp_count.."] = ".. tostring(v));
 		if (type(v) == 'nil') then
 			local nullptr = ffi.new("void *", 0);
 			local bind_var = ffi.new("lua_bind_variable_s", 0);
