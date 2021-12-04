@@ -14,16 +14,6 @@ local function instantiate_tbl_def(context, tbl_name)
 	return tbl_def;
 end
 
-local function get_tbl_def(context, tbl_name)
-	local tbl_def = context.open_tbls[tbl_name];
-	assert(tbl_def ~= nil and type(tbl_def) == 'table');
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-	require 'pl.pretty'.dump(tbl_def);
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-
-	return tbl_def;
-end
-
 local mt = { __index = tao };
 local tao_factory = {};
 
@@ -372,10 +362,6 @@ tao.update = function(self, context, obj, col_map)
 	assert(conn ~= nil);
 
 	local query_stmt, inputs, count = prepare_update_stmt(context, conn, tbl_def, obj, col_map);
-	print(query_stmt);
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-	require 'pl.pretty'.dump(inputs);
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 
 	local stmt = conn:prepare(query_stmt);
 	local flg, msg = stmt:vexecute(count, inputs, true)
