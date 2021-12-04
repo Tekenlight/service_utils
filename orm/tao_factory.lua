@@ -427,7 +427,7 @@ tao.delete = function(self, context, obj)
 	assert(conn ~= nil);
 
 	local stmt = conn:prepare(tbl_def.delete_stmt);
-	local flg, msg = stmt:vexecute(#inputs, inputs, true)
+	local flg, msg = stmt:vexecute(count, inputs, true)
 	if (not flg) then
 		return false, msg;
 	end
@@ -494,7 +494,7 @@ local function logical_del_or_undel(context, conn, action, tbl_def, obj)
 	end
 
 	local stmt = conn:prepare(tbl_def.logdel_stmt);
-	local flg, msg = stmt:vexecute(#inputs, inputs, true)
+	local flg, msg = stmt:vexecute(count, inputs, true)
 	if (not flg) then
 		return false, msg;
 	end
