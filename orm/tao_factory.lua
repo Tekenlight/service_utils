@@ -95,9 +95,19 @@ local function assert_key_columns_present(context, tbl_def, obj, col_map)
 	end
 end
 
-local function assert_version_column_present(context, tbl_def, obj)
-	if (obj.version == nil) then
-		error("Column [version] not present in the input object");
+local function assert_version_column_present(context, tbl_def, obj, col_map)
+	assert(col_map == nil or type(col_map) == 'table');
+	if (col_map == nil) then
+		if (obj.version == nil) then
+			error("Column [version] not present in the input object");
+		end
+	else
+		local obj_col_name = col_map.version;
+		assert(obj_col_name ~= nil and type(obj_col_name) == 'string');
+		local val = val_of_elem_in_obj(obj, obj_col_name);
+		if (val == nil) then
+			error("Version Column [".. obj_col_name .."] not present in the input object");
+		end
 	end
 end
 
@@ -355,7 +365,7 @@ tao.update = function(self, context, obj, col_map)
 	local tbl_def = self.tbl_def;
 	assert_key_columns_present(context, tbl_def, obj, col_map);
 	if (tbl_def.col_props.update_fields == true) then
-		assert_version_column_present(context, tbl_def, obj);
+		assert_version_column_present(context, tbl_def, obj, col_map);
 	end
 
 	local conn = self.conn;
@@ -521,6 +531,27 @@ tao.undelete = function(self, context, obj)
 	return logical_del_or_undel(context, conn, 'U', tbl_def, obj);
 end
 
+tao.commit = function(self, context)
+	assert(self ~= nil and type(self) == 'table');
+	assert(context ~= nil and type(context) == 'table');
+	local conn = self.conn;
+	local flg, msg = conn:commit();
+	if (not flg) then
+		error(msg);
+	end
+	return;
+end
+
+tao.rollback = function(self, context)
+	assert(self ~= nil and type(self) == 'table');
+	assert(context ~= nil and type(context) == 'table');
+	local conn = self.conn;
+	local flg, msg = conn:rollback();
+	if (not flg) then
+		error(msg);
+	end
+	return;
+end
 
 
 return tao_factory;
