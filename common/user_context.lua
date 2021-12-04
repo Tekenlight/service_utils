@@ -1,19 +1,25 @@
 local user_context = {};
 
-function user_context:add_db_connection(name, conn)
-	if (name == nil or type(name) ~= 'string') then
-		error("INVALID INPUTS");
-	elseif (conn == nil) then
-		error("INVALID INPUTS");
+function user_context:commit(db_name)
+	assert(self ~= nil and type(self) == 'table');
+	assert(db_name ~= nil and type(db_name) == 'string');
+	local conn = self.db_connections[db_name].conn;
+	local flg, msg = conn:commit();
+	if (not flg) then
+		error(msg);
 	end
-	self.db_connections[name] = conn;
+	return;
 end
 
-function user_context:get_db_connetion(name)
-	if (name == nil or type(name) ~= 'string') then
-		error("INVALID INPUTS");
+function user_context:rollback(db_name)
+	assert(self ~= nil and type(self) == 'table');
+	assert(db_name ~= nil and type(db_name) == 'string');
+	local conn = self.db_connections[db_name].conn;
+	local flg, msg = conn:rollback();
+	if (not flg) then
+		error(msg);
 	end
-	return self.db_connections[name];
+	return;
 end
 
 local mt = { __index = user_context };

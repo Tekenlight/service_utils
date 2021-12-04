@@ -542,27 +542,5 @@ tao.undelete = function(self, context, obj)
 	return logical_del_or_undel(context, conn, 'U', tbl_def, obj);
 end
 
-tao.commit = function(self, context)
-	assert(self ~= nil and type(self) == 'table');
-	assert(context ~= nil and type(context) == 'table');
-	local conn = self.conn;
-	local flg, msg = conn:commit();
-	if (not flg) then
-		error(msg);
-	end
-	return;
-end
-
-tao.rollback = function(self, context)
-	assert(self ~= nil and type(self) == 'table');
-	assert(context ~= nil and type(context) == 'table');
-	local conn = self.conn;
-	local flg, msg = conn:rollback();
-	if (not flg) then
-		error(msg);
-	end
-	return;
-end
-
 
 return tao_factory;
