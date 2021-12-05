@@ -5,6 +5,7 @@ local schema_processor = require("schema_processor");
 local error_handler = require("lua_schema.error_handler");
 local properties_funcs = platform.properties_funcs();
 local tao_factory = require('service_utils.orm.tao_factory');
+local jwt = require('service_utils.jwt.luajwt')
 
 local rest_controller = {};
 
@@ -213,7 +214,21 @@ end
 local function prepare_uc(request, url_parts)
 	local uc = require('service_utils.common.user_context').new();
 
-	uc.uid = ffi.cast("int64_t", 1);
+	local hdr_flds = request:get_hdr_fields();
+	local jwt_token = hdr_flds['X-Auth'];
+	local token = jwt.decode(jwt_token);
+	if (token ~= nil) then
+		token.exp_time = os.date('%c', token.exp);
+		token.nbf_time = os.date('%c', token.nbf);
+		uc.uid = ffi.cast("int64_t", tonumber(token.uid));
+		uc.token = token;
+	else
+		uc.uid = ffi.cast("int64_t", 1);
+	end
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	require 'pl.pretty'.dump(uc);
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+
 	uc.module_path = get_module_path(url_parts);
 
 	return uc;

@@ -143,6 +143,14 @@ do
 			stmt = stmt.." "..col;
 		end
 	end
+	if (tbl_def.col_props.internal_id) then
+		tbl_def.selected_col_names[#(tbl_def.selected_col_names)+1] = 'id';
+		if (flg) then
+			stmt = stmt..", id";
+		else
+			stmt = stmt.." id";
+		end
+	end
 	stmt = stmt .. "\n";
 	stmt = stmt .. "FROM " .. tbl_def.tbl_props.database_schema .. "." .. tbl_def.tbl_props.name .. "\n";
 	stmt = stmt .. "WHERE";
@@ -174,6 +182,13 @@ do
 			stmt = stmt..", "..col;
 		else
 			stmt = stmt.." "..col;
+		end
+	end
+	if (tbl_def.col_props.internal_id) then
+		if (flg) then
+			stmt = stmt..", id";
+		else
+			stmt = stmt.." id";
 		end
 	end
 	stmt = stmt .. "\n";
