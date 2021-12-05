@@ -212,10 +212,22 @@ local function end_transaction(req_processor_interface, func, uc, status)
 end
 
 local function does_request_need_auth(request, url_parts)
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, request:get_uri());
-	if (url_parts[1] == 'aaa' and url_parts[2] == 'auth' and url_parts[3] == 'login') then
-		return false;
+	local json_parser = cjson.new();
+	local prop_str = properties_funcs.get_string_property("evluaserver.noAuthUrls");
+	if (prop_str == nil) then
+		return true;
 	end
+	local obj, msg = json_parser.decode(prop_str);
+	if (obj == nil) then
+		return true;
+	end
+	local url = request:get_uri();
+	for i,v in ipairs(obj.urls) do
+		if (v == url) then
+			return false;
+		end
+	end
+
 	return true;
 end
 
