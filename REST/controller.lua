@@ -211,19 +211,34 @@ local function end_transaction(req_processor_interface, func, uc, status)
 	return flg;
 end
 
+local function does_request_need_auth(request, url_parts)
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, request:get_uri());
+	if (url_parts[1] == 'aaa' and url_parts[2] == 'auth' and url_parts[3] == 'login') then
+		return false;
+	end
+	return true;
+end
+
 local function prepare_uc(request, url_parts)
 	local uc = require('service_utils.common.user_context').new();
 
+	local key = properties_funcs.get_string_property("evluaserver.jwtSignatureKey");
+
 	local hdr_flds = request:get_hdr_fields();
 	local jwt_token = hdr_flds['X-Auth'];
-	local token = jwt.decode(jwt_token);
+	local token, msg = jwt.decode(jwt_token, key, true);
 	if (token ~= nil) then
 		token.exp_time = os.date('%Y-%m-%d %T', token.exp);
 		token.nbf_time = os.date('%Y-%m-%d %T', token.nbf);
 		uc.uid = ffi.cast("int64_t", tonumber(token.uid));
 		uc.token = token;
+		local now = os.time();
 	else
-		return nil;
+		if (does_request_need_auth(request, url_parts)) then
+			return nil, msg;
+		else
+			uc.uid = 0;
+		end
 	end
 
 	uc.module_path = get_module_path(url_parts);
@@ -235,10 +250,14 @@ local invoke_func = function(request, req_processor_interface, req_processor, fu
 	local proc_stat, status, out_obj, flg;
 	local http_method = request:get_method();
 	local ret = 200;
-	local uc = prepare_uc(request, url_parts);
 
+	local uc, msg = prepare_uc(request, url_parts);
 	if (uc == nil) then
-		out_obj = { error_message = 'Bad Request: Badly formed Access token or Access Token not present' };
+		if (msg == nil) then
+			out_obj = { error_message = 'Bad Request: Invalid Access token or Access Token not present' };
+		else
+			out_obj = { error_message = 'Bad Request: Invalid Access token or Access Token not present: '..msg };
+		end
 		return false, out_obj, 401;
 	end
 
