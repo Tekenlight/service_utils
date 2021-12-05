@@ -218,16 +218,13 @@ local function prepare_uc(request, url_parts)
 	local jwt_token = hdr_flds['X-Auth'];
 	local token = jwt.decode(jwt_token);
 	if (token ~= nil) then
-		token.exp_time = os.date('%c', token.exp);
-		token.nbf_time = os.date('%c', token.nbf);
+		token.exp_time = os.date('%Y-%m-%d %T', token.exp);
+		token.nbf_time = os.date('%Y-%m-%d %T', token.nbf);
 		uc.uid = ffi.cast("int64_t", tonumber(token.uid));
 		uc.token = token;
 	else
-		uc.uid = ffi.cast("int64_t", 1);
+		return nil;
 	end
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-	require 'pl.pretty'.dump(uc);
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 
 	uc.module_path = get_module_path(url_parts);
 
@@ -236,13 +233,18 @@ end
 
 local invoke_func = function(request, req_processor_interface, req_processor, func, url_parts, qp, obj)
 	local proc_stat, status, out_obj, flg;
-	local uc = prepare_uc(request, url_parts);
 	local http_method = request:get_method();
 	local ret = 200;
+	local uc = prepare_uc(request, url_parts);
+
+	if (uc == nil) then
+		out_obj = { error_message = 'Bad Request: Badly formed Access token or Access Token not present' };
+		return false, out_obj, 401;
+	end
 
 	if (supported_http_methods[http_method] == nil) then
 		out_obj = { error_message = 'Unsupported HTTP method' };
-		return out_obj, 400;
+		return false, out_obj, 400;
 	end
 	tao_factory.init(uc);
 	local db_init_done = false;
