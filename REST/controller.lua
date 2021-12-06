@@ -264,6 +264,7 @@ local function prepare_uc(request, url_parts)
 	--]]
 
 	uc.module_path = get_module_path(url_parts);
+	uc.access_token = jwt_token;
 
 	return uc;
 end
