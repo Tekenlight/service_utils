@@ -238,6 +238,9 @@ local function prepare_uc(request, url_parts)
 
 	local hdr_flds = request:get_hdr_fields();
 	local jwt_token = hdr_flds['X-Auth'];
+	-- jwt.decode does the auth as well
+	-- It basically decodes the token as well as verifies the signature
+	-- The bearer of the token is the authorized user
 	local token, msg = jwt.decode(jwt_token, key, true);
 	if (token ~= nil) then
 		token.exp_time = os.date('%Y-%m-%d %T', token.exp);
@@ -252,6 +255,13 @@ local function prepare_uc(request, url_parts)
 			uc.uid = 0;
 		end
 	end
+
+	--[[
+	-- More functionality in terms of whether the user has permission to 
+	-- perform a specific action or if the user has access to the 
+	-- database that the request is trying to access etc...
+	-- Are to be implemented here.
+	--]]
 
 	uc.module_path = get_module_path(url_parts);
 
