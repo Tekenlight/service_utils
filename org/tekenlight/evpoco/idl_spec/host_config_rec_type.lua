@@ -43,11 +43,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        min_occurs = 1,
         top_level_group = true,
-        generated_subelement_name = '_sequence_group',
         group_type = 'S',
+        min_occurs = 1,
         max_occurs = 1,
+        generated_subelement_name = '_sequence_group',
         'host',
         'port',
     };
@@ -72,6 +72,57 @@ end
 
 do
     element_handler.properties.subelement_properties = {};
+    element_handler.properties.subelement_properties['{}port'] = {};
+    do
+element_handler.properties.subelement_properties['{}port'].super_element_content_type = require('org.w3.2001.XMLSchema.int_handler'):instantiate();
+
+element_handler.properties.subelement_properties['{}port'].type_of_simple = 'A';
+
+        do
+            element_handler.properties.subelement_properties['{}port'].properties = {};
+            element_handler.properties.subelement_properties['{}port'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{}port'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{}port'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}int';
+            element_handler.properties.subelement_properties['{}port'].properties.bi_type = {};
+            element_handler.properties.subelement_properties['{}port'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{}port'].properties.bi_type.name = 'int';
+            element_handler.properties.subelement_properties['{}port'].properties.bi_type.id = '35';
+            element_handler.properties.subelement_properties['{}port'].properties.attr = {};
+            element_handler.properties.subelement_properties['{}port'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{}port'].properties.attr._generated_attr = {};
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}port'].particle_properties = {};
+            element_handler.properties.subelement_properties['{}port'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{}port'].particle_properties.q_name.ns = '';
+            element_handler.properties.subelement_properties['{}port'].particle_properties.q_name.local_name = 'port';
+            element_handler.properties.subelement_properties['{}port'].particle_properties.generated_name = 'port';
+        end
+
+        -- Simple type properties
+        do
+            element_handler.properties.subelement_properties['{}port'].base = {};
+            element_handler.properties.subelement_properties['{}port'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{}port'].base.name = 'int';
+            element_handler.properties.subelement_properties['{}port'].local_facets = {};
+            element_handler.properties.subelement_properties['{}port'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{}port']);
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}port'].type_handler = require('org.w3.2001.XMLSchema.int_handler'):instantiate();
+            element_handler.properties.subelement_properties['{}port'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{}port'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{}port'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{}port'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{}port'].parse_xml = basic_stuff.parse_xml;
+        end
+
+        element_handler.properties.subelement_properties['{}port'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{}port'].particle_properties.min_occurs = 1;
+        element_handler.properties.subelement_properties['{}port'].particle_properties.max_occurs = 1;
+    end
+
     element_handler.properties.subelement_properties['{}host'] = {};
     do
 element_handler.properties.subelement_properties['{}host'].super_element_content_type = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
@@ -125,57 +176,6 @@ element_handler.properties.subelement_properties['{}host'].type_of_simple = 'A';
         element_handler.properties.subelement_properties['{}host'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{}host'].particle_properties.min_occurs = 1;
         element_handler.properties.subelement_properties['{}host'].particle_properties.max_occurs = 1;
-    end
-
-    element_handler.properties.subelement_properties['{}port'] = {};
-    do
-element_handler.properties.subelement_properties['{}port'].super_element_content_type = require('org.w3.2001.XMLSchema.int_handler'):instantiate();
-
-element_handler.properties.subelement_properties['{}port'].type_of_simple = 'A';
-
-        do
-            element_handler.properties.subelement_properties['{}port'].properties = {};
-            element_handler.properties.subelement_properties['{}port'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{}port'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{}port'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}int';
-            element_handler.properties.subelement_properties['{}port'].properties.bi_type = {};
-            element_handler.properties.subelement_properties['{}port'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{}port'].properties.bi_type.name = 'int';
-            element_handler.properties.subelement_properties['{}port'].properties.bi_type.id = '35';
-            element_handler.properties.subelement_properties['{}port'].properties.attr = {};
-            element_handler.properties.subelement_properties['{}port'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{}port'].properties.attr._generated_attr = {};
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}port'].particle_properties = {};
-            element_handler.properties.subelement_properties['{}port'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{}port'].particle_properties.q_name.ns = '';
-            element_handler.properties.subelement_properties['{}port'].particle_properties.q_name.local_name = 'port';
-            element_handler.properties.subelement_properties['{}port'].particle_properties.generated_name = 'port';
-        end
-
-        -- Simple type properties
-        do
-            element_handler.properties.subelement_properties['{}port'].base = {};
-            element_handler.properties.subelement_properties['{}port'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{}port'].base.name = 'int';
-            element_handler.properties.subelement_properties['{}port'].local_facets = {};
-            element_handler.properties.subelement_properties['{}port'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{}port']);
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}port'].type_handler = require('org.w3.2001.XMLSchema.int_handler'):instantiate();
-            element_handler.properties.subelement_properties['{}port'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{}port'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{}port'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{}port'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{}port'].parse_xml = basic_stuff.parse_xml;
-        end
-
-        element_handler.properties.subelement_properties['{}port'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{}port'].particle_properties.min_occurs = 1;
-        element_handler.properties.subelement_properties['{}port'].particle_properties.max_occurs = 1;
     end
 
 end

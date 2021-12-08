@@ -81,7 +81,10 @@ service_client.transceive = function(context, inp)
 	local host_config_element = host_confg_rec_handler:from_json(core_utils.str_base64_decode(response[1]));
 	local client = rest_client_factory.new(host_config_element.host, tonumber(host_config_element.port));
 	local headers = {};
-	headers.method = 'GET';
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	require 'pl.pretty'.dump(method_properties);
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	headers.method = method_properties.http_method;
     headers['X-Auth'] = context.access_token;
 	local uri = "/"..string.gsub(inp.module_name, "%.", "/");
 	local uri = uri.."/"..inp.class_name.."/"..inp.method_name;
@@ -97,18 +100,18 @@ service_client.transceive = function(context, inp)
 	end
     client:send_request(uri, headers, request_json);
 
-	local status, response = client:recv_response();
+	local status, response_json = client:recv_response();
     if (not status) then
-		local obj, msg = json_parser.decode(response);
+		local obj, msg = json_parser.decode(response_json);
 		if (obj == nil) then
-			return false, response;
+			return false, response_json;
 		end
         return false, obj;
     end
 
 	if (method_properties.message.in_out[2] ~= nil) then
-		assert(response ~= nil and type(response) == 'string');
-		local obj = get_output_obj(method_properties.message.in_out[2], response);
+		assert(response_json ~= nil and type(response_json) == 'string');
+		local obj = get_output_obj(method_properties.message.in_out[2], response_json);
 		return status, obj;
 	else
 		return status, nil;

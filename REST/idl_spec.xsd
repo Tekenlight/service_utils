@@ -9,6 +9,15 @@ targetNamespace="http://evpoco.tekenlight.org/idl_spec" xmlns:ns="http://evpoco.
 
 	<xsd:element name="error_response" type="ns:error_response_type"/>
 
+	<xsd:simpleType name="http_method_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="GET"/>
+			<xsd:enumeration value="PUT"/>
+			<xsd:enumeration value="POST"/>
+			<xsd:enumeration value="DELETE"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
 	<xsd:simpleType name="input_source_type">
 		<xsd:restriction base="xsd:token">
 			<xsd:enumeration value="query_param"/>
@@ -43,6 +52,7 @@ targetNamespace="http://evpoco.tekenlight.org/idl_spec" xmlns:ns="http://evpoco.
 		<xsd:attribute name="name" type="xsd:token" use="required"/>
 		<xsd:attribute name="transactional" type="xsd:boolean" use="required"/>
 		<xsd:attribute name="db_schema_name" type="xsd:token" use="optional"/>
+		<xsd:attribute name="http_method" type="ns:http_method_type" use="required"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="interface_type">

@@ -42,6 +42,7 @@ for i, method in ipairs(idl_struct.method) do
 	code = code .. [=[
 ]=]..[=[
 ]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[ = {};
+]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.http_method = "]=]..method._attr.http_method..[=[";
 ]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.transactional = ]=]..tostring(method._attr.transactional)..[=[;
 ]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.db_schema_name = ']=]..tostring(method._attr.db_schema_name)..[=[';
 ]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.message = {};

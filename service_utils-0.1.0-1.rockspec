@@ -55,6 +55,7 @@ build = {
 		['org.tekenlight.evpoco.message_rules.validation_type'] = 'org/tekenlight/evpoco/message_rules/validation_type.lua',
 
 		['org.tekenlight.evpoco.idl_spec.output_dtls_type'] = 'org/tekenlight/evpoco/idl_spec/output_dtls_type.lua',
+		['org.tekenlight.evpoco.idl_spec.http_method_type'] = 'org/tekenlight/evpoco/idl_spec/http_method_type.lua',
 		['org.tekenlight.evpoco.idl_spec.method_type'] = 'org/tekenlight/evpoco/idl_spec/method_type.lua',
 		['org.tekenlight.evpoco.idl_spec.interface_type'] = 'org/tekenlight/evpoco/idl_spec/interface_type.lua',
 		['org.tekenlight.evpoco.idl_spec.interface'] = 'org/tekenlight/evpoco/idl_spec/interface.lua',
