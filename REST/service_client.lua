@@ -81,9 +81,6 @@ service_client.transceive = function(context, inp)
 	local host_config_element = host_confg_rec_handler:from_json(core_utils.str_base64_decode(response[1]));
 	local client = rest_client_factory.new(host_config_element.host, tonumber(host_config_element.port));
 	local headers = {};
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-	require 'pl.pretty'.dump(method_properties);
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	headers.method = method_properties.http_method;
     headers['X-Auth'] = context.access_token;
 	local uri = "/"..string.gsub(inp.module_name, "%.", "/");
