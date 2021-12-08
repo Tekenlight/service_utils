@@ -75,7 +75,7 @@ client.recv_response = function (self)
 		resp_buf = resp_buf..buf;
 		buf = response:read();
 	end
-	return status, resp_buf;
+	return status, resp_buf, resp_status;
 end
 
 

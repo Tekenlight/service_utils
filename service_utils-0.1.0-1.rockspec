@@ -29,6 +29,7 @@ build = {
 		["org.tekenlight.evpoco.idl_spec.host_config_rec_type"] = 'org/tekenlight/evpoco/idl_spec/host_config_rec_type.lua',
 		["service_utils.REST.controller"] = 'REST/controller.lua',
 		["service_utils.REST.client"] = 'REST/client.lua',
+		["service_utils.REST.service_client"] = 'REST/service_client.lua',
 		["idl_gen"] = 'REST/idl_gen.lua',
 
 		["service_utils.jwt.luajwt"] = 'jwt/luajwt.lua',
