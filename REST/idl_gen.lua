@@ -44,7 +44,13 @@ for i, method in ipairs(idl_struct.method) do
 ]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[ = {};
 ]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.http_method = "]=]..method._attr.http_method..[=[";
 ]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.transactional = ]=]..tostring(method._attr.transactional)..[=[;
+]=]
+	if (method._attr.db_schema_name ~= nil) then
+		code = code .. [=[
 ]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.db_schema_name = ']=]..tostring(method._attr.db_schema_name)..[=[';
+]=]
+	end
+	code = code .. [=[
 ]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.message = {};
 
 ]=]..class_name..[=[.methods]=]..[=[.]=]..method._attr.name..[=[.message.query_params = {};
