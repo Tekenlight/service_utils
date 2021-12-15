@@ -50,7 +50,7 @@ local function get_interface_class_path(url_parts)
 	end
 	i = i + 1;
 	interface_path = interface_path.."."..url_parts[i].."_interface";
-	local app_base_path = properties_funcs.get_string_property("evluaserver.appBasePath");
+	local app_base_path = properties_funcs.get_string_property("service_utils.REST.controller.appBasePath");
 	if (app_base_path ~= nil) then
 		interface_path = app_base_path.."."..interface_path;
 	end
@@ -74,7 +74,7 @@ local function get_module_path(url_parts)
 		end
 	end
 
-	local app_base_path = properties_funcs.get_string_property("evluaserver.appBasePath");
+	local app_base_path = properties_funcs.get_string_property("service_utils.REST.controller.appBasePath");
 	if (app_base_path ~= nil) then
 		path = app_base_path.."."..path;
 	end
@@ -98,7 +98,7 @@ local function deduce_action(url_parts, qp)
 		end
 	end
 
-	local app_base_path = properties_funcs.get_string_property("evluaserver.appBasePath");
+	local app_base_path = properties_funcs.get_string_property("service_utils.REST.controller.appBasePath");
 	if (app_base_path ~= nil) then
 		path = app_base_path.."."..path;
 	end
@@ -213,7 +213,7 @@ end
 
 local function does_request_need_auth(request, url_parts)
 	local json_parser = cjson.new();
-	local prop_str = properties_funcs.get_string_property("evluaserver.noAuthUrls");
+	local prop_str = properties_funcs.get_string_property("service_utils.REST.controller.noAuthUrls");
 	if (prop_str == nil) then
 		return true;
 	end
@@ -234,7 +234,7 @@ end
 local function prepare_uc(request, url_parts)
 	local uc = require('service_utils.common.user_context').new();
 
-	local key = properties_funcs.get_string_property("evluaserver.jwtSignatureKey");
+	local key = properties_funcs.get_string_property("platform.jwtSignatureKey");
 
 	local hdr_flds = request:get_hdr_fields();
 	local jwt_token = hdr_flds['X-Auth'];
@@ -377,6 +377,11 @@ local function validate_query_params(req_processor_interface, qp, func)
 			end
 		end
 	end
+	--[[
+	--We can put a hack here for all other query param values
+	--present in qp for unit testing
+	--]]
+
 	return true, new_qp;
 end
 
@@ -447,6 +452,11 @@ rest_controller.handle_request = function (request, response)
 							end
 						end
 					else
+						--[[
+						--
+						-- We can put a hack here for unit testing
+						--
+						--]]
 						flg = false;
 						obj = nil;
 						msg = "Unable to derserialize JSON, schema not specified";

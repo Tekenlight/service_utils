@@ -5,7 +5,7 @@ local smtp_c_f = require('service_utils.SMTP.smtp_client');
 local platform = require('platform');
 local evclient = require('libevclient');
 local properties_funcs = platform.properties_funcs();
-local enablesmtpclientpool = properties_funcs.get_bool_property("evlhttprequesthandler.enablesmtpclientpool");
+local enablesmtpclientpool = properties_funcs.get_bool_property("service_utils.SMTP.email_client.enablesmtpclientpool");
 if (enablesmtpclientpool == nil) then
 	enablesmtpclientpool = false;
 end
