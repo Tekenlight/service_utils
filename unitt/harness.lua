@@ -85,31 +85,20 @@ function harness.run_test(databases, db_schema_name, module_path, tester_main, j
 	local db_init_done = false;
 	if (nil ~= db_conection_params) then
 		uc.db_connections = make_db_connections(db_conection_params);
-		if (false == begin_transaction(db_schema_name, uc)) then
+		--if (false == begin_transaction(db_schema_name, uc)) then
 		--begin_trans(uc);
-		end
+		--end
 		db_init_done = true;
 	end
 
 	error_handler.init();
-	local proc_stat, status, out_obj = pcall(tester_main, uc);
+	local proc_stat, status, msg = pcall(tester_main, uc);
 	local message_validation_context = error_handler.reset_init();
 	if (not proc_stat) then
 		error(status);
 	end
-	if (not status) then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-		--require 'pl.pretty'.dump(message_validation_context);
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-		out_obj = {};
-		out_obj.error_message = message_validation_context.status.error_message;
-		if (message_validation_context.status.field_path ~= nil and
-			message_validation_context.status.field_path ~= '') then
-			out_obj.field_path = message_validation_context.status.field_path;
-		end
-	end
 
-	return status, out_obj;
+	return status, msg, message_validation_context.status.error_message;
 
 end
 
