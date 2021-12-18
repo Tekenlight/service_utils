@@ -102,4 +102,18 @@ function harness.run_test(databases, db_schema_name, module_path, tester_main, j
 
 end
 
+function harness.run_tests(databases, db_schema_name, module_path, test_cases, jwt_token)
+	local status = true;
+	for n,v in pairs(test_cases) do
+		local flg, msg, add_msg =  harness.run_test(databases, db_schema_name, module_path, v, jwt_token);
+		if (flg) then
+			print(n, ": PASSED -- ", msg, add_msg);
+		else
+			status = false;
+			print(n, ": FAILED -- ", msg, add_msg);
+		end
+	end
+	return status;
+end
+
 return harness;
