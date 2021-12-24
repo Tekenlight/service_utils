@@ -56,11 +56,10 @@ local function end_transaction(db_schema_name, uc, status)
 	return flg;
 end
 
-function harness.run_test(databases, db_schema_name, module_path, tester_main, jwt_token)
+function harness.prepare_uc(databases, db_schema_name, module_path, jwt_token)
 	assert(databases ~= nil and type(databases) == 'table');
 	assert(db_schema_name ~= nil and type(db_schema_name) == 'string');
 	assert(module_path ~= nil and type(module_path) == 'string');
-	assert(tester_main ~= nil and type(tester_main) == 'function');
 	assert(jwt_token ~= nil and type(jwt_token) == 'string');
 
 	local db_conection_params = master_db_params:get_params(table.unpack(databases));
@@ -82,16 +81,24 @@ function harness.run_test(databases, db_schema_name, module_path, tester_main, j
 	tao_factory.init(uc);
 	uc.module_path = module_path;
 
-	local db_init_done = false;
 	if (nil ~= db_conection_params) then
 		uc.db_connections = make_db_connections(db_conection_params);
-		--if (false == begin_transaction(db_schema_name, uc)) then
-		--begin_trans(uc);
-		--end
-		db_init_done = true;
 	end
 
 	error_handler.init();
+
+	return uc;
+end
+
+function harness.run_test(databases, db_schema_name, module_path, tester_main, jwt_token)
+	assert(databases ~= nil and type(databases) == 'table');
+	assert(db_schema_name ~= nil and type(db_schema_name) == 'string');
+	assert(module_path ~= nil and type(module_path) == 'string');
+	assert(tester_main ~= nil and type(tester_main) == 'function');
+	assert(jwt_token ~= nil and type(jwt_token) == 'string');
+
+	local uc = harness.prepare_uc(databases, db_schema_name, module_path, jwt_token);
+
 	local proc_stat, status, msg = pcall(tester_main, uc);
 	local message_validation_context = error_handler.reset_init();
 	if (not proc_stat) then

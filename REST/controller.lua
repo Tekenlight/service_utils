@@ -221,7 +221,7 @@ local function does_request_need_auth(request, url_parts)
 	if (obj == nil) then
 		return true;
 	end
-	local url = (URI_CLASS(request:get_uri())):path();
+	local url = (URI_CLASS:new(request:get_uri())):path();
 	for i,v in ipairs(obj.urls) do
 		if (v == url) then
 			return false;
