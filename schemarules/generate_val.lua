@@ -193,6 +193,9 @@ return ]=]..package_parts[n]..[=[;
 		validations_array[j].type = ']=]..tostring(v._attr.type)..[=[';
 		local package = require(']=]..v.validation._attr.package..[=[');
 		validations_array[j].val_func = package[']=]..v.validation._attr.method..[=['];
+		if (validations_array[j].val_func == nil) then
+			error("Function []=]..v.validation._attr.method..[=[] not found in package []=]..v.validation._attr.package..[=[]");
+		end
 		validations_array[j].argument_type = ']=]..tostring(v.validation._attr.argument_type)..[=[';
 		validations_array[j].argument = ]=]..tostring(v.validation._attr.argument)..[=[;
 		validations_array[j].addnl_argument = ]=]..tostring(v.validation._attr.addnl_argument)..[=[;
@@ -217,6 +220,9 @@ return ]=]..package_parts[n]..[=[;
 	validations_array[j].type = ']=]..tostring(v._attr.type)..[=[';
 	local package = require(']=]..v.validation._attr.package..[=[');
 	validations_array[j].val_func = package[']=]..v.validation._attr.method..[=['];
+	if (validations_array[j].val_func == nil) then
+		error("Function []=]..v.validation._attr.method..[=[] not found in package []=]..v.validation._attr.package..[=[]");
+	end
 	validations_array[j].argument_type = ']=]..tostring(v.validation._attr.argument_type)..[=[';
 	validations_array[j].argument = ]=]..tostring(v.validation._attr.argument)..[=[;
 	validations_array[j].addnl_argument = ]=]..tostring(v.validation._attr.addnl_argument)..[=[;
