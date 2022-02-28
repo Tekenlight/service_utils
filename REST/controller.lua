@@ -424,7 +424,7 @@ rest_controller.handle_request = function (request, response)
 
 	local obj, msg;
 	local error_cond = 0;
-	do
+	do --{
 		--if (req_processor.message[func] == nil) then
 		if (req_processor_interface.methods[func] == nil) then
 			flg = false;
@@ -485,7 +485,7 @@ rest_controller.handle_request = function (request, response)
 				end
 			end
 		end
-	end
+	end --}
 	local successfully_processed = false;
 	if (not flg) then
 		output_obj.error_message = msg;
@@ -496,7 +496,7 @@ rest_controller.handle_request = function (request, response)
 		--It is expected that the server responds 200 Ok if the request is acceptable
 		--subsequent requenst will have content
 		--]]
-		if (((hdr_flds["Access-Control-Request-Headers"] ~= nil or hdr_flds[Access-Control-Request-Method] ~= nil)) and
+		if (((hdr_flds["Access-Control-Request-Headers"] ~= nil or hdr_flds["Access-Control-Request-Method"] ~= nil)) and
 			error_cond == 8) then
 			status = 200;
 		end
@@ -505,7 +505,7 @@ rest_controller.handle_request = function (request, response)
 		response:set_content_type("application/json");
 		response:send();
 		response:set_hdr_field("X-msg", json_output);
-		response:write(json_output);
+		if (status ~= 200) then response:write(json_output); end
 	else
 		local status, table_output, ret = invoke_func(request, req_processor_interface, req_processor, func, url_parts, qp, obj)
 		if (type(ret) ~= 'number' or ret < 200 or ret > 550) then
