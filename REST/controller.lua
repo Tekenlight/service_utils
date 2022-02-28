@@ -392,6 +392,11 @@ rest_controller.handle_request = function (request, response)
 	local url_parts = split_path(uri);
 	local qp = get_query_params(uri:query());
 
+	response:set_hdr_field("Access-Control-Allow-Origin", "*");
+	response:set_hdr_field("Access-Control-Allow-Methods", "*");
+	response:set_hdr_field("Access-Control-Allow-Headers", "*");
+	response:set_hdr_field("Access-Control-Allow-Credentials", "true");
+
 	local output_obj = {};
 
 	local json_parser = cjson.new();
@@ -418,16 +423,19 @@ rest_controller.handle_request = function (request, response)
 
 
 	local obj, msg;
+	local error_cond = 0;
 	do
 		--if (req_processor.message[func] == nil) then
 		if (req_processor_interface.methods[func] == nil) then
 			flg = false;
 			obj = nil;
 			msg = "Invalid function "..func;
+			error_cond = 1;
 		elseif (req_processor_interface.methods[func].message == nil) then
 			flg = false;
 			obj = nil;
 			msg = "Invalid function "..func;
+			error_cond = 2;
 		else
 			--local t = req_processor.message[func][1];
 			flg, qp = validate_query_params(req_processor_interface, qp, func);
@@ -435,6 +443,7 @@ rest_controller.handle_request = function (request, response)
 				flg = false;
 				obj = nil;
 				msg = qp;
+				error_cond = 3;
 			else
 				local t = req_processor_interface.methods[func].message.in_out[1];
 				if (json_input ~= nil) then
@@ -444,11 +453,13 @@ rest_controller.handle_request = function (request, response)
 							flg = false;
 							obj = nil;
 							msg = "Unable to find message schema handler";
+							error_cond = 4;
 						else
 							flg = true;
 							obj, msg = msg_handler:from_json(json_input);
 							if (obj == nil) then
 								flg = false;
+								error_cond = 6;
 							end
 						end
 					else
@@ -460,11 +471,13 @@ rest_controller.handle_request = function (request, response)
 						flg = false;
 						obj = nil;
 						msg = "Unable to derserialize JSON, schema not specified";
+						error_cond = 7;
 					end
 				else
 					if (t ~= nil) then
 						flg = false;
 						msg = "NULL Message received, while expecting one";
+						error_cond = 8;
 					else
 						flg = true;
 					end
@@ -477,7 +490,17 @@ rest_controller.handle_request = function (request, response)
 	if (not flg) then
 		output_obj.error_message = msg;
 		local flg, json_output, err = pcall(json_parser.encode, output_obj);
-		response:set_status(400);
+		local status = 400;
+		local hdr_flds = request:get_hdr_fields();
+		--[[ In case of CORS browsers send an empty request with the below headers first.
+		--It is expected that the server responds 200 Ok if the request is acceptable
+		--subsequent requenst will have content
+		--]]
+		if (((hdr_flds["Access-Control-Request-Headers"] ~= nil or hdr_flds[Access-Control-Request-Method] ~= nil)) and
+			error_cond == 8) then
+			status = 200;
+		end
+		response:set_status(status);
 		response:set_chunked_trfencoding(true);
 		response:set_content_type("application/json");
 		response:send();
