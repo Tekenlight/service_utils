@@ -397,6 +397,21 @@ rest_controller.handle_request = function (request, response)
 	response:set_hdr_field("Access-Control-Allow-Headers", "*");
 	response:set_hdr_field("Access-Control-Allow-Credentials", "true");
 
+	local hdr_flds = request:get_hdr_fields();
+	if ((request:get_method() == "OPTIONS") and
+		((hdr_flds["Access-Control-Request-Headers"] ~= nil or hdr_flds["Access-Control-Request-Method"] ~= nil)) ) then
+		--[[ In case of CORS browsers send an empty request with the below headers first.
+		--It is expected that the server responds 200 Ok if the request is acceptable
+		--subsequent requenst will have content
+		--]]
+		response:set_status(200);
+		response:set_chunked_trfencoding(true);
+		response:set_content_type("application/json");
+		response:send();
+		response:write("");
+		return;
+	end
+
 	local output_obj = {};
 
 	local json_parser = cjson.new();
@@ -491,22 +506,19 @@ rest_controller.handle_request = function (request, response)
 		output_obj.error_message = msg;
 		local flg, json_output, err = pcall(json_parser.encode, output_obj);
 		local status = 400;
-		local hdr_flds = request:get_hdr_fields();
-		--[[ In case of CORS browsers send an empty request with the below headers first.
-		--It is expected that the server responds 200 Ok if the request is acceptable
-		--subsequent requenst will have content
-		--]]
-		if (((hdr_flds["Access-Control-Request-Headers"] ~= nil or hdr_flds["Access-Control-Request-Method"] ~= nil)) and
-			error_cond == 8) then
-			status = 200;
-		end
 		response:set_status(status);
 		response:set_chunked_trfencoding(true);
 		response:set_content_type("application/json");
-		response:send();
 		response:set_hdr_field("X-msg", json_output);
-		if (status ~= 200) then response:write(json_output); end
+		response:send();
+		response:write(json_output);
 	else
+		--[[
+		local hdr_flds = request:get_hdr_fields();
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+		require 'pl.pretty'.dump(hdr_flds);
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+		--]]
 		local status, table_output, ret = invoke_func(request, req_processor_interface, req_processor, func, url_parts, qp, obj)
 		if (type(ret) ~= 'number' or ret < 200 or ret > 550) then
 			error('Invalid error code returned '..ret);
