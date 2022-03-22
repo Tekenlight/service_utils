@@ -166,38 +166,34 @@ end
 
 local function end_transaction(req_processor_interface, func, uc, status)
 	local flg = false;
-	--[[
-	if (req_processor.transactional ~= nil
-		and req_processor.transactional[func] ~= nil
-		and req_processor.transactional[func][1] == true) then
-	--]]
-	if (req_processor_interface.methods[func].transactional ~= nil
-		and req_processor_interface.methods[func].transactional ~= nil
-		and req_processor_interface.methods[func].transactional == true) then
 
-		local i = 0;
-		local name = nil;
-		for n,v in pairs(uc.db_connections) do
-			i = i + 1;
-			if (i == 1) then
-				name = n;
-			else
-				break;
-			end
-		end
+	local i = 0;
+	local name = nil;
+	for n,v in pairs(uc.db_connections) do
+		i = i + 1;
 		if (i == 1) then
+			name = n;
+		else
+			break;
+		end
+	end
+	if (i == 1) then
+		uc.db_connections[name].conn:close_open_cursors();
+		if (req_processor_interface.methods[func].transactional == true) then
 			if (status) then
 				uc.db_connections[name].conn:commit();
 			else
 				uc.db_connections[name].conn:rollback();
 			end
-			flg = true;
-		elseif (i>1) then
-			--if (req_processor.transactional[func][2] == nil) then
-			if (req_processor_interface.methods[func].db_schema_name == nil) then
-				error("CONNECTION NAME MUST BE SPECIFIED FOR "..func.." IF TRANSACTIONA CONTROL IS REQUIRED");
-				return false
-			else
+		end
+		flg = true;
+	elseif (i>1) then
+		if (req_processor_interface.methods[func].db_schema_name == nil) then
+			error("CONNECTION NAME MUST BE SPECIFIED FOR "..func.." IF TRANSACTIONA CONTROL IS REQUIRED");
+			return false
+		else
+			uc.db_connections[req_processor_interface.methods[func].db_schema_name].conn:close_open_cursors();
+			if (req_processor_interface.methods[func].transactional == true) then
 				if (status) then
 					uc.db_connections[req_processor_interface.methods[func].db_schema_name].conn:commit();
 					flg = true;
@@ -208,6 +204,7 @@ local function end_transaction(req_processor_interface, func, uc, status)
 			end
 		end
 	end
+
 	return flg;
 end
 
@@ -238,9 +235,18 @@ local function prepare_uc(request, url_parts)
 
 	local hdr_flds = request:get_hdr_fields();
 	local jwt_token = hdr_flds['X-Auth'];
-	-- jwt.decode does the auth as well
+	if (hdr_flds['X-FrameNum'] ~= nil) then
+		uc.req_frame_num = tonumber(hdr_flds['X-ReqFrameNum']);
+	end
+	if (hdr_flds['X-NumRecsInFrame'] ~= nil) then
+		uc.req_num_recs_per_frame = tonumber(hdr_flds['X-ReqNumRecsInFrame']);
+	end
+
+	--[[
+	--jwt.decode does the auth as well
 	-- It basically decodes the token as well as verifies the signature
 	-- The bearer of the token is the authorized user
+	--]]
 	local token, msg = jwt.decode(jwt_token, key, true);
 	if (token ~= nil) then
 		token.exp_time = os.date('%Y-%m-%d %T', token.exp);
@@ -397,13 +403,12 @@ rest_controller.handle_request = function (request, response)
 	response:set_hdr_field("Access-Control-Allow-Headers", "*");
 	response:set_hdr_field("Access-Control-Allow-Credentials", "true");
 
+	--[[ In case of CORS browsers send an empty request with the below headers first.
+	--It is expected that the server responds 200 Ok if the request is acceptable
+	--subsequent requenst will have content
 	local hdr_flds = request:get_hdr_fields();
 	if ((request:get_method() == "OPTIONS") and
 		((hdr_flds["Access-Control-Request-Headers"] ~= nil or hdr_flds["Access-Control-Request-Method"] ~= nil)) ) then
-		--[[ In case of CORS browsers send an empty request with the below headers first.
-		--It is expected that the server responds 200 Ok if the request is acceptable
-		--subsequent requenst will have content
-		--]]
 		response:set_status(200);
 		response:set_chunked_trfencoding(true);
 		response:set_content_type("application/json");
@@ -411,6 +416,7 @@ rest_controller.handle_request = function (request, response)
 		response:write("");
 		return;
 	end
+	--]]
 
 	local output_obj = {};
 

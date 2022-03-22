@@ -364,6 +364,16 @@ ev_postgres_conn.get_sequence_nextval = function(self, seq_name)
 	return result[1];
 end
 
+ev_postgres_conn.close_open_cursors = function(self)
+	local ed_stmt = self:prepare("CLOSE ALL");
+	if (ed_stmt == nil) then
+		error("COULD NOT PREPARE STATEMENTS FOR CLOSE ALL");
+		return nil;
+	end
+	local flg, msg = ed_stmt:execute();
+	return flg, msg;
+end
+
 ev_postgres_conn.end_tran = function(self)
 	local ed_stmt = self:prepare("ROLLBACK WORK");
 	if (ed_stmt == nil) then

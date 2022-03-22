@@ -141,12 +141,13 @@ ev_redis_connection.zrangebyscore = function(self, key, score1, score1_inclusive
 end
 
 --[[
---The following three functions are added to be compliant to the
+--The following four functions are added to be compliant to the
 --interface of a db connection as needed by the REST controller.
 --]]
 ev_redis_connection.begin = function(self, key, value) return; end
 ev_redis_connection.commit = function(self, key, value) return; end
 ev_redis_connection.rollback = function(self, key, value) return; end
+ev_redis_connection.close_open_cursors = function(self, key, value) return; end
 
 return ev_redis_db;
 

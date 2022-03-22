@@ -9,6 +9,28 @@ local function get_conn(uc, db_name)
 	return conn;
 end
 
+function user_context:get_req_frame_num()
+	local req_frame_num = 1;
+	assert(self ~= nil and type(self) == 'table');
+	if (self.req_frame_num ~= nil) then
+		req_frame_num = self.req_frame_num;
+	end
+	return req_frame_num;
+end
+
+function user_context:get_req_num_recs_per_frame()
+	local req_num_recs_per_frame = 1000;
+	assert(self ~= nil and type(self) == 'table');
+	if (self.req_num_recs_per_frame ~= nil) then
+		req_num_recs_per_frame = self.req_num_recs_per_frame;
+	end
+	return req_num_recs_per_frame;
+end
+
+function user_context:get_num_recs_per_frame()
+	assert(self ~= nil and type(self) == 'table');
+end
+
 function user_context:get_connection(db_name)
 	return get_conn(self, db_name);
 end
