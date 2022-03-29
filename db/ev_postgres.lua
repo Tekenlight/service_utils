@@ -507,6 +507,13 @@ ev_postgres_cursor_res.fetch_rec = function(self)
 	return self._stmt:fetch_result();
 end
 
+ev_postgres_cursor_res.map = function(self, rec, map)
+	assert(cu_r_mt == getmetatable(self));
+	assert('table' == type(map));
+	assert('table' == type(rec));
+	return self._stmt.map(rec, map);
+end
+
 ev_postgres_cursor.close = function(self)
 	assert(cu_mt == getmetatable(self));
 	local sql_stmt = "CLOSE " .. self._cursor_id ;

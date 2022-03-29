@@ -235,12 +235,24 @@ local function prepare_uc(request, url_parts)
 
 	local hdr_flds = request:get_hdr_fields();
 	local jwt_token = hdr_flds['X-Auth'];
-	if (hdr_flds['X-FrameNum'] ~= nil) then
-		uc.req_frame_num = tonumber(hdr_flds['X-ReqFrameNum']);
+	local req_frame_num = 1;
+	if (hdr_flds['X-ReqFrameNum'] ~= nil) then
+		req_frame_num = tonumber(hdr_flds['X-ReqFrameNum']);
+		if (req_frame_num == nil) then
+			req_frame_num = 1;
+		elseif (req_frame_num <=0) then
+			req_frame_num = 1;
+		end
 	end
-	if (hdr_flds['X-NumRecsInFrame'] ~= nil) then
-		uc.req_num_recs_per_frame = tonumber(hdr_flds['X-ReqNumRecsInFrame']);
+	local req_num_recs_per_frame = 1000;
+	if (hdr_flds['X-ReqNumRecsInFrame'] ~= nil) then
+		req_num_recs_per_frame = tonumber(hdr_flds['X-ReqNumRecsInFrame']);
+		if (req_num_recs_per_frame == nil) then
+			req_num_recs_per_frame = 1000;
+		end
 	end
+	uc.req_from_rec_index = (req_frame_num-1) * req_num_recs_per_frame + 1 ;
+	uc.req_num_recs = req_num_recs_per_frame;
 
 	--[[
 	--jwt.decode does the auth as well
