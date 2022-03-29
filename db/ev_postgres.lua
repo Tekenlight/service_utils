@@ -39,10 +39,14 @@ size_t strlen(const char *s);
 
 local ev_postgres_conn = { exec = false;};
 local ev_postgres_stmt = {};
+local ev_postgres_cursor = {};
+local ev_postgres_cursor_res = {};
 local ev_postgres_db = {};
 
 local c_mt = { __index = ev_postgres_conn };
 local s_mt = { __index = ev_postgres_stmt };
+local cu_mt = { __index = ev_postgres_cursor };
+local cu_r_mt = { __index = ev_postgres_cursor_res };
 
 ev_postgres_db.get_statement_id = function(dinfo)
 	local id = dinfo.source..":"..dinfo.currentline;
@@ -54,7 +58,7 @@ local open_connetion_internal = function(host, port, dbname, user, password)
 	if (nil == conn) then
 		return nil, msg;
 	end
-	local c = {_conn = conn}
+	local c = {_conn = conn, cursor_num = 1}
 	c = setmetatable(c, c_mt);
 	return c;
 end
@@ -431,6 +435,44 @@ ev_postgres_conn.get_seq_nextval = function(self, seq_name)
 		error(msg);
 	end
 	return result[1];
+end
+
+ev_postgres_conn.open_cursor = function(self, cursor_id, i_sql_stmt, ...)
+
+	assert((cursor_id ~= nil) and (type(cursor_id) == 'string'));
+	assert((i_sql_stmt ~= nil) and (type(i_sql_stmt) == 'string'));
+
+	local stmt_src = ev_postgres_db.get_statement_id(debug.getinfo(2));
+
+	local sql_stmt = "DECLARE " .. cursor_id .. " CURSOR FOR " .. i_sql_stmt;
+	local stmt = self:prepare(sql_stmt);
+
+	stmt:execute(...);
+
+	local cu_stmt = { _conn = self, _cursor_id = cursor_id };
+	cu_stmt = setmetatable(cu_stmt, cu_mt);
+	assert(cu_stmt ~= nil);
+
+	return cu_stmt;
+end
+
+ev_postgres_cursor.fetch = function(self)
+
+	assert(cu_mt == getmetatable(self));
+	local sql_stmt = "FETCH ALL in " .. self._cursor_id ;
+	local stmt = self._conn:prepare(sql_stmt);
+	stmt:execute();
+	local cu_res = setmetatable({_stmt = stmt, _cur = self}, cu_r_mt);
+
+	return cu_res;
+end
+
+ev_postgres_cursor_res.close = function(self)
+	assert(cu_r_mt == getmetatable(self));
+	local sql_stmt = "CLOSE " .. self._cur._cursor_id ;
+	local stmt = self._cur._conn:prepare(sql_stmt);
+	stmt:execute();
+
 end
 
 return ev_postgres_db;
