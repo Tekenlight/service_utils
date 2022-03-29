@@ -439,12 +439,12 @@ end
 
 ev_postgres_conn.open_cursor = function(self, cursor_id, i_sql_stmt, ...)
 
-	assert((cursor_id ~= nil) and (type(cursor_id) == 'string'));
+	assert((cursor_id ~= nil) and (type(cursor_id) == 'string') and tonumber(cursor_id) == nil);
 	assert((i_sql_stmt ~= nil) and (type(i_sql_stmt) == 'string'));
 
 	local stmt_src = ev_postgres_db.get_statement_id(debug.getinfo(2));
 
-	local sql_stmt = "DECLARE " .. cursor_id .. " CURSOR FOR " .. i_sql_stmt;
+	local sql_stmt = "DECLARE " .. cursor_id .. " BINARY CURSOR FOR " .. i_sql_stmt;
 	local stmt = self:prepare(sql_stmt);
 
 	stmt:execute(...);
