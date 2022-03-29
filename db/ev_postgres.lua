@@ -484,7 +484,6 @@ ev_postgres_cursor.fetch_next_set = function(self, props)
 		end
 		do
 			local mv_count = props.from - 1;
-			print(debug.getinfo(1).source, debug.getinfo(1).currentline, mv_count);
 			local stmt = self._conn:prepare("MOVE FORWARD " .. mv_count .. " IN " .. self._cursor_id);
 			stmt:execute();
 		end
