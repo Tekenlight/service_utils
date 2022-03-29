@@ -467,6 +467,47 @@ ev_postgres_cursor.fetch_all = function(self)
 	return cu_res;
 end
 
+ev_postgres_cursor.fetch_next = function(self, props)
+
+	assert(cu_mt == getmetatable(self));
+	assert('table' == type(props));
+	assert(props.count == nil or (type(props.count) == 'number' and math.floor(props.count) == props.count ));
+	assert(props.from == nil or (type(props.from) == 'number' and math.floor(props.from) == props.from) and (props.from > 0));
+
+	local count = 0;
+	if props.count ~= nil then count = props.count; end
+
+	if (props.from ~= nil) then
+		do
+			local stmt = self._conn:prepare("MOVE ABSOLUTE 0 IN " .. self._cursor_id);
+			stmt:execute();
+		end
+		do
+			local mv_count = props.from - 1;
+			print(debug.getinfo(1).source, debug.getinfo(1).currentline, mv_count);
+			local stmt = self._conn:prepare("MOVE FORWARD " .. mv_count .. " IN " .. self._cursor_id);
+			stmt:execute();
+		end
+	end
+
+	local sql_stmt;
+	if (count > 0) then
+		sql_stmt = "FETCH FORWARD " .. count .." in " .. self._cursor_id ;
+	else
+		sql_stmt = "FETCH FORWARD ALL IN " .. self._cursor_id ;
+	end
+	local stmt = self._conn:prepare(sql_stmt);
+	stmt:execute();
+	local cu_res = setmetatable({_stmt = stmt, _cur = self}, cu_r_mt);
+
+	return cu_res;
+end
+
+ev_postgres_cursor_res.fetch_result = function(self)
+	assert(cu_r_mt == getmetatable(self));
+	return self._stmt:fetch_result();
+end
+
 ev_postgres_cursor_res.close = function(self)
 	assert(cu_r_mt == getmetatable(self));
 	local sql_stmt = "CLOSE " .. self._cur._cursor_id ;
