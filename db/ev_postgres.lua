@@ -456,7 +456,7 @@ ev_postgres_conn.open_cursor = function(self, cursor_id, i_sql_stmt, ...)
 	return cu_stmt;
 end
 
-ev_postgres_cursor.fetch = function(self)
+ev_postgres_cursor.fetch_all = function(self)
 
 	assert(cu_mt == getmetatable(self));
 	local sql_stmt = "FETCH ALL in " .. self._cursor_id ;
