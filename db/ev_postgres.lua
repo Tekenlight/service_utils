@@ -449,11 +449,11 @@ ev_postgres_conn.open_cursor = function(self, cursor_id, i_sql_stmt, ...)
 
 	stmt:execute(...);
 
-	local cu_stmt = { _conn = self, _cursor_id = cursor_id };
-	cu_stmt = setmetatable(cu_stmt, cu_mt);
-	assert(cu_stmt ~= nil);
+	local cu = { _conn = self, _cursor_id = cursor_id };
+	cu = setmetatable(cu, cu_mt);
+	assert(cu ~= nil);
 
-	return cu_stmt;
+	return cu;
 end
 
 ev_postgres_cursor.fetch_all = function(self)
