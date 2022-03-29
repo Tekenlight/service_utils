@@ -467,10 +467,10 @@ ev_postgres_cursor.fetch_all = function(self)
 	return cu_res;
 end
 
-ev_postgres_cursor.fetch_next = function(self, props)
+ev_postgres_cursor.fetch_next_set = function(self, props)
 
 	assert(cu_mt == getmetatable(self));
-	assert('table' == type(props));
+	assert(props == nil or 'table' == type(props)); if (props == nil) then props = {}; end
 	assert(props.count == nil or (type(props.count) == 'number' and math.floor(props.count) == props.count ));
 	assert(props.from == nil or (type(props.from) == 'number' and math.floor(props.from) == props.from) and (props.from > 0));
 
@@ -503,9 +503,17 @@ ev_postgres_cursor.fetch_next = function(self, props)
 	return cu_res;
 end
 
-ev_postgres_cursor_res.fetch_result = function(self)
+ev_postgres_cursor_res.fetch_rec = function(self)
 	assert(cu_r_mt == getmetatable(self));
 	return self._stmt:fetch_result();
+end
+
+ev_postgres_cursor.close = function(self)
+	assert(cu_mt == getmetatable(self));
+	local sql_stmt = "CLOSE " .. self._cursor_id ;
+	local stmt = self._conn:prepare(sql_stmt);
+	stmt:execute();
+
 end
 
 ev_postgres_cursor_res.close = function(self)
