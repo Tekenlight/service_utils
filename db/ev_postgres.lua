@@ -471,27 +471,27 @@ ev_postgres_cursor.fetch_next_set = function(self, props)
 
 	assert(cu_mt == getmetatable(self));
 	assert(props == nil or 'table' == type(props)); if (props == nil) then props = {}; end
-	assert(props.count == nil or (type(props.count) == 'number' and math.floor(props.count) == props.count ));
-	assert(props.from == nil or (type(props.from) == 'number' and math.floor(props.from) == props.from) and (props.from > 0));
+	assert(props.num_recs == nil or (ffi.istype("int32_t", props.num_recs) and (props.num_recs >= 0)));
+	assert(props.offset == nil or (ffi.istype("int32_t", props.offset) and (props.offset >= 0)));
 
-	local count = 0;
-	if props.count ~= nil then count = props.count; end
+	local num_recs = 0;
+	if props.num_recs ~= nil then num_recs = tonumber(props.num_recs); end
 
-	if (props.from ~= nil) then
+	if (props.offset ~= nil) then
 		do
 			local stmt = self._conn:prepare("MOVE ABSOLUTE 0 IN " .. self._cursor_id);
 			stmt:execute();
 		end
 		do
-			local mv_count = props.from - 1;
+			local mv_count = tonumber(props.offset) - 1;
 			local stmt = self._conn:prepare("MOVE FORWARD " .. mv_count .. " IN " .. self._cursor_id);
 			stmt:execute();
 		end
 	end
 
 	local sql_stmt;
-	if (count > 0) then
-		sql_stmt = "FETCH FORWARD " .. count .." in " .. self._cursor_id ;
+	if (num_recs > 0) then
+		sql_stmt = "FETCH FORWARD " .. num_recs .." in " .. self._cursor_id ;
 	else
 		sql_stmt = "FETCH FORWARD ALL IN " .. self._cursor_id ;
 	end
