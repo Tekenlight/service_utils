@@ -7,6 +7,6 @@
 5. Should support types properly (all the types, byte, short, int, long, float, double, arbitrary precision floating points) (javascript and lua fall at this stage)
 6. It should be very easy to augment the language with native libraries to capabilities like schema support, type support etc... (lua comes back into the game because of its easy extensibility)
 7. Net-net the following from lua and the enhancements, which is not there in other languages
-	1. scripting, mult-threaded
+	1. Scripting, therefore easy closures callbacks, dynamic code, faster development
 	2. good support for multi-threaded (parallel) event driven code through coroutines
 	3. first-class type system support
