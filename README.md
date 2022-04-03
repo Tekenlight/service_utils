@@ -1,4 +1,4 @@
-# Reasoning for why lua is chsoen as the language for backend
+# why lua?
 
 1. Should be a scripting language, it therefore brings all the advantages of scripting (therefore python, javascript and lua)
 2. Should support multiple threads and not have global interpreter lock (therefore javascript and lua)
