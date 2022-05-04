@@ -4,12 +4,12 @@ local schema_processor = require("schema_processor")
 local xsd = xmlua.XSD.new();
 local xml = xmlua.XML;
 
-local function write_to_file(code_output)
+local function write_to_file(code_output, output_directory)
 	for package, package_content in pairs(code_output) do
 		local package_parts = package_content.package_parts;
 		assert(#package_parts > 0);
 		local n = #package_parts;
-		local local_path = '.';
+		local local_path = output_directory;
 		local i = 1;
 		while (i < n) do
 			local_path = local_path..'/'..package_parts[i];;
@@ -244,19 +244,22 @@ end
 end
 
 -- Main()
---
-if (#arg ~= 2) then
-	error("Usage generate_schema <app_info_xml_file> <ref_common_module_name>");
-	os.exit(-1);
-end
+
+--if (#arg ~= 2) then
+--	error("Usage generate_schema <app_info_xml_file> <ref_common_module_name>");
+--	os.exit(-1);
+--end
 local app_info_xml_name = arg[1];
 local ref_common_module_name = arg[2];
-
+local output_directory = arg[3];
 local code_output = {};
 
 assert(app_info_xml_name ~= nil and type(app_info_xml_name) == 'string');
 local app_info_xml_file = io.open(app_info_xml_name, "r");
 assert(app_info_xml_file ~= nil);
+if(output_directory == nil) then
+	output_directory = '.'
+end
 
 local app_info_xml_string = app_info_xml_file:read("a");
 app_info_xml_file:close();
@@ -275,7 +278,7 @@ if (app_info.rule_set ~= nil) then
 end
 
 
-write_to_file(code_output);
+write_to_file(code_output,output_directory);
 
 
 
