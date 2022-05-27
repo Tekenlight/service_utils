@@ -2,6 +2,9 @@ local ffi = require('ffi');
 local schema_processor = require("schema_processor");
 local tao = {}
 
+local issue_savepoint_sql = [[SAVEPOINT ORM_TAO_FACTORY_SAVEPOINT]]
+local rollback_savepoint_sql = [[ROLLBACK TO SAVEPOINT ORM_TAO_FACTORY_SAVEPOINT]]
+
 local function get_qualified_table_name(context, tbl_name)
 	local tbl_def_class_name = context.module_path..".tbl."..tbl_name
 	return tbl_def_class_name;
@@ -237,8 +240,10 @@ tao.insert = function(self, context, obj, col_map)
 			inputs[count] = nil;
 		end
 	end
+	if (conn:get_in_transaction()) then conn:prepare(issue_savepoint_sql):execute(); end
 	local flg, msg = stmt:vexecute(count, inputs, true)
 	if (not flg) then
+		if (conn:get_in_transaction()) then conn:prepare(rollback_savepoint_sql):execute(); end
 		return false, msg;
 	end
 	if (0 == stmt:affected()) then
@@ -378,9 +383,11 @@ tao.raw_update = function(self, context, obj, col_map)
 
 	local query_stmt, inputs, count = prepare_update_stmt(context, conn, tbl_def, obj, col_map);
 
+	if (conn:get_in_transaction()) then conn:prepare(issue_savepoint_sql):execute(); end
 	local stmt = conn:prepare(query_stmt);
 	local flg, msg = stmt:vexecute(count, inputs, true)
 	if (not flg) then
+		if (conn:get_in_transaction()) then conn:prepare(rollback_savepoint_sql):execute(); end
 		return false, msg;
 	end
 	if (stmt:affected() == 0) then
@@ -426,9 +433,11 @@ tao.delete = function(self, context, obj)
 	local conn = context:get_connection(self.db_name);
 	assert(conn ~= nil);
 
+	if (conn:get_in_transaction()) then conn:prepare(issue_savepoint_sql):execute(); end
 	local stmt = conn:prepare(tbl_def.delete_stmt);
 	local flg, msg = stmt:vexecute(count, inputs, true)
 	if (not flg) then
+		if (conn:get_in_transaction()) then conn:prepare(rollback_savepoint_sql):execute(); end
 		return false, msg;
 	end
 	if (stmt:affected() == 0) then

@@ -297,8 +297,9 @@ local invoke_func = function(request, req_processor_interface, req_processor, fu
 			uc.db_connections = make_db_connections(db_params);
 			if (false == begin_transaction(req_processor_interface, func, uc)) then
 				--begin_trans(uc);
+			else
+				db_init_done = true;
 			end
-			db_init_done = true;
 		end
 	end
 	do

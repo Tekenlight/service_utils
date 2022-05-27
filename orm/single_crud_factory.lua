@@ -75,10 +75,15 @@ single_crud.add = function (self, context, obj)
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 
 	if (not tao:insert_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns})) then
-		local key_params_str = get_key_params_str(tao, obj);
-		local msg = messages:format('RECORD_INSERTION_FAILED', key_params_str);
-		error_handler.raise_error(-1, msg, debug.getinfo(1));
-		return false, nil;
+		if (ret == -2) then
+			local key_params_str = get_key_params_str(tao, obj);
+			local msg = messages:format('RECORD_INSERTION_FAILED', key_params_str);
+			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			return false, nil, ret;
+		else
+			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			return false, nil, ret;
+		end
 	end
 
 	return true, nil;
@@ -87,12 +92,17 @@ end
 single_crud.modify = function (self, context, obj)
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 
-	local flg, msg = tao:update_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+	local flg, msg, ret = tao:update_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
 	if (not flg) then
-		local key_params_str = get_key_params_str(tao, obj);
-		local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
-		error_handler.raise_error(-1, msg, debug.getinfo(1));
-		return false, nil;
+		if (ret == -2) then
+			local key_params_str = get_key_params_str(tao, obj);
+			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
+			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			return false, nil, ret;
+		else
+			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			return false, nil, ret;
+		end
 	end
 
 	return true, nil;
@@ -108,10 +118,15 @@ single_crud.delete = function (self, context, obj)
 		flg, msg = tao:delete(context, obj);
 	end
 	if (not flg) then
-		local key_params_str = get_key_params_str(tao, obj);
-		local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
-		error_handler.raise_error(-1, msg, debug.getinfo(1));
-		return false, nil;
+		if (ret == -2) then
+			local key_params_str = get_key_params_str(tao, obj);
+			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
+			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			return false, nil, ret;
+		else
+			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			return false, nil, ret;
+		end
 	end
 
 	return true, nil;
@@ -126,10 +141,15 @@ single_crud.undelete = function (self, context, obj)
 
 	local flg, msg = tao:undelete(context, obj);
 	if (not flg) then
-		local key_params_str = get_key_params_str(tao, obj);
-		local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
-		error_handler.raise_error(-1, msg, debug.getinfo(1));
-		return false, nil;
+		if (ret == -2) then
+			local key_params_str = get_key_params_str(tao, obj);
+			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
+			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			return false, nil, ret;
+		else
+			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			return false, nil, ret;
+		end
 	end
 
 	return true, nil;
