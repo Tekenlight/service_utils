@@ -1,15 +1,13 @@
 local basic_file = require("rockspec");
 local stringx = require("pl.stringx");
 
-function exists(file)
-   local ok, err, code = os.rename(file, file)
-   if not ok then
-      if code == 13 then
-         -- Permission denied, but it exists
-         return true
-      end
-   end
-   return ok, err
+function folder_exists(folder)
+	local ret = (os.execute("[ -d "..folder.." ] && exit 0"));
+	if(ret == true) then
+		return true
+	else
+		return false
+	end
 end
 
 function include_xsd_files(directory)
@@ -39,7 +37,7 @@ function include_xsd_files(directory)
     pfile:close()
 end
 
-if(exists("build/com/biop/registrar") == true and exists("build/com/biop/aaa") == true) then
+if(folder_exists("build/com/biop/registrar") == true and folder_exists("build/com/biop/aaa") == true) then
 	include_xsd_files("build/com/biop/registrar");
 	include_xsd_files("build/com/biop/aaa");
 end
@@ -60,7 +58,7 @@ function include_idl_files(directory)
     pfile:close()
 end
 
-if(exists("idl/") == true) then
+if(folder_exists("idl/") == true) then
 	include_idl_files("idl/aaa");
 	include_idl_files("idl/registrar");
 end
@@ -80,7 +78,7 @@ function include_val_files(directory)
     pfile:close()
 end
 
-if(exists("val") == true) then
+if(folder_exists("val") == true) then
 	include_val_files("val/");
 end
 
@@ -99,7 +97,7 @@ function include_ddl_files(directory)
     pfile:close()
 end
 
-if(exists("ddl") == true) then
+if(folder_exists("ddl") == true) then
 	include_ddl_files("ddl/");
 end
 
@@ -115,7 +113,7 @@ function include_src_files(directory)
     pfile:close()
 end
 
-if(exists("src") == true) then
+if(folder_exists("src") == true) then
 	include_src_files("src/");
 end
 

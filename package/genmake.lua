@@ -20,16 +20,23 @@ local registrar_xsd_source = {};
 local aaa_xsd_target = {};
 local aaa_xsd_source = {};
 
-function exists(file)
-   local ok, err, code = os.rename(file, file)
-   if not ok then
-      if code == 13 then
-         -- Permission denied, but it exists
-         return true
-      end
-   end
-   return ok, err
+function folder_exists(folder)
+    local ret = (os.execute("[ -d "..folder.." ] && exit 0"));
+    if(ret == true) then
+        return true
+    else
+        return false
+    end
 end
+function file_exists(file)
+    local ret = (os.execute("[ -f "..file.." ] && exit 0"));
+    if(ret == true) then
+        return true
+    else
+        return false
+    end
+end
+
 
 function add_xsd_target(xsd_file_name)
    local schema = xsd:parse(xsd_file_name);
@@ -64,7 +71,7 @@ function add_xsd_target(xsd_file_name)
    end
 end
 
-if(exists("xsd/")==true) then
+if(folder_exists("xsd/")==true) then
 	add_xsd_target("xsd/registrar_data_structures.xsd")
 	add_xsd_target("xsd/aaa_data_structures.xsd")
 end
@@ -120,23 +127,23 @@ function add_leftout_target(directory)
 	return;
 end
 
-if(exists("val/")==true) then
+if(folder_exists("val/")==true) then
 	add_target("val/");
 end
 
-if(exists("ddl/")==true) then
+if(folder_exists("ddl/")==true) then
 	add_target("ddl/");
 end
 
-if(exists("src/")==true) then
+if(folder_exists("src/")==true) then
 	add_target("src/");
 end
 
-if(exists("ddl/")==true) then
+if(folder_exists("ddl/")==true) then
 	add_leftout_target("ddl/");
 end
 
-if(exists("idl/") == true) then
+if(folder_exists("idl/") == true) then
 	add_target("idl/aaa/");
 	add_target("idl/registrar/");
 end
@@ -159,7 +166,7 @@ function write_makefile()
 		end
 	end
 	file:write("  build/rockspec.out\n\nall: $(all_target)\n\n");
-	if(exists("val/") == true) then
+	if(folder_exists("val/") == true) then
 	file:write("#generating validation lua files in build/biop/registrar \n\n");
 	for a,source in pairs(val_source) do
 		local target = "build/biop/registrar/"..source:gsub("%.xml","").."idations_xml.lua";
@@ -167,7 +174,7 @@ function write_makefile()
     end
     end
 
-	if(exists("xsd/registrar_data_structures.xsd") == true) then
+	if(file_exists("xsd/registrar_data_structures.xsd") == true) then
 	file:write("#generating xsd files in build/com/biop/registrar/ \n\n");
 	local all_target = '';
 	local source = "xsd/registrar_data_structures.xsd";
@@ -176,8 +183,7 @@ function write_makefile()
     end
 		file:write(all_target.." : "..source.."\n\t~/.luarocks/bin/gxsd "..source.." build\n\n")
     end
-
-	if(exists("xsd/aaa_data_structures.xsd") == true) then
+	if(file_exists("xsd/aaa_data_structures.xsd") == true) then
 	file:write("#generating xsd files in build/com/biop/aaa/ \n\n");
 	local all_target = '';
 	local source = "xsd/aaa_data_structures.xsd";
@@ -187,7 +193,7 @@ function write_makefile()
 		file:write(all_target.." : "..source.."\n\t~/.luarocks/bin/gxsd "..source.." build\n\n")
     end
 
-	if(exists("ddl/") == true) then
+	if(folder_exists("ddl/") == true) then
 	file:write("#generating ddl lua files in build/biop/registrar/tbl\n\n");
 	for a,source in pairs(ddl_source) do
 		local source_file = source:gsub("ddl/","");
@@ -195,14 +201,14 @@ function write_makefile()
 		file:write(target.." : "..source.."\n\t~/.luarocks/bin/gtbl "..source.." biop/registrar build\n\n")
 	end
     end
-	if(exists("src/") == true) then
+	if(folder_exists("src/") == true) then
 	file:write("#Copying handcoded services into build/src\n\n")
 	for a,source in pairs(src_source) do
 		local target = "build/"..source;
 		file:write(target.." : "..source.."\n\tmkdir -p build/src\n\tcp "..source.." "..target.."\n\n")
 	end
     end
-    if(exists("ddl/") == true) then
+    if(folder_exists("ddl/") == true) then
 	file:write("#Copying sql files into build/sql\n\n")
 	for a,source in pairs(sql_source) do
 		local formatted_source = (source:gsub("ddl/", ""));
@@ -210,7 +216,7 @@ function write_makefile()
 		file:write(target.." : "..source.."\n\tmkdir -p build/sql\n\tcp "..source.." "..target.."\n\n")
 	end
     end
-    if(exists("idl") == true) then
+    if(folder_exists("idl") == true) then
 	file:write("#Generating idl files in build/biop/\n\n")
 	for a,source in pairs(idl_source) do
 		local formatted_source = source:gsub("idl/", "");

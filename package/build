@@ -1,8 +1,15 @@
 #/usr/bin/sh
 
-cd ..
-. .env
-cd - 
-lua ~/.luarocks/share/lua/5.3/genmake.lua
+#LUA_CPATH_5_3="./?.so;$LUA_CPATH_5_3;$HOME/.luarocks/lib/lua/5.3/?.so"
+#export LUA_CPATH_5_3
+LUA_CPATH="./?.so;$LUA_CPATH;$HOME/.luarocks/lib/lua/5.3/?.so"
+export LUA_CPATH
+
+#LUA_PATH_5_3="./?.lua;$LUA_PATH_5_3;$HOME/.luarocks/share/lua/5.3/?.lua"
+#export LUA_PATH_5_3
+LUA_PATH="./?.lua;$LUA_PATH;$HOME/.luarocks/share/lua/5.3/?.lua"
+export LUA_PATH
+
+lua $HOME/.luarocks/share/lua/5.3/genmake.lua
 make
 rm Makefile
