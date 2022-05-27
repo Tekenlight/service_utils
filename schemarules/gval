@@ -1,10 +1,10 @@
 #/usr/bin/sh
 
-#if [ $# -ne 2 ]
-#then
-#	echo "Usage: gappingo <xml_file_name> <ref_common_module_name>"
-#	exit 1
-#fi
+if [ $# -ne 3 ]
+then
+	echo "Usage: gappingo <xml_file_name> <ref_common_module_name> <output_directory"
+	exit 1
+fi
 
 file=$1
 ref_common_module=$2
@@ -12,7 +12,12 @@ output_directory=$3
 echo "Generating "$file
 echo "--------------"
 echo "lua $HOME/.luarocks/share/lua/5.3/generate_val.lua $file $ref_common_module $output_directory"
-lua $HOME/.luarocks/share/lua/5.3/generate_val.lua $file $ref_common_module $output_directory
+if [ "$output_directory" != "" ]
+then
+    mkdir -p $output_directory
+    cd $output_directory
+fi
+lua $HOME/.luarocks/share/lua/5.3/generate_val.lua ../$file $ref_common_module $output_directory
 if [ $? -ne 0 ]
 then
 	exit 1;

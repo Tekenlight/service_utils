@@ -4,15 +4,19 @@ local schema_processor = require("schema_processor")
 local xsd = xmlua.XSD.new();
 local xml = xmlua.XML;
 
-local function write_to_file(code_output, output_directory)
+local function write_to_file(code_output)
 	for package, package_content in pairs(code_output) do
 		local package_parts = package_content.package_parts;
 		assert(#package_parts > 0);
 		local n = #package_parts;
-		local local_path = output_directory;
+		local local_path = "";
 		local i = 1;
 		while (i < n) do
+			if(local_path == "") then
+			local_path = package_parts[i];
+		    else
 			local_path = local_path..'/'..package_parts[i];;
+		    end
 			i = i+1;
 		end
 		local command ='mkdir -p '..local_path;
@@ -31,35 +35,38 @@ local function write_to_file(code_output, output_directory)
 	return;
 end
 
-local function write_target_file(code_output, output_directory)
+local function write_target_file(code_output)
 	 local target_file_path;
 	 local c,header,footer;
      for package, package_content in pairs(code_output) do
         local package_parts = package_content.package_parts;
         assert(#package_parts > 0);
         local n = #package_parts;
-        local local_path = output_directory;
-		local path = "";
-		local local_path1 = output_directory;
-		local path1 = "";
+        local local_path = "";
         local i = 1;
         while (i < n) do
-			if(path == "") then
-				path = package_parts[i];
+			if(local_path == "") then
+				local_path = package_parts[i]
 			else
-			path = path..'/'..package_parts[i];
+            	local_path = local_path..'/'..package_parts[i];
 			end
-			if(path1 == "") then
-				path1 = package_parts[i];
-			else
-			path1 = path1..'.'..package_parts[i];
-			end
-            local_path = local_path..'/'..package_parts[i];
             i = i+1;
         end
-        local file_path = path..'/'..package_parts[n]..'.lua';
-        local file_path1 = path1..'.'..package_parts[n];
-        target_file_path = local_path..'/'..package_parts[n]..'_xml.lua';
+        local file_path = local_path..'/'..package_parts[n]..'.lua';
+		target_file_path = local_path..'/'..package_parts[n]..'_xml.lua';
+        local file_path_parts = stringx.split(file_path, "/");
+        local j = 1;
+        local file_path1 = "";
+        while(j <= #file_path_parts) do
+        	if(file_path1 == "") then
+        		file_path1 = file_path1..file_path_parts[j];
+    		else
+        		file_path1 = file_path1.."."..file_path_parts[j];
+    		end
+    		j = j + 1;
+		end
+		file_path1 = file_path1:gsub(".lua","");
+
 		header = "local build_mappings = {\n"
 		footer = '\n}'.."\n\nreturn build_mappings;"
 	    if(c ~= nil) then
@@ -67,7 +74,7 @@ local function write_target_file(code_output, output_directory)
 	    else
 	    c = '\t["'..file_path1..'"]'..' = '..'"'..file_path..'"';
 	    end
-	end
+	    end
 	    local final = header..c..footer;
         local file1 = io.open(target_file_path, "w+");
 		file1:write(final);
@@ -296,15 +303,11 @@ end
 --end
 local app_info_xml_name = arg[1];
 local ref_common_module_name = arg[2];
-local output_directory = arg[3];
 local code_output = {};
 
 assert(app_info_xml_name ~= nil and type(app_info_xml_name) == 'string');
 local app_info_xml_file = io.open(app_info_xml_name, "r");
 assert(app_info_xml_file ~= nil);
-if(output_directory == nil) then
-	output_directory = '.'
-end
 
 local app_info_xml_string = app_info_xml_file:read("a");
 app_info_xml_file:close();
@@ -323,5 +326,5 @@ if (app_info.rule_set ~= nil) then
 end
 
 
-write_to_file(code_output,output_directory);
-write_target_file(code_output, output_directory);
+write_to_file(code_output);
+write_target_file(code_output);

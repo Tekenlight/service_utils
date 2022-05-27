@@ -15,11 +15,6 @@ local reserved_column_names = {
 
 local tbl_file_name = arg[1];
 local common_ref_module = arg[2];
-local output_directory = arg[3];
-
-if(output_directory == nil)
-	then output_directory='.';
-end
 
 assert(tbl_file_name ~= nil and type(tbl_file_name) == 'string');
 local tbl_file = io.open(tbl_file_name, "r");
@@ -373,24 +368,16 @@ local package_parts = stringx.split(tbl_struct._attr.package, ".");
 assert(#package_parts > 0);
 
 local n = #package_parts;
-local local_path = output_directory; 
-local path = "";
-local path1 = "";
+local local_path = ""; 
 local i = 1;
 
 
 while (i <= n) do
-	if(path == "") then
-    	path = package_parts[i];
+	if(local_path == "") then
+ 		local_path = package_parts[i];
     else
-		path = path..'/'..package_parts[i];
-    end
-	if(path1 == "") then
-		path1 = package_parts[i];
-    else
-		path1 = path1..'.'..package_parts[i];
-    end
- 	local_path = local_path..'/'..package_parts[i];
+		local_path = local_path.."/"..package_parts[i];
+	end
     i = i+1;
 end
 local command ='mkdir -p '..local_path;
@@ -398,9 +385,19 @@ os.execute(command);
 
 local table_name = tbl_struct._attr.name;
 local file_path = local_path..'/'..table_name..'.lua';
-local file_pth = path..'/'..table_name..'.lua';
 local target_file_path = local_path..'/'..table_name..'_xml.lua';
-local file_path1 = path1..'.'..table_name;
+local file_path_parts = stringx.split(file_path, "/");
+local j = 1;
+local file_path1 = "";
+while(j <= #file_path_parts) do
+	if(file_path1 == "") then
+		file_path1 = file_path1..file_path_parts[j];
+	else
+		file_path1 = file_path1.."."..file_path_parts[j];
+	end
+	j = j + 1;
+end	
+file_path1 = file_path1:gsub(".lua","");
 local file = io.open(file_path, "w+");
 
 local tbldef_str = require 'pl.pretty'.write(tbl_def);
@@ -416,7 +413,7 @@ file:write(code);
 
 file:close();
 local file1 = io.open(target_file_path, "w+");
-local c = "local build_mappings = {\n"..'\t["'..file_path1..'"]'..' = '..'"'..file_pth..'"\n}'.."\n\nreturn build_mappings;";
+local c = "local build_mappings = {\n"..'\t["'..file_path1..'"]'..' = '..'"'..file_path..'"\n}'.."\n\nreturn build_mappings;";
 file1:write(c);
 file1:close();
 
@@ -519,9 +516,9 @@ code = code .. [=[
 
 ]=]
 
-local command = 'test ! -d '..output_directory..'/ddl_scripts && mkdir '..output_directory..'/ddl_scripts';
+local command =  'mkdir -p ddl_scripts';
 os.execute(command);
-local file_path = output_directory..'/ddl_scripts/'..table_name..'.sql'
+local file_path = 'ddl_scripts/'..table_name..'.sql'
 local file = io.open(file_path, "w+");
 file:write(code);
 file:close();

@@ -1,18 +1,23 @@
 #/usr/bin/sh
 
-#if [ $# -ne 1 ]
-#then
-#	echo "Usage: gidl <tbl_spec_file>"
-#	exit 1
-#fi
+if [ $# -ne 3 ]
+then
+	echo "Usage: gidl <tbl_spec_file> <common_ref_module> <output_directory>"
+	exit 1
+fi
 
 file=$1
 common_ref_module=$2
 output_directory=$3
 echo "Generating TBL:"$file
 echo "--------------"
-echo "lua $HOME/.luarocks/share/lua/5.3/tblgen.lua $file"
-lua $HOME/.luarocks/share/lua/5.3/tblgen.lua $file $common_ref_module $output_directory
+echo "lua $HOME/.luarocks/share/lua/5.3/tblgen.lua $file $common_ref_module $output_directory"
+if [ "$output_directory" != "" ]
+then
+	mkdir -p $output_directory
+	cd $output_directory
+fi
+lua $HOME/.luarocks/share/lua/5.3/tblgen.lua ../$file $common_ref_module 
 if [ $? -ne 0 ]
 then
 	exit 1;

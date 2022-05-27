@@ -4,7 +4,6 @@ local stringx = require("pl.stringx");
 
 
 local idl_file_name = arg[1];
-local output_directory = arg[2];
 assert(idl_file_name ~= nil and type(idl_file_name) == 'string');
 local idl_file = io.open(idl_file_name, "r");
 assert(idl_file ~= nil);
@@ -120,10 +119,14 @@ local package_parts = stringx.split(idl_struct._attr.package, ".");
 assert(#package_parts > 0);
 
 local n = #package_parts;
-local local_path = output_directory;
+local local_path = ""; 
 local i = 1;
 while (i <= n) do
-	local_path = local_path..'/'..package_parts[i];
+	if(local_path == "") then
+        local_path = package_parts[i];
+    else
+        local_path = local_path.."/"..package_parts[i];
+    end
 	i = i+1;
 end
 local_path = local_path..'/idl';
@@ -150,8 +153,6 @@ while(j <= #file_path_parts) do
     end
 	j=j+1;
 end
-file_path1=file_path1:gsub("build.","");
-file_path=file_path:gsub("build/","");
 local c = "local build_mapping = {\n\t[\""..file_path1.."\"] = \""..file_path.."\"\n}\n\nreturn build_mapping;"
 
 file1:write(c);
