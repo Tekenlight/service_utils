@@ -244,12 +244,13 @@ tao.insert = function(self, context, obj, col_map)
 	local flg, msg = stmt:vexecute(count, inputs, true)
 	if (not flg) then
 		if (conn:get_in_transaction()) then conn:prepare(rollback_savepoint_sql):execute(); end
-		return false, msg;
+		return false, msg, -1;
 	end
-	if (0 == stmt:affected()) then
-		return false, msg;
+	local ret = stmt:affected();
+	if (0 == ret) then
+		return false, msg, ret;
 	end
-	return true;
+	return true, nil, ret;
 end
 
 local function get_column_map_from_obj_meta(context, tbl_def, obj_meta)
@@ -388,14 +389,15 @@ tao.raw_update = function(self, context, obj, col_map)
 	local flg, msg = stmt:vexecute(count, inputs, true)
 	if (not flg) then
 		if (conn:get_in_transaction()) then conn:prepare(rollback_savepoint_sql):execute(); end
-		return false, msg;
+		return false, msg, -1;
 	end
-	if (stmt:affected() == 0) then
+	local ret = stmt:affected();
+	if (0 == ret) then
 		msg = "["..tbl_def.tbl_props.database_schema .. "." .. tbl_def.tbl_props.name.."]:"
 		msg = msg.."Error : Trying to update a non-exsitent version of the record";
-		return false, msg;
+		return false, msg, ret;
 	end
-	return true, nil;
+	return true, nil, ret;
 end
 
 tao.update = function(self, context, obj, col_map)
@@ -438,14 +440,15 @@ tao.delete = function(self, context, obj)
 	local flg, msg = stmt:vexecute(count, inputs, true)
 	if (not flg) then
 		if (conn:get_in_transaction()) then conn:prepare(rollback_savepoint_sql):execute(); end
-		return false, msg;
+		return false, msg, -1;
 	end
-	if (stmt:affected() == 0) then
+	local ret = stmt:affected();
+	if (0 == ret) then
 		msg = "["..tbl_def.tbl_props.database_schema .. "." .. tbl_def.tbl_props.name.."]:"
 		msg = msg.."Error : Trying to delete a non existent or an older version of the record";
-		return false, msg;
+		return false, msg, ret;
 	end
-	return true, nil;
+	return true, nil, ret;
 end
 
 local function logical_del_or_undel(context, conn, action, tbl_def, obj)
