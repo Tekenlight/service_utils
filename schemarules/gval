@@ -12,7 +12,7 @@ output_directory=$3
 echo "Generating "$file
 echo "--------------"
 echo "lua $HOME/.luarocks/share/lua/5.3/generate_val.lua $file $ref_common_module $output_directory"
-lua $HOME/.luarocks/share/lua/5.3/generate_val.lua $file $ref_common_module $output_directory && touch $output_directory/$ref_common_module/$file.out
+lua $HOME/.luarocks/share/lua/5.3/generate_val.lua $file $ref_common_module $output_directory
 if [ $? -ne 0 ]
 then
 	exit 1;

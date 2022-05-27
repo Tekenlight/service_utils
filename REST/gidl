@@ -1,16 +1,11 @@
 #/usr/bin/sh
 
-if [ $# -ne 1 ]
-then
-	echo "Usage: gidl <idl_file_name>"
-	exit 1
-fi
-
 file=$1
+output_directory=$2
 echo "Generating IDL:"$file
 echo "--------------"
 echo "lua $HOME/.luarocks/share/lua/5.3/idl_gen.lua $file"
-lua $HOME/.luarocks/share/lua/5.3/idl_gen.lua $file
+lua $HOME/.luarocks/share/lua/5.3/idl_gen.lua $file $output_directory
 if [ $? -ne 0 ]
 then
 	exit 1;

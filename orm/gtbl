@@ -12,7 +12,7 @@ output_directory=$3
 echo "Generating TBL:"$file
 echo "--------------"
 echo "lua $HOME/.luarocks/share/lua/5.3/tblgen.lua $file"
-lua $HOME/.luarocks/share/lua/5.3/tblgen.lua $file $common_ref_module $output_directory && touch $output_directory/$common_ref_module/$file.out
+lua $HOME/.luarocks/share/lua/5.3/tblgen.lua $file $common_ref_module $output_directory
 if [ $? -ne 0 ]
 then
 	exit 1;

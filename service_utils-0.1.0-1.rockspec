@@ -89,6 +89,8 @@ build = {
 		["generate_val"] = 'schemarules/generate_val.lua',
 
 		["tblgen"] = 'orm/tblgen.lua',
+		["genmake"] = 'package/genmake.lua',
+		["generator"] = 'package/generator.lua',
 		["service_utils.orm.tao_factory"] = 'orm/tao_factory.lua',
 		["service_utils.orm.mapping_util"] = 'orm/mapping_util.lua',
 		["service_utils.orm.single_crud_factory"] = 'orm/single_crud_factory.lua',
@@ -102,6 +104,8 @@ build = {
 			gval = 'schemarules/gval',
 			gidl = 'REST/gidl',
 			gtbl = 'orm/gtbl',
+			build = 'package/build',
+			deploy = 'package/deploy';
 		}
 	}
 }

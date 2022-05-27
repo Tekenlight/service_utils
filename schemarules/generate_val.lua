@@ -19,7 +19,6 @@ local function write_to_file(code_output, output_directory)
         os.execute(command);
 		local file_path = local_path..'/'..package_parts[n]..'.lua';
 		local file = io.open(file_path, "w+");
-
 		file:write(package_content.top_portion);
 		for i,v in ipairs(package_content.functions) do
 			file:write(v);
@@ -31,6 +30,52 @@ local function write_to_file(code_output, output_directory)
 
 	return;
 end
+
+local function write_target_file(code_output, output_directory)
+	 local target_file_path;
+	 local c,header,footer;
+     for package, package_content in pairs(code_output) do
+        local package_parts = package_content.package_parts;
+        assert(#package_parts > 0);
+        local n = #package_parts;
+        local local_path = output_directory;
+		local path = "";
+		local local_path1 = output_directory;
+		local path1 = "";
+        local i = 1;
+        while (i < n) do
+			if(path == "") then
+				path = package_parts[i];
+			else
+			path = path..'/'..package_parts[i];
+			end
+			if(path1 == "") then
+				path1 = package_parts[i];
+			else
+			path1 = path1..'.'..package_parts[i];
+			end
+            local_path = local_path..'/'..package_parts[i];
+            i = i+1;
+        end
+        local file_path = path..'/'..package_parts[n]..'.lua';
+        local file_path1 = path1..'.'..package_parts[n];
+        target_file_path = local_path..'/'..package_parts[n]..'_xml.lua';
+		header = "local build_mappings = {\n"
+		footer = '\n}'.."\n\nreturn build_mappings;"
+	    if(c ~= nil) then
+       		 c = c..",\n"..'\t["'..file_path1..'"]'..' = '..'"'..file_path..'"';
+	    else
+	    c = '\t["'..file_path1..'"]'..' = '..'"'..file_path..'"';
+	    end
+	end
+	    local final = header..c..footer;
+        local file1 = io.open(target_file_path, "w+");
+		file1:write(final);
+		file1:close();
+
+	return;
+end
+
 
 local function generate_validation_routine(rule_set, ref_common_module_name, code_output)
 	local package_parts = stringx.split(rule_set._attr.package, ".");
@@ -279,6 +324,4 @@ end
 
 
 write_to_file(code_output,output_directory);
-
-
-
+write_target_file(code_output, output_directory);

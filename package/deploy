@@ -1,0 +1,17 @@
+#/usr/bin/sh
+
+if [ $# -ne 1 ]
+then
+   echo "Usage: deploy <local/system>"
+   exit 1
+fi
+
+option=$1
+if [ $option = "local" ]
+then
+	cd build 
+	luarocks --local make
+else
+	cd build
+	sudo luarocks make
+fi

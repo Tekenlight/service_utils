@@ -1,0 +1,8 @@
+#/usr/bin/sh
+
+cd ..
+. .env
+cd - 
+lua ~/.luarocks/share/lua/5.3/genmake.lua
+make
+rm Makefile

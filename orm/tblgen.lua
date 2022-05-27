@@ -374,19 +374,33 @@ assert(#package_parts > 0);
 
 local n = #package_parts;
 local local_path = output_directory; 
+local path = "";
+local path1 = "";
 local i = 1;
 
 
 while (i <= n) do
+	if(path == "") then
+    	path = package_parts[i];
+    else
+		path = path..'/'..package_parts[i];
+    end
+	if(path1 == "") then
+		path1 = package_parts[i];
+    else
+		path1 = path1..'.'..package_parts[i];
+    end
  	local_path = local_path..'/'..package_parts[i];
     i = i+1;
 end
-
 local command ='mkdir -p '..local_path;
 os.execute(command);
 
 local table_name = tbl_struct._attr.name;
 local file_path = local_path..'/'..table_name..'.lua';
+local file_pth = path..'/'..table_name..'.lua';
+local target_file_path = local_path..'/'..table_name..'_xml.lua';
+local file_path1 = path1..'.'..table_name;
 local file = io.open(file_path, "w+");
 
 local tbldef_str = require 'pl.pretty'.write(tbl_def);
@@ -401,6 +415,10 @@ return tbldef;
 file:write(code);
 
 file:close();
+local file1 = io.open(target_file_path, "w+");
+local c = "local build_mappings = {\n"..'\t["'..file_path1..'"]'..' = '..'"'..file_pth..'"\n}'.."\n\nreturn build_mappings;";
+file1:write(c);
+file1:close();
 
 code = '';
 

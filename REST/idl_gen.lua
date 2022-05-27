@@ -4,6 +4,7 @@ local stringx = require("pl.stringx");
 
 
 local idl_file_name = arg[1];
+local output_directory = arg[2];
 assert(idl_file_name ~= nil and type(idl_file_name) == 'string');
 local idl_file = io.open(idl_file_name, "r");
 assert(idl_file ~= nil);
@@ -119,26 +120,40 @@ local package_parts = stringx.split(idl_struct._attr.package, ".");
 assert(#package_parts > 0);
 
 local n = #package_parts;
-local local_path = '.';
+local local_path = output_directory;
 local i = 1;
 while (i <= n) do
 	local_path = local_path..'/'..package_parts[i];
-	local command = 'test ! -d '..local_path..' && mkdir '..local_path;
-	os.execute(command);
 	i = i+1;
 end
 local_path = local_path..'/idl';
-local command = 'test ! -d '..local_path..' && mkdir '..local_path;
+local command = 'mkdir -p '..local_path;
 os.execute(command);
 
 local file_path = local_path..'/'..class_name..'.lua';
+local target_file_path = file_path:gsub("%.lua","").."_xml.lua";
 local file = io.open(file_path, "w+");
 
 file:write(code);
 
 file:close();
 
+local file1 = io.open(target_file_path, "w+");
+local file_path_parts = stringx.split(file_path, "/");
+local file_path1 = '';
+local j = 1;
+while(j <= #file_path_parts) do
+	if(j == #file_path_parts) then
+	file_path1 = file_path1..file_path_parts[j];
+    else
+	file_path1 = file_path1..file_path_parts[j]..".";
+    end
+	j=j+1;
+end
+file_path1=file_path1:gsub("build.","");
+file_path=file_path:gsub("build/","");
+local c = "local build_mapping = {\n\t[\""..file_path1.."\"] = \""..file_path.."\"\n}\n\nreturn build_mapping;"
 
+file1:write(c);
 
-
-
+file1:close();
