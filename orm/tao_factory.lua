@@ -506,20 +506,23 @@ local function logical_del_or_undel(context, conn, action, tbl_def, obj)
 	end
 
 	local stmt = conn:prepare(tbl_def.logdel_stmt);
+	if (conn:get_in_transaction()) then conn:prepare(issue_savepoint_sql):execute(); end
 	local flg, msg = stmt:vexecute(count, inputs, true)
 	if (not flg) then
-		return false, msg;
+		if (conn:get_in_transaction()) then conn:prepare(rollback_savepoint_sql):execute(); end
+		return false, msg, -1;
 	end
-	if (stmt:affected() == 0) then
+	local ret = stmt:affected();
+	if (0 == ret) then
 		msg = "["..tbl_def.tbl_props.database_schema .. "." .. tbl_def.tbl_props.name.."]:"
 		if (action == 'D') then
 			msg = msg.."Error : Did not find the correct undeleted version of the record for logical delete";
 		else
 			msg = msg.."Error : Did not find the correct deleted version of the record for logical delete";
 		end
-		return false, msg;
+		return false, msg, ret;
 	end
-	return true, nil;
+	return true, nil, ret;
 end
 
 tao.logdel = function(self, context, obj)
