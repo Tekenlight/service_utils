@@ -2,6 +2,9 @@ local ffi = require('ffi');
 local schema_processor = require("schema_processor");
 local tao = {}
 
+local issue_savepoint_sql = [[SAVEPOINT ORM_TAO_FACTORY_SAVEPOINT]]
+local rollback_savepoint_sql = [[ROLLBACK TO SAVEPOINT ORM_TAO_FACTORY_SAVEPOINT]]
+
 local function get_qualified_table_name(context, tbl_name)
 	local tbl_def_class_name = context.module_path..".tbl."..tbl_name
 	return tbl_def_class_name;
@@ -237,14 +240,17 @@ tao.insert = function(self, context, obj, col_map)
 			inputs[count] = nil;
 		end
 	end
+	if (conn:get_in_transaction()) then conn:prepare(issue_savepoint_sql):execute(); end
 	local flg, msg = stmt:vexecute(count, inputs, true)
 	if (not flg) then
-		return false, msg;
+		if (conn:get_in_transaction()) then conn:prepare(rollback_savepoint_sql):execute(); end
+		return false, msg, -1;
 	end
-	if (0 == stmt:affected()) then
-		return false, msg;
+	local ret = stmt:affected();
+	if (0 == ret) then
+		return false, msg, ret;
 	end
-	return true;
+	return true, nil, ret;
 end
 
 local function get_column_map_from_obj_meta(context, tbl_def, obj_meta)
@@ -378,17 +384,20 @@ tao.raw_update = function(self, context, obj, col_map)
 
 	local query_stmt, inputs, count = prepare_update_stmt(context, conn, tbl_def, obj, col_map);
 
+	if (conn:get_in_transaction()) then conn:prepare(issue_savepoint_sql):execute(); end
 	local stmt = conn:prepare(query_stmt);
 	local flg, msg = stmt:vexecute(count, inputs, true)
 	if (not flg) then
-		return false, msg;
+		if (conn:get_in_transaction()) then conn:prepare(rollback_savepoint_sql):execute(); end
+		return false, msg, -1;
 	end
-	if (stmt:affected() == 0) then
+	local ret = stmt:affected();
+	if (0 == ret) then
 		msg = "["..tbl_def.tbl_props.database_schema .. "." .. tbl_def.tbl_props.name.."]:"
 		msg = msg.."Error : Trying to update a non-exsitent version of the record";
-		return false, msg;
+		return false, msg, ret;
 	end
-	return true, nil;
+	return true, nil, ret;
 end
 
 tao.update = function(self, context, obj, col_map)
@@ -426,17 +435,20 @@ tao.delete = function(self, context, obj)
 	local conn = context:get_connection(self.db_name);
 	assert(conn ~= nil);
 
+	if (conn:get_in_transaction()) then conn:prepare(issue_savepoint_sql):execute(); end
 	local stmt = conn:prepare(tbl_def.delete_stmt);
 	local flg, msg = stmt:vexecute(count, inputs, true)
 	if (not flg) then
-		return false, msg;
+		if (conn:get_in_transaction()) then conn:prepare(rollback_savepoint_sql):execute(); end
+		return false, msg, -1;
 	end
-	if (stmt:affected() == 0) then
+	local ret = stmt:affected();
+	if (0 == ret) then
 		msg = "["..tbl_def.tbl_props.database_schema .. "." .. tbl_def.tbl_props.name.."]:"
 		msg = msg.."Error : Trying to delete a non existent or an older version of the record";
-		return false, msg;
+		return false, msg, ret;
 	end
-	return true, nil;
+	return true, nil, ret;
 end
 
 local function logical_del_or_undel(context, conn, action, tbl_def, obj)
@@ -494,20 +506,23 @@ local function logical_del_or_undel(context, conn, action, tbl_def, obj)
 	end
 
 	local stmt = conn:prepare(tbl_def.logdel_stmt);
+	if (conn:get_in_transaction()) then conn:prepare(issue_savepoint_sql):execute(); end
 	local flg, msg = stmt:vexecute(count, inputs, true)
 	if (not flg) then
-		return false, msg;
+		if (conn:get_in_transaction()) then conn:prepare(rollback_savepoint_sql):execute(); end
+		return false, msg, -1;
 	end
-	if (stmt:affected() == 0) then
+	local ret = stmt:affected();
+	if (0 == ret) then
 		msg = "["..tbl_def.tbl_props.database_schema .. "." .. tbl_def.tbl_props.name.."]:"
 		if (action == 'D') then
 			msg = msg.."Error : Did not find the correct undeleted version of the record for logical delete";
 		else
 			msg = msg.."Error : Did not find the correct deleted version of the record for logical delete";
 		end
-		return false, msg;
+		return false, msg, ret;
 	end
-	return true, nil;
+	return true, nil, ret;
 end
 
 tao.logdel = function(self, context, obj)

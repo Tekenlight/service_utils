@@ -37,7 +37,7 @@ void free(void *ptr);
 size_t strlen(const char *s);
 ]]
 
-local ev_postgres_conn = { exec = false;};
+local ev_postgres_conn = {};
 local ev_postgres_stmt = {};
 local ev_postgres_cursor = {};
 local ev_postgres_cursor_res = {};
@@ -58,7 +58,7 @@ local open_connetion_internal = function(host, port, dbname, user, password)
 	if (nil == conn) then
 		return nil, msg;
 	end
-	local c = {_conn = conn, cursor_num = 1}
+	local c = {_conn = conn, cursor_num = 1, _in_tran = false, _exec = false}
 	c = setmetatable(c, c_mt);
 	return c;
 end
@@ -185,7 +185,7 @@ ev_postgres_stmt.vexecute = function(self, inp_count, inp_args, return_errors)
 		i = i + 1;
 	end
 	local flg, msg = self._stmt.execute(self._stmt, table.unpack(args));
-	self._conn.exec = true;
+	self._conn._exec = true;
 	if (not flg) then
 		if (return_errors ~= nil and return_errors == true) then
 			return false, msg;
@@ -333,7 +333,12 @@ ev_postgres_conn.begin = function(self)
 		return nil;
 	end
 	local flg, msg = bg_stmt:execute();
+	self._in_tran = true;
 	return flg, msg;
+end
+
+function ev_postgres_conn:get_in_transaction()
+	return self._in_tran;
 end
 
 --[=[
@@ -385,7 +390,8 @@ ev_postgres_conn.end_tran = function(self)
 		return nil;
 	end
 	local flg, msg = ed_stmt:execute();
-	self.exec = false;
+	self._exec = false;
+	self._in_tran = false;
 	return flg, msg;
 end
 
@@ -396,7 +402,8 @@ ev_postgres_conn.commit = function(self)
 		return nil;
 	end
 	local flg, msg = cm_stmt:execute();
-	self.exec = false;
+	self._exec = false;
+	self._in_tran = false;
 	return flg, msg;
 end
 
@@ -407,7 +414,8 @@ ev_postgres_conn.rollback = function(self)
 		return nil;
 	end
 	local flg, msg = rb_stmt:execute();
-	self.exec = false;
+	self._exec = false;
+	self._in_tran = false;
 	return flg, msg;
 end
 

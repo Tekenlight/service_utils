@@ -74,47 +74,63 @@ end
 single_crud.add = function (self, context, obj)
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 
-	if (not tao:insert_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns})) then
-		local key_params_str = get_key_params_str(tao, obj);
-		local msg = messages:format('RECORD_INSERTION_FAILED', key_params_str);
-		error_handler.raise_error(-1, msg, debug.getinfo(1));
-		return false, nil;
+	local flg, msg, ret = tao:insert_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+	if (not flg) then
+		if (ret == -1) then
+			local key_params_str = get_key_params_str(tao, obj);
+			local msg = messages:format('RECORD_INSERTION_FAILED', key_params_str);
+			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			return false, msg, ret;
+		else
+			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			return false, msg, ret;
+		end
 	end
 
-	return true, nil;
+	return true, nil, ret;
 end
 
 single_crud.modify = function (self, context, obj)
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 
-	local flg, msg = tao:update_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+	local flg, msg, ret = tao:update_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
 	if (not flg) then
-		local key_params_str = get_key_params_str(tao, obj);
-		local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
-		error_handler.raise_error(-1, msg, debug.getinfo(1));
-		return false, nil;
+		if (ret == -1) then
+			local key_params_str = get_key_params_str(tao, obj);
+			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
+			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			return false, nil, ret;
+		else
+			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			return false, nil, ret;
+		end
 	end
 
-	return true, nil;
+	return true, nil, ret;
 end
 
 single_crud.delete = function (self, context, obj)
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 
-	local flg, msg;
+	local flg, msg, ret;
 	if (tao.tbl_def.col_props.soft_del) then
-		flg, msg = tao:logdel(context, obj);
+		flg, msg, ret = tao:logdel(context, obj);
 	else
-		flg, msg = tao:delete(context, obj);
+		flg, msg, ret = tao:delete(context, obj);
 	end
 	if (not flg) then
-		local key_params_str = get_key_params_str(tao, obj);
-		local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
-		error_handler.raise_error(-1, msg, debug.getinfo(1));
-		return false, nil;
+		if (ret == -1) then
+			local key_params_str = get_key_params_str(tao, obj);
+			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
+			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			return false, nil, ret;
+		else
+			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			return false, nil, ret;
+		end
 	end
 
-	return true, nil;
+	return true, nil, ret;
 end
 
 single_crud.undelete = function (self, context, obj)
@@ -124,15 +140,20 @@ single_crud.undelete = function (self, context, obj)
 		error("["..tao.tbl_def.tbl_props.database_schema .. "." .. tao.tbl_def.tbl_props.name.."]:".. " does not support soft delete");
 	end
 
-	local flg, msg = tao:undelete(context, obj);
+	local flg, msg, ret = tao:undelete(context, obj);
 	if (not flg) then
-		local key_params_str = get_key_params_str(tao, obj);
-		local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
-		error_handler.raise_error(-1, msg, debug.getinfo(1));
-		return false, nil;
+		if (ret == -1) then
+			local key_params_str = get_key_params_str(tao, obj);
+			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
+			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			return false, nil, ret;
+		else
+			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			return false, nil, ret;
+		end
 	end
 
-	return true, nil;
+	return true, nil, ret;
 end
 
 return crud_factory;
