@@ -218,7 +218,7 @@ ev_postgres_stmt.map = function(q_out, fields)
 		return nil;
 	end
 	if (#fields ~= #q_out) then
-		error("Invalid inputs");
+		error("All query fields should be mapped as output fields");
 		return nil;
 	end
 	local out = {};
