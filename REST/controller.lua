@@ -391,6 +391,9 @@ rest_controller.handle_request = function (request, response)
 	local json_output, msg;
 	local flg, json_input = pcall(request.get_message_body_str, request);
 	local uri = URI_CLASS:new(request:get_uri());
+	if (uri == nil) then
+		error('Badly formed URL');
+	end
 	local url_parts = split_path(uri);
 	local qp = get_query_params(uri:query());
 
