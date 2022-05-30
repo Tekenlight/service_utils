@@ -99,10 +99,10 @@ single_crud.modify = function (self, context, obj)
 			local key_params_str = get_key_params_str(tao, obj);
 			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
 			error_handler.raise_error(-1, msg, debug.getinfo(1));
-			return false, nil, ret;
+			return false, msg, ret;
 		else
 			error_handler.raise_error(-1, msg, debug.getinfo(1));
-			return false, nil, ret;
+			return false, msg, ret;
 		end
 	end
 
@@ -123,10 +123,10 @@ single_crud.delete = function (self, context, obj)
 			local key_params_str = get_key_params_str(tao, obj);
 			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
 			error_handler.raise_error(-1, msg, debug.getinfo(1));
-			return false, nil, ret;
+			return false, msg, ret;
 		else
 			error_handler.raise_error(-1, msg, debug.getinfo(1));
-			return false, nil, ret;
+			return false, msg, ret;
 		end
 	end
 
@@ -146,10 +146,10 @@ single_crud.undelete = function (self, context, obj)
 			local key_params_str = get_key_params_str(tao, obj);
 			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
 			error_handler.raise_error(-1, msg, debug.getinfo(1));
-			return false, nil, ret;
+			return false, msg, ret;
 		else
 			error_handler.raise_error(-1, msg, debug.getinfo(1));
-			return false, nil, ret;
+			return false, msg, ret;
 		end
 	end
 
