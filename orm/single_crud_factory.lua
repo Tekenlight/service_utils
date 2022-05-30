@@ -95,7 +95,7 @@ single_crud.modify = function (self, context, obj)
 
 	local flg, msg, ret = tao:update_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
 	if (not flg) then
-		if (ret == -1) then
+		if (ret == 0) then
 			local key_params_str = get_key_params_str(tao, obj);
 			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
 			error_handler.raise_error(-1, msg, debug.getinfo(1));
@@ -119,7 +119,7 @@ single_crud.delete = function (self, context, obj)
 		flg, msg, ret = tao:delete(context, obj);
 	end
 	if (not flg) then
-		if (ret == -1) then
+		if (ret == 0) then
 			local key_params_str = get_key_params_str(tao, obj);
 			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
 			error_handler.raise_error(-1, msg, debug.getinfo(1));
@@ -142,7 +142,7 @@ single_crud.undelete = function (self, context, obj)
 
 	local flg, msg, ret = tao:undelete(context, obj);
 	if (not flg) then
-		if (ret == -1) then
+		if (ret == 0) then
 			local key_params_str = get_key_params_str(tao, obj);
 			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
 			error_handler.raise_error(-1, msg, debug.getinfo(1));
