@@ -3,6 +3,7 @@ local rest_client_factory = require('service_utils.REST.client');
 local cjson = require('cjson.safe');
 local json_parser = cjson.new();
 local core_utils = require("lua_schema.core_utils");
+local properties_funcs = platform.properties_funcs();
 
 local service_client = {};
 
@@ -19,7 +20,12 @@ local function get_api_idl_obj(module_name, class_name)
 			idl_class_path = idl_class_path.."."..v;
 		end
 	end
-	idl_class_path = "biop."..idl_class_path.. ".idl.".. idl_class_name
+	local app_base_path = properties_funcs.get_string_property("service_utils.REST.controller.appBasePath");
+	if (app_base_path ~= nil) then
+		idl_class_path = app_base_path"."..idl_class_path.. ".idl.".. idl_class_name
+	else
+		idl_class_path = idl_class_path.. ".idl.".. idl_class_name
+	end
 	return require(idl_class_path);
 end
 
