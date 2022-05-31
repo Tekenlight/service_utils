@@ -192,7 +192,7 @@ function write_makefile()
 		file:write("#Copying handcoded services into build/src\n\n")
 		for a,source in pairs(src_sources) do
 			local target = "build/"..source;
-			file:write(target.." : "..source.."\n\tmkdir -p build/src\n\tcp "..source.." "..target.."\n\n")
+			file:write(target.." : "..source.."\n\tmkdir -p build/src\n\tluac -o "..target.." "..source.."\n\n")
 		end
     end
     if(folder_exists("ddl/") == true) then
