@@ -218,7 +218,7 @@ ev_postgres_stmt.map = function(q_out, fields)
 		return nil;
 	end
 	if (#fields ~= #q_out) then
-		error("Invalid inputs");
+		error("All query fields should be mapped as output fields");
 		return nil;
 	end
 	local out = {};
@@ -386,7 +386,7 @@ end
 ev_postgres_conn.end_tran = function(self)
 	local ed_stmt = self:prepare("ROLLBACK WORK");
 	if (ed_stmt == nil) then
-		error("COULD NOT PREPARE STATEMENTS FOR BEGIN");
+		error("COULD NOT PREPARE STATEMENTS FOR ROLLBACK");
 		return nil;
 	end
 	local flg, msg = ed_stmt:execute();

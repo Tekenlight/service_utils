@@ -2,7 +2,7 @@ local error_handler = require("lua_schema.error_handler");
 local tao_factory = require('service_utils.orm.tao_factory');
 local mapper = require('service_utils.orm.mapping_util');
 
-local messages = require('biop.registrar.literals');
+local messages = require('service_utils.literals.literals');
 
 local single_crud = {};
 local mt = { __index = single_crud };
@@ -78,7 +78,7 @@ single_crud.add = function (self, context, obj)
 	if (not flg) then
 		if (ret == -1) then
 			local key_params_str = get_key_params_str(tao, obj);
-			local msg = messages:format('RECORD_INSERTION_FAILED', key_params_str);
+			local msg = messages:format('DUPLICATE_RECORD_FOUND', key_params_str);
 			error_handler.raise_error(-1, msg, debug.getinfo(1));
 			return false, msg, ret;
 		else
@@ -95,14 +95,14 @@ single_crud.modify = function (self, context, obj)
 
 	local flg, msg, ret = tao:update_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
 	if (not flg) then
-		if (ret == -1) then
+		if (ret == 0) then
 			local key_params_str = get_key_params_str(tao, obj);
 			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
 			error_handler.raise_error(-1, msg, debug.getinfo(1));
-			return false, nil, ret;
+			return false, msg, ret;
 		else
 			error_handler.raise_error(-1, msg, debug.getinfo(1));
-			return false, nil, ret;
+			return false, msg, ret;
 		end
 	end
 
@@ -119,14 +119,14 @@ single_crud.delete = function (self, context, obj)
 		flg, msg, ret = tao:delete(context, obj);
 	end
 	if (not flg) then
-		if (ret == -1) then
+		if (ret == 0) then
 			local key_params_str = get_key_params_str(tao, obj);
 			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
 			error_handler.raise_error(-1, msg, debug.getinfo(1));
-			return false, nil, ret;
+			return false, msg, ret;
 		else
 			error_handler.raise_error(-1, msg, debug.getinfo(1));
-			return false, nil, ret;
+			return false, msg, ret;
 		end
 	end
 
@@ -142,14 +142,14 @@ single_crud.undelete = function (self, context, obj)
 
 	local flg, msg, ret = tao:undelete(context, obj);
 	if (not flg) then
-		if (ret == -1) then
+		if (ret == 0) then
 			local key_params_str = get_key_params_str(tao, obj);
 			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
 			error_handler.raise_error(-1, msg, debug.getinfo(1));
-			return false, nil, ret;
+			return false, msg, ret;
 		else
 			error_handler.raise_error(-1, msg, debug.getinfo(1));
-			return false, nil, ret;
+			return false, msg, ret;
 		end
 	end
 
