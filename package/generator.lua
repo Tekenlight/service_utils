@@ -11,56 +11,50 @@ function folder_exists(folder)
 end
 
 function include_xsd_files(directory)
-    local i, t, popen = 0, {}, io.popen
-    local pfile = popen('ls -1 '..directory..' |grep _xml.lua')
-    for filename in pfile:lines() do
-        i = i + 1
-        t[i] = filename;
-		filename = filename:gsub(".lua","");
-        local output_file_path_parts = stringx.split(directory,"/");
-		local j = 1;
-		local output_file_path = '';
-		while(j <= #output_file_path_parts) do
-			if(j <= #output_file_path_parts) then
-				output_file_path = output_file_path..output_file_path_parts[j]..".";
-		    else
-				output_file_path = output_file_path..output_file_path_parts[j];
+	local directory_parts = stringx.split(directory, "/");
+	local root_path = '';
+	local count = 1;
+	while(count <= #directory_parts) do
+		root_path = root_path..directory_parts[count]..".";
+		count = count + 1;
+	end
+	local i, t, popen = 0, {}, io.popen
+	local pfile = popen('ls -1 '..directory)
+		for folder in pfile:lines() do
+		    local pfile1 = popen('ls -1 '..directory..folder..' |grep _xml.lua');
+		    for filename in pfile1:lines() do
+				i = i + 1;
+				t[i] = filename;
+				filename = filename:gsub(".lua","");
+				local output_file_path = root_path..folder.."."..filename;
+				local mapping = require(output_file_path);
+				for i, v in pairs(mapping) do
+					xsd_mapping = "[\""..i.."\"] = ".."\""..v.."\"";
+					table.insert(basic_file.build.modules, xsd_mapping);
+				end
 			end
-		    j = j+1;
 		end
-        local mapping = require(output_file_path..filename);
-        for i, v in pairs(mapping) do
-            xsd_mapping = "[\""..i.."\"] = ".."\""..v.."\"";
-            table.insert(basic_file.build.modules, xsd_mapping);
-    	end
-    end
-    pfile:close()
-end
-
-if(folder_exists("build/com/biop/registrar") == true and folder_exists("build/com/biop/aaa") == true) then
-	include_xsd_files("build/com/biop/registrar");
-	include_xsd_files("build/com/biop/aaa");
 end
 
 function include_idl_files(directory)
 	local i, t, popen = 0, {}, io.popen
-    local pfile = popen('ls -a '..directory..' |grep .xml')
-    for filename in pfile:lines() do
-        i = i + 1
-        t[i] = filename;
-		local module = directory:gsub("idl.","");
-        local mapping = require("build.biop."..module..".idl."..filename:gsub("%.xml", "").."_interface_xml");
-        for i, v in pairs(mapping) do
-            idl_mapping = "[\""..i.."\"] = ".."\""..v.."\"";
-            table.insert(basic_file.build.modules, idl_mapping);
-        end
-    end
-    pfile:close()
-end
-
-if(folder_exists("idl/") == true) then
-	include_idl_files("idl/aaa");
-	include_idl_files("idl/registrar");
+    local pfile = popen('ls -1 '..directory)
+    for folder in pfile:lines() do
+		local pfile1 = popen('ls -1 '..directory.."/"..folder.."| grep .xml")
+		for filename in pfile1:lines() do
+		print(filename);
+        	i = i + 1
+			t[i] = filename;
+			print(filename);
+			filename = filename:gsub("%.xml","");
+			filename = filename.."_interface_xml";
+			local mapping = require("build.biop."..folder..".idl."..filename);
+			for i, v in pairs(mapping) do
+            	idl_mapping = "[\""..i.."\"] = ".."\""..v.."\"";
+            	table.insert(basic_file.build.modules, idl_mapping);
+        	end
+    	end
+	end
 end
 
 function include_val_files(directory)
@@ -78,10 +72,6 @@ function include_val_files(directory)
     pfile:close()
 end
 
-if(folder_exists("val") == true) then
-	include_val_files("val/");
-end
-
 function include_ddl_files(directory)
     local i, t, popen = 0, {}, io.popen
     local pfile = popen('ls -a '..directory..' |grep .xml');
@@ -97,10 +87,6 @@ function include_ddl_files(directory)
     pfile:close()
 end
 
-if(folder_exists("ddl") == true) then
-	include_ddl_files("ddl/");
-end
-
 function include_src_files(directory)
     local i, t, popen = 0, {}, io.popen
     local pfile = popen('ls -a '..directory..' |grep .lua');
@@ -111,6 +97,22 @@ function include_src_files(directory)
         table.insert(basic_file.build.modules, src_mapping);
     end
     pfile:close()
+end
+
+if(folder_exists("idl/") == true) then
+	include_idl_files("idl");
+end
+
+if(folder_exists("build/com/biop") == true) then
+	include_xsd_files("build/com/biop/");
+end
+
+if(folder_exists("val") == true) then
+	include_val_files("val/");
+end
+
+if(folder_exists("ddl") == true) then
+	include_ddl_files("ddl/");
 end
 
 if(folder_exists("src") == true) then
