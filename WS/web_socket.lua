@@ -119,20 +119,38 @@ end
 ws.connect = function(url, credentials)
 	assert(url ~= nil and type(url) == 'string');
 	assert(credentials == nil or type(credentials) == 'table');
-	local nonce = create_key();
+
 	local uri = client_factory.deduce_details(url);
 	local conn = client_factory.new(uri._host, uri._port);
+
 	local hdrs = {};
 	hdrs.method = "GET";
 	hdrs.Connection = "Upgrade";
 	hdrs.Upgrade = "websocket";
-	hdrs["Sec-WebSocket-Key"] = "ALKJSKLAJFKLDJFKLJDSFKJD";
-	hdrs["Sec-WebSocket-Version"] = 13
+	local nonce = create_key();
+	hdrs["Sec-WebSocket-Key"] = nonce;
+	hdrs["Sec-WebSocket-Version"] = 13;
 	conn:send_request(uri._path, hdrs);
+
 	local status, msg, resp_status, resp_hdrs = conn:recv_response();
     if (not status) then
-		print(status, "["..msg.."]");
+		return nil, resp_hdrs["X-msg"];
     end
+
+	do
+		local connection =  resp_hdrs["Connection"]
+		if (connection == nil or stringx.strip(connection) ~= "Upgrade") then
+			return nil, "No Connection: Upgrade header in handshake response"
+		end
+		local upgrade = resp_hdrs["Upgrade"];
+		if (upgrade == nil or stringx.strip(upgrade) ~= "websocket") then
+			return nil, "No Upgrade: websocket header in handshake response";
+		end
+		local accept = resp_hdrs["Sec-WebSocket-Accept"];
+		if (accept == nil or stringx.strip(accept) ~= compute_accept(nonce)) then
+			return nil, "Invalid or missing Sec-WebSocket-Accept header in handshake response";
+		end
+	end
 
 	return conn, resp_status, resp_hdrs
 end
