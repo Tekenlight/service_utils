@@ -32,6 +32,8 @@ build = {
 		["service_utils.REST.service_client"] = 'REST/service_client.lua',
 		["idl_gen"] = 'REST/idl_gen.lua',
 
+		['service_utils.WS.web_socket'] = 'WS/web_socket.lua',
+
 		["service_utils.jwt.luajwt"] = 'jwt/luajwt.lua',
 
 		["service_utils.literals.literals"] = 'literals/literals.lua',
@@ -78,6 +80,7 @@ build = {
 		["service_utils.common.msg_literal"] = 'common/msg_literal.lua',
 		["service_utils.common.password_generator"] = 'common/password_generator.lua',
 		["service_utils.common.user_context"] = 'common/user_context.lua',
+		["service_utils.common.utils"] = 'common/utils.lua',
 
 		["service_utils.db.client_params"] = 'db/client_params.lua',
 		["service_utils.db.ev_postgres"] = 'db/ev_postgres.lua',
