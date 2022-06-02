@@ -158,8 +158,9 @@ do
 		j=j+1;
 	end
 
-	local out_file = idl_file_name:gsub("%.%.",""); 
+	local out_file = idl_file_name:gsub("%.%./",""); 
 	out_file = out_file:gsub(".xml$","");
+	print(out_file);
 	local parts = stringx.split(out_file,"/");
 	os.execute("mkdir -p output_files/idl")
 	local target_file_path = "output_files/idl/"..parts[3].."_xml.lua";
