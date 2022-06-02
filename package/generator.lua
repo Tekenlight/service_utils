@@ -37,8 +37,8 @@ function include_files(directory)
 end
 
 function include_src_files(directory)
-    local i, t, popen = 0, {}, io.popen
-    local pfile = popen([[ls -a ]]..directory..[[ |grep '.lua']]);
+    local i, t = 0, {}
+    local pfile = io.popen([[ls -1 ]]..directory..[[ |grep '.lua']]);
 	for filename in pfile:lines() do
         i = i + 1
         t[i] = filename;
@@ -69,12 +69,12 @@ local function write_rockspec(basic_file, filename)
 	--Write the appended modules part to the rockspec file
 	local j = 1;
     for i, v in pairs(basic_file.build.modules) do
-		j=j+1;
 		if(j < #basic_file.build.modules) then
 			file:write("\t\t"..v..",\n");
 		elseif(j == #basic_file.build.modules) then
 			file:write("\t\t"..v);
 		end
+		j=j+1;
 	end
 
 	file:write("\n  }\n}");
@@ -95,8 +95,8 @@ if(folder_exists("build/output_files/val") == true) then
 	include_files("build/output_files/val");
 end
 
-if(folder_exists("build/output_files/tbl") == true) then
-	include_files("build/output_files/tbl");
+if(folder_exists("build/output_files/ddl") == true) then
+	include_files("build/output_files/ddl");
 end
 
 if(folder_exists("src") == true) then
