@@ -163,7 +163,7 @@ do
 	local parts = stringx.split(out_file,"/");
 	os.execute("mkdir -p output_files/idl")
 	local target_file_path = "output_files/idl/"..parts[3].."_xml.lua";
-	file_path1 = file_path1:gsub([[\.lua$]],"");
+	file_path1 = file_path1:gsub(".lua$","");
 	local c = "local build_mapping = {\n\t[\""..file_path1.."\"] = \""..file_path.."\"\n}\n\nreturn build_mapping;"
 
 	local file1 = io.open(target_file_path, "w+");
