@@ -395,7 +395,7 @@ while(j <= #file_path_parts) do
 	end
 	j = j + 1;
 end	
-file_path1 = file_path1:gsub([[\.lua]],"");
+file_path1 = file_path1:gsub(".lua","");
 local file = io.open(file_path, "w+");
 
 local tbldef_str = require 'pl.pretty'.write(tbl_def);

@@ -67,7 +67,7 @@ local function write_target_file(code_output)
     		end
     		j = j + 1;
 		end
-		file_path1 = file_path1:gsub([[\.lua$]],"");
+		file_path1 = file_path1:gsub("lua$","");
 
 		header = "local build_mappings = {\n"
 		footer = '\n}'.."\n\nreturn build_mappings;"
