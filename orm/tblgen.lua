@@ -382,10 +382,8 @@ while (i <= n) do
 end
 local command ='mkdir -p '..local_path;
 os.execute(command);
-
 local table_name = tbl_struct._attr.name;
 local file_path = local_path..'/'..table_name..'.lua';
-local target_file_path = local_path..'/'..table_name..'_xml.lua';
 local file_path_parts = stringx.split(file_path, "/");
 local j = 1;
 local file_path1 = "";
@@ -397,7 +395,7 @@ while(j <= #file_path_parts) do
 	end
 	j = j + 1;
 end	
-file_path1 = file_path1:gsub(".lua","");
+file_path1 = file_path1:gsub([[\.lua]],"");
 local file = io.open(file_path, "w+");
 
 local tbldef_str = require 'pl.pretty'.write(tbl_def);
@@ -412,10 +410,19 @@ return tbldef;
 file:write(code);
 
 file:close();
-local file1 = io.open(target_file_path, "w+");
-local c = "local build_mappings = {\n"..'\t["'..file_path1..'"]'..' = '..'"'..file_path..'"\n}'.."\n\nreturn build_mappings;";
-file1:write(c);
-file1:close();
+
+--[[
+-- Here we are generating the output file with mappings necessary
+-- for luarocks.
+--]]
+do
+	os.execute("mkdir -p output_files/ddl")
+	local target_file_path = "output_files/ddl/"..table_name.."_xml.lua";
+	local file1 = io.open(target_file_path, "w+");
+	local c = "local build_mappings = {\n"..'\t["'..file_path1..'"]'..' = '..'"'..file_path..'"\n}'.."\n\nreturn build_mappings;";
+	file1:write(c);
+	file1:close();
+end
 
 code = '';
 

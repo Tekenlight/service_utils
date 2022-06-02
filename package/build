@@ -20,3 +20,4 @@ fi
 lua $LUA_FILE 
 make
 rm Makefile
+
