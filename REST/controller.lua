@@ -6,6 +6,7 @@ local error_handler = require("lua_schema.error_handler");
 local properties_funcs = platform.properties_funcs();
 local tao_factory = require('service_utils.orm.tao_factory');
 local jwt = require('service_utils.jwt.luajwt')
+local stringx = require("pl.stringx");
 
 local rest_controller = {};
 
@@ -15,7 +16,7 @@ local function isempty(s)
 	return s == nil or s == '';
 end
 
-function split_path(uri_obj)
+local function split_path(uri_obj)
 	local url_parts = {};
 	local i = 0;
 	local j = 0;
@@ -387,7 +388,7 @@ local function validate_query_params(req_processor_interface, qp, func)
 	return true, new_qp;
 end
 
-rest_controller.handle_request = function (request, response)
+rest_controller.handle_service_request = function (request, response)
 	local json_output, msg;
 	local flg, json_input = pcall(request.get_message_body_str, request);
 	local uri = URI_CLASS:new(request:get_uri());
@@ -396,26 +397,6 @@ rest_controller.handle_request = function (request, response)
 	end
 	local url_parts = split_path(uri);
 	local qp = get_query_params(uri:query());
-
-	response:set_hdr_field("Access-Control-Allow-Origin", "*");
-	response:set_hdr_field("Access-Control-Allow-Methods", "*");
-	response:set_hdr_field("Access-Control-Allow-Headers", "*");
-	response:set_hdr_field("Access-Control-Allow-Credentials", "true");
-
-	--[[ In case of CORS browsers send an empty request with the below headers first.
-	--It is expected that the server responds 200 Ok if the request is acceptable
-	--subsequent requenst will have content
-	local hdr_flds = request:get_hdr_fields();
-	if ((request:get_method() == "OPTIONS") and
-		((hdr_flds["Access-Control-Request-Headers"] ~= nil or hdr_flds["Access-Control-Request-Method"] ~= nil)) ) then
-		response:set_status(200);
-		response:set_chunked_trfencoding(true);
-		response:set_content_type("application/json");
-		response:send();
-		response:write("");
-		return;
-	end
-	--]]
 
 	local output_obj = {};
 
@@ -595,6 +576,36 @@ rest_controller.handle_request = function (request, response)
 	end
 
 	return ;
+end
+
+rest_controller.handle_websocket_upgrade = function(request, response, hdr_flds)
+	require('service_utils.WS.web_socket').accept(request, response);
+	return;
+end
+
+
+rest_controller.handle_upgrade_request = function (request, response)
+	local hdr_flds = request:get_hdr_fields();
+	if (stringx.strip(hdr_flds["Upgrade"]) == "websocket") then
+		return rest_controller.handle_websocket_upgrade(request, response, hdr_flds);
+	else
+		error("Protocol ["..hdr_flds["Upgrade"].."] not supported");
+	end
+end
+
+rest_controller.handle_request = function (request, response)
+	response:set_hdr_field("Access-Control-Allow-Origin", "*");
+	response:set_hdr_field("Access-Control-Allow-Methods", "*");
+	response:set_hdr_field("Access-Control-Allow-Headers", "*");
+	response:set_hdr_field("Access-Control-Allow-Credentials", "true");
+
+	local connection_hdr_field = stringx.strip(request:get_hdr_field(request, "Connection"));
+
+	if (connection_hdr_field == 'Upgrade') then
+		return rest_controller.handle_upgrade_request(request, response);
+	else
+		return rest_controller.handle_service_request(request, response);
+	end
 end
 
 
