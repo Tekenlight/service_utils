@@ -67,7 +67,7 @@ local function write_target_file(code_output)
     		end
     		j = j + 1;
 		end
-		file_path1 = file_path1:gsub(".lua$","");
+		file_path1 = file_path1:gsub("%.lua$","");
 
 		header = "local build_mappings = {\n"
 		footer = '\n}'.."\n\nreturn build_mappings;"
@@ -79,7 +79,7 @@ local function write_target_file(code_output)
 	end
 
 	local out_file = app_info_xml_name:gsub("%.%.","");
-    out_file = out_file:gsub(".xml$","");
+    out_file = out_file:gsub("%.xml$","");
 	os.execute("mkdir -p output_files/val")
 	local target_file_path = "output_files/"..out_file.."_xml.lua";
 	local final = header..c..footer;
