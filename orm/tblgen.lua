@@ -399,7 +399,7 @@ while(j <= #module_path_parts) do
 	end
 	j = j + 1;
 end	
-module_path1 = module_path1:gsub(".lua","");
+module_path1 = module_path1:gsub(".lua$","");
 local file = io.open(file_path, "w+");
 
 local tbldef_str = require 'pl.pretty'.write(tbl_def);
