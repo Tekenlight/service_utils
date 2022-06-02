@@ -14,6 +14,8 @@ local reserved_column_names = {
 
 
 local tbl_file_name = arg[1];
+local common_ref_module = arg[2];
+
 assert(tbl_file_name ~= nil and type(tbl_file_name) == 'string');
 local tbl_file = io.open(tbl_file_name, "r");
 assert(tbl_file ~= nil);
@@ -366,17 +368,34 @@ local package_parts = stringx.split(tbl_struct._attr.package, ".");
 assert(#package_parts > 0);
 
 local n = #package_parts;
-local local_path = '.';
+local local_path = ""; 
 local i = 1;
-while (i <= n) do
-	local_path = local_path..'/'..package_parts[i];
-	local command = 'test ! -d '..local_path..' && mkdir '..local_path;
-	os.execute(command);
-	i = i+1;
-end
 
+
+while (i <= n) do
+	if(local_path == "") then
+ 		local_path = package_parts[i];
+    else
+		local_path = local_path.."/"..package_parts[i];
+	end
+    i = i+1;
+end
+local command ='mkdir -p '..local_path;
+os.execute(command);
 local table_name = tbl_struct._attr.name;
 local file_path = local_path..'/'..table_name..'.lua';
+local file_path_parts = stringx.split(file_path, "/");
+local j = 1;
+local file_path1 = "";
+while(j <= #file_path_parts) do
+	if(file_path1 == "") then
+		file_path1 = file_path1..file_path_parts[j];
+	else
+		file_path1 = file_path1.."."..file_path_parts[j];
+	end
+	j = j + 1;
+end	
+file_path1 = file_path1:gsub(".lua","");
 local file = io.open(file_path, "w+");
 
 local tbldef_str = require 'pl.pretty'.write(tbl_def);
@@ -391,6 +410,19 @@ return tbldef;
 file:write(code);
 
 file:close();
+
+--[[
+-- Here we are generating the output file with mappings necessary
+-- for luarocks.
+--]]
+do
+	os.execute("mkdir -p output_files/ddl")
+	local target_file_path = "output_files/ddl/"..table_name.."_xml.lua";
+	local file1 = io.open(target_file_path, "w+");
+	local c = "local build_mappings = {\n"..'\t["'..file_path1..'"]'..' = '..'"'..file_path..'"\n}'.."\n\nreturn build_mappings;";
+	file1:write(c);
+	file1:close();
+end
 
 code = '';
 
@@ -491,7 +523,7 @@ code = code .. [=[
 
 ]=]
 
-local command = 'test ! -d ddl_scripts && mkdir ddl_scripts';
+local command =  'mkdir -p ddl_scripts';
 os.execute(command);
 local file_path = 'ddl_scripts/'..table_name..'.sql'
 local file = io.open(file_path, "w+");

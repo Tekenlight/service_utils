@@ -1,17 +1,41 @@
 #/usr/bin/sh
 
-if [ $# -ne 2 ]
+LUA_CPATH="./?.so;$HOME/.luarocks/lib/lua/5.3/?.so;$LUA_CPATH"
+export LUA_CPATH
+
+LUA_PATH="./?.lua;$HOME/.luarocks/share/lua/5.3/?.lua;$LUA_PATH"
+export LUA_PATH
+
+if [ $# -lt 2 ]
 then
-	echo "Usage: gappingo <xml_file_name> <ref_common_module_name>"
+	echo "Usage: gappingo <xml_file_name> <ref_common_module_name> [<output_directory>]"
 	exit 1
 fi
 
 file=$1
 ref_common_module=$2
+output_directory=$3
 echo "Generating "$file
 echo "--------------"
-echo "lua $HOME/.luarocks/share/lua/5.3/generate_val.lua $file $ref_common_module"
-lua $HOME/.luarocks/share/lua/5.3/generate_val.lua $file $ref_common_module
+if [ -f $HOME/.luarocks/share/lua/5.3/generate_val.lua ]
+then
+    LUA_FILE="$HOME/.luarocks/share/lua/5.3/generate_val.lua"
+elif [ -f /usr/local/share/lua/5.3/generate_val.lua ]
+then
+    LUA_FILE="/usr/local/share/lua/5.3/generate_val.lua"
+else
+    echo "File generate_val.lua not found"
+    exit 1
+fi
+echo "lua $LUA_FILE $file $ref_common_module $output_directory"
+if [ "$output_directory" != "" ]
+then
+    mkdir -p $output_directory
+    cd $output_directory
+    lua $LUA_FILE ../$file $ref_common_module $output_directory
+else
+	lua $LUA_FILE $file $ref_common_module
+fi
 if [ $? -ne 0 ]
 then
 	exit 1;

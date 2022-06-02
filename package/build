@@ -1,0 +1,23 @@
+#/usr/bin/sh
+
+LUA_CPATH="./?.so;$HOME/.luarocks/lib/lua/5.3/?.so;$LUA_CPATH"
+export LUA_CPATH
+
+LUA_PATH="./?.lua;$HOME/.luarocks/share/lua/5.3/?.lua;$LUA_PATH"
+export LUA_PATH
+
+if [ -f $HOME/.luarocks/share/lua/5.3/genmake.lua ]
+then
+	LUA_FILE="$HOME/.luarocks/share/lua/5.3/genmake.lua"
+elif [ -f /usr/local/share/lua/5.3/genmake.lua ]
+then
+	LUA_FILE="/usr/local/share/lua/5.3/genmake.lua"
+else
+	echo "File genmake.lua not found"
+	exit 1
+fi
+
+lua $LUA_FILE 
+make
+rm Makefile
+

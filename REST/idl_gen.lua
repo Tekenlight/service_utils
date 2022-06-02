@@ -119,16 +119,18 @@ local package_parts = stringx.split(idl_struct._attr.package, ".");
 assert(#package_parts > 0);
 
 local n = #package_parts;
-local local_path = '.';
+local local_path = ""; 
 local i = 1;
 while (i <= n) do
-	local_path = local_path..'/'..package_parts[i];
-	local command = 'test ! -d '..local_path..' && mkdir '..local_path;
-	os.execute(command);
+	if(local_path == "") then
+        local_path = package_parts[i];
+    else
+        local_path = local_path.."/"..package_parts[i];
+    end
 	i = i+1;
 end
 local_path = local_path..'/idl';
-local command = 'test ! -d '..local_path..' && mkdir '..local_path;
+local command = 'mkdir -p '..local_path;
 os.execute(command);
 
 local file_path = local_path..'/'..class_name..'.lua';
@@ -139,6 +141,35 @@ file:write(code);
 file:close();
 
 
+--[[
+-- Here we are generating the output file with mappings necessary
+-- for luarocks.
+--]]
+do
+	local file_path_parts = stringx.split(file_path, "/");
+	local file_path1 = '';
+	local j = 1;
+	while(j <= #file_path_parts) do
+		if(j == #file_path_parts) then
+		file_path1 = file_path1..file_path_parts[j];
+		else
+		file_path1 = file_path1..file_path_parts[j]..".";
+		end
+		j=j+1;
+	end
 
+	local out_file = idl_file_name:gsub([[%.%./]],""); 
+	out_file = out_file:gsub(".xml$","");
+	local parts = stringx.split(out_file,"/");
+	os.execute("mkdir -p output_files/idl")
+	local target_file_path = "output_files/idl/"..parts[3].."_xml.lua";
+	file_path1 = file_path1:gsub(".lua$","");
+	local c = "local build_mapping = {\n\t[\""..file_path1.."\"] = \""..file_path.."\"\n}\n\nreturn build_mapping;"
+
+	local file1 = io.open(target_file_path, "w+");
+
+	file1:write(c);
+	file1:close();
+end
 
 

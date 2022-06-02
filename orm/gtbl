@@ -1,16 +1,43 @@
 #/usr/bin/sh
 
-if [ $# -ne 1 ]
+LUA_CPATH="./?.so;$HOME/.luarocks/lib/lua/5.3/?.so;$LUA_CPATH"
+export LUA_CPATH
+
+LUA_PATH="./?.lua;$HOME/.luarocks/share/lua/5.3/?.lua;$LUA_PATH"
+export LUA_PATH
+
+if [ $# -lt 2 ]
 then
-	echo "Usage: gidl <tbl_spec_file>"
+	echo "Usage: gidl <tbl_spec_file> <common_ref_module> [<output_directory>]"
 	exit 1
 fi
 
 file=$1
+common_ref_module=$2
+output_directory=$3
 echo "Generating TBL:"$file
 echo "--------------"
-echo "lua $HOME/.luarocks/share/lua/5.3/tblgen.lua $file"
-lua $HOME/.luarocks/share/lua/5.3/tblgen.lua $file
+
+if [ -f $HOME/.luarocks/share/lua/5.3/tblgen.lua ]
+then
+	LUA_FILE="$HOME/.luarocks/share/lua/5.3/tblgen.lua"
+elif [ -f /usr/local/share/lua/5.3/tblgen.lua ]
+then
+	LUA_FILE="/usr/local/share/lua/5.3/tblgen.lua"
+else
+	echo "File tblgen.lua not found"
+	exit 1
+fi
+
+echo "lua $LUA_FILE $file $common_ref_module $output_directory"
+if [ "$output_directory" != "" ]
+then
+	mkdir -p $output_directory
+	cd $output_directory
+	lua $LUA_FILE ../$file $common_ref_module 
+else
+	lua $LUA_FILE $file $common_ref_module 
+fi
 if [ $? -ne 0 ]
 then
 	exit 1;
