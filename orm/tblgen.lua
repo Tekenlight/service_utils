@@ -383,19 +383,23 @@ end
 local command ='mkdir -p '..local_path;
 os.execute(command);
 local table_name = tbl_struct._attr.name;
-local file_path = local_path..'/'..table_name..'.lua';
-local file_path_parts = stringx.split(file_path, "/");
+local generated_file_name = tbl_file_name:gsub("%.%.","");
+generated_file_name = generated_file_name:gsub("/ddl/","");
+generated_file_name = generated_file_name:gsub(".xml$","");
+local file_path = local_path..'/'..generated_file_name..'.lua';
+local module_path = local_path..'/'..table_name..'.lua';
+local module_path_parts = stringx.split(module_path, "/");
 local j = 1;
-local file_path1 = "";
-while(j <= #file_path_parts) do
-	if(file_path1 == "") then
-		file_path1 = file_path1..file_path_parts[j];
+local module_path1 = "";
+while(j <= #module_path_parts) do
+	if(module_path1 == "") then
+		module_path1 = module_path1..module_path_parts[j];
 	else
-		file_path1 = file_path1.."."..file_path_parts[j];
+		module_path1 = module_path1.."."..module_path_parts[j];
 	end
 	j = j + 1;
 end	
-file_path1 = file_path1:gsub(".lua","");
+module_path1 = module_path1:gsub(".lua","");
 local file = io.open(file_path, "w+");
 
 local tbldef_str = require 'pl.pretty'.write(tbl_def);
@@ -417,9 +421,9 @@ file:close();
 --]]
 do
 	os.execute("mkdir -p output_files/ddl")
-	local target_file_path = "output_files/ddl/"..table_name.."_xml.lua";
+	local target_file_path = "output_files/ddl/"..generated_file_name.."_xml.lua";
 	local file1 = io.open(target_file_path, "w+");
-	local c = "local build_mappings = {\n"..'\t["'..file_path1..'"]'..' = '..'"'..file_path..'"\n}'.."\n\nreturn build_mappings;";
+	local c = "local build_mappings = {\n"..'\t["'..module_path1..'"]'..' = '..'"'..file_path..'"\n}'.."\n\nreturn build_mappings;";
 	file1:write(c);
 	file1:close();
 end
