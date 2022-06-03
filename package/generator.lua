@@ -99,8 +99,8 @@ if(folder_exists("build/output_files/ddl") == true) then
 	include_files("build/output_files/ddl");
 end
 
-if(folder_exists("src") == true) then
-	include_src_files("src/");
+if(folder_exists("build/src") == true) then
+	include_src_files("build/src");
 end
 
 local File=arg[1];

@@ -149,7 +149,7 @@ function write_makefile()
 			file:write("  "..l.." \\\n");
 		end
 	end
-	file:write("  build/rockspec.out\n\n");
+	file:write("  build/"..basic_file.package.."-"..basic_file.version..".rockspec\n\n");
 
 	file:write("all: $(all_targets)\n\n");
 
@@ -158,7 +158,8 @@ function write_makefile()
 		for i,source in ipairs(val_sources_tbl) do
 			local target = "build/output_files/"..source:gsub(".xml$","").."_xml.lua";
 			file:write(target.." : "..source.."\n");
-			file:write("\t~/.luarocks/bin/gval "..source.." "..basic_file.product.."/"..basic_file.package.." build\n\n")
+			file:write("\t~/.luarocks/bin/gval "..source.." "..basic_file.product.."/"..basic_file.package.." build\n")
+			file:write("\ttouch build/rockspec.out\n\n");
     	end
     end
 
@@ -166,7 +167,8 @@ function write_makefile()
 		file:write("#generating xsd files in build \n\n");
 		for i,source in ipairs(xsd_sources_tbl) do
 			local target = "build/output_files/"..source:gsub(".xsd","").."_xsd.lua";
-			file:write(target.." : "..source.."\n\t~/.luarocks/bin/gxsd "..source.." build\n\n")
+			file:write(target.." : "..source.."\n\t~/.luarocks/bin/gxsd "..source.." build\n")
+			file:write("\ttouch build/rockspec.out\n\n");
     	end
     end
 
@@ -175,7 +177,8 @@ function write_makefile()
 		for i,source in ipairs(ddl_sources_tbl) do
 			local target = "build/output_files/"..source:gsub(".xml$","").."_xml.lua";
 			file:write(target.." : "..source.."\n\t~/.luarocks/bin/gtbl "
-					..source.." "..basic_file.product.."/"..basic_file.package.." build\n\n")
+					..source.." "..basic_file.product.."/"..basic_file.package.." build\n")
+			file:write("\ttouch build/rockspec.out\n\n");
 		end
     end
 	if(folder_exists("src/") == true) then
@@ -183,7 +186,8 @@ function write_makefile()
 		for i,source in ipairs(src_sources_tbl) do
 			local target = "build/"..source;
 			file:write(target.." : "..source.."\n\tmkdir -p build/src\n");
-			file:write("\tluac -o "..target.." "..source.."\n\n")
+			file:write("\tluac -o "..target.." "..source.."\n")
+			file:write("\ttouch build/rockspec.out\n\n");
 		end
     end
     if(folder_exists("ddl/") == true) then
@@ -192,7 +196,8 @@ function write_makefile()
 			local sql_filename = (source:gsub("ddl/", ""));
 			local target = "build/sql/"..sql_filename;
 			file:write(target.." : "..source.."\n\tmkdir -p build/sql\n");
-			file:write("\tcp "..source.." "..target.."\n\n")
+			file:write("\tcp "..source.." "..target.."\n")
+			file:write("\ttouch build/rockspec.out\n\n");
 		end
     end
     if(folder_exists("idl/") == true) then
@@ -201,13 +206,13 @@ function write_makefile()
 			local parts = stringx.split(source, "/");
 			local target = "build/output_files/"..parts[1].."/"..parts[3]:gsub(".xml$","").."_xml.lua";
 			file:write(target.." : "..source.."\n");
-			file:write("\t~/.luarocks/bin/gidl "..source.." build\n\n")
+			file:write("\t~/.luarocks/bin/gidl "..source.." build\n")
+			file:write("\ttouch build/rockspec.out\n\n");
 		end
     end
-	file:write("build/rockspec.out :\n");
+	file:write("build/"..basic_file.package.."-"..basic_file.version..".rockspec : build/rockspec.out\n");
 	file:write("\tlua ~/.luarocks/share/lua/5.3/generator.lua build/"
-					..basic_file.package.."-"..basic_file.version..".rockspec".."\n");
-	file:write("\ttouch build/rockspec.out\n\n");
+					..basic_file.package.."-"..basic_file.version..".rockspec".."\n\n");
 	file:write("clean :\n");
 	file:write("\trm -f $all_targets)");
 end
