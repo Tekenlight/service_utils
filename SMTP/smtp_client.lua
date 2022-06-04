@@ -399,7 +399,7 @@ smtp_client_session_factory.new = function(conn_type, host, port)
 	local ss = nil;
 	ss = platform.make_tcp_connection(host, port);
 	if (ss == nil) then
-		error('Unable to connect to connect to the SMT server '.. host..':'..port);
+		error('Unable to connect to connect to the SMTP server '.. host..':'..port);
 	end
 	nc.ds = sock_factory.new(ss, conn_type, host, port);
 	nc.is_open = false;
@@ -407,6 +407,12 @@ smtp_client_session_factory.new = function(conn_type, host, port)
 		return nil;
 	end
 	return nc;
+end
+
+smtp_client_session.set_user_id_in_ds = function(self, user_id)
+	assert(self ~= nil);
+	assert(user_id ~= nil);
+	self.ds:set_name(user_id);
 end
 
 smtp_client_session_factory.new_from_cached_ss = function(ss, conn_type, host, port, name)

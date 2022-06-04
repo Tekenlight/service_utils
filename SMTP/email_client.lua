@@ -35,6 +35,8 @@ local make_connection = function(self, email_service, user_id, password)
 		smtp_c:set_socket_to_be_cached(true);
 	end
 
+	smtp_c:set_user_id_in_ds(user_id);
+
 	return true, smtp_c;
 end
 local init = function(self, email_service, user_id, password)
