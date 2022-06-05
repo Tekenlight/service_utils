@@ -9,10 +9,19 @@ local error_handler = require("lua_schema.error_handler");
 ffi.cdef[[
 void * pin_loaded_so(const char * libname);
 ]]
-local libname = 'libevclient.so';
-local loaded, lib = pcall(ffi.C.pin_loaded_so, libname);
-if (not loaded) then
-	error("Could not load library [libevclient.so] : "..lib);
+do
+	local libname = 'libevlnetssl.so';
+	local loaded, lib = pcall(ffi.C.pin_loaded_so, libname);
+	if (not loaded) then
+		error("Could not load library [libevlnetssl.so] : "..lib);
+	end
+end
+do
+	local libname = 'libevclient.so';
+	local loaded, lib = pcall(ffi.C.pin_loaded_so, libname);
+	if (not loaded) then
+		error("Could not load library [libevclient.so] : "..lib);
+	end
 end
 
 

@@ -403,6 +403,7 @@ smtp_client_session_factory.new = function(conn_type, host, port)
 	end
 	nc.ds = sock_factory.new(ss, conn_type, host, port);
 	nc.is_open = false;
+	nc.ds:set_name(name);
 	if (not init(nc)) then
 		return nil;
 	end
