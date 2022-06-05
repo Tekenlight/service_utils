@@ -87,7 +87,6 @@ ws.accept = function(request, response)
 			ws_recvd_msg_handler = ws_recvd_msg_handler .. "." .. url_parts[i];
 			i = i + 1;
 		end
-		platform.set_ws_recvd_msg_handler(ws_recvd_msg_handler);
 	else
 		gen_err_resp(request, response, "Path empty: Unable to deduce message handler");
 		return false;
@@ -105,6 +104,9 @@ ws.accept = function(request, response)
 			return false;
 		end
 	end
+
+	platform.set_ws_recvd_msg_handler(ws_recvd_msg_handler);
+	platform.set_socket_upgrade_to(1);
 
 	response:set_status(101);
 	response:set_hdr_field("Upgrade", "websocket");
@@ -153,6 +155,9 @@ ws.connect = function(url, credentials)
 	end
 
 	return conn, resp_status, resp_hdrs
+end
+
+ws.handle_msg = function()
 end
 
 

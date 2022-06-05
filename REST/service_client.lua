@@ -22,7 +22,7 @@ local function get_api_idl_obj(module_name, class_name)
 	end
 	local app_base_path = properties_funcs.get_string_property("service_utils.REST.controller.appBasePath");
 	if (app_base_path ~= nil) then
-		idl_class_path = app_base_path"."..idl_class_path.. ".idl.".. idl_class_name
+		idl_class_path = app_base_path.."."..idl_class_path.. ".idl.".. idl_class_name
 	else
 		idl_class_path = idl_class_path.. ".idl.".. idl_class_name
 	end

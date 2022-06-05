@@ -601,10 +601,18 @@ rest_controller.handle_request = function (request, response)
 
 	local connection_hdr_field = stringx.strip(request:get_hdr_field(request, "Connection"));
 
-	if (connection_hdr_field == 'Upgrade') then
-		return rest_controller.handle_upgrade_request(request, response);
+	local socket_upgraded = platform.get_socket_upgrade_to();
+
+	if (socket_upgraded == 0) then
+		if (connection_hdr_field == 'Upgrade') then
+			return rest_controller.handle_upgrade_request(request, response);
+		else
+			return rest_controller.handle_service_request(request, response);
+		end
+	elseif (socket_upgraded == 1) then
+		return require('service_utils.WS.web_socket').handle_msg();
 	else
-		return rest_controller.handle_service_request(request, response);
+		error("Protocol not supported in socket implementation");
 	end
 end
 
