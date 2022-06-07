@@ -8,6 +8,7 @@ local utils = require('service_utils.common.utils');
 local client_factory = require('service_utils.REST.client');
 local ffi = require("ffi");
 local ws_util = require("service_utils.WS.ws_util");
+local ws_const = require('service_utils.WS.ws_const');
 
 ffi.cdef[[
 void * memset(void *b, int c, size_t len);
@@ -164,12 +165,13 @@ ws.connect = function(url, credentials)
 end
 
 ws.recv_frame = function(ss)
-	return ws_util.recv_bytes(ss);
+	return ws_util.recv_frame(ss);
 end
 
 ws.handle_msg = function(request, response)
 	local ss = platform.get_accepted_stream_socket();
-	local buffer = ws_util.recv_frame(ss);
+	local msg = ws_util.recv_frame(ss);
+	print(ffi.string(msg.buf));
 
 end
 
