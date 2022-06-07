@@ -104,8 +104,8 @@ ws_util.recv_payload = function(ss, inps)
 	local buf = ws_util.recv_bytes(ss, inps.payload_len);
 	if (inps.use_mask) then
 		for i = 1, inps.payload_len, 1 do
-			local m = tonumber(mask[(i-1)%4]);
-			local n = m ~ tonumber(b[i-1]);
+			local m = tonumber(inps.mask[(i-1)%4]);
+			local n = m ~ tonumber(buf[i-1]);
 			buf[i-1] = ffi.cast("unsigned char", n);
 		end
 	end
@@ -163,7 +163,7 @@ ws_util.form_header = function(inp, buf)
 
 	if (inp.use_mask) then
 		inp.mask = utils.get_rand_bytes(4);
-		ffi.C.memcpy((buf+hdr_len), rnd, 4);
+		ffi.C.memcpy((buf+hdr_len), inp.mask.value, 4);
 		hdr_len = hdr_len + 4;
 	end
 
@@ -176,7 +176,7 @@ ws_util.form_payload = function(inp, buf)
 		local mask = inp.mask;
 		local hdr_len = inp.hdr_len;
 		for i = 1, inp.size, 1 do
-			local m = tonumber(mask[(i-1)%4]);
+			local m = tonumber(mask.value[(i-1)%4]);
 			local n = m ~ tonumber(inp.buf[i-1]);
 			buf[hdr_len+(i-1)] = ffi.cast("unsigned char", n);
 		end
