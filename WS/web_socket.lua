@@ -171,8 +171,10 @@ end
 ws.handle_msg = function(request, response)
 	local ss = platform.get_accepted_stream_socket();
 	local msg = ws_util.recv_frame(ss);
-	print(ffi.string(msg.buf));
 
+	local ws_msg_handler = platform.get_ws_recvd_msg_handler();
+	local handler = require(ws_msg_handler);
+	return handler.handle_message(msg)
 end
 
 
