@@ -33,6 +33,8 @@ build = {
 		["idl_gen"] = 'REST/idl_gen.lua',
 
 		['service_utils.WS.web_socket'] = 'WS/web_socket.lua',
+		['service_utils.WS.ws_util'] = 'WS/ws_util.lua',
+		['service_utils.WS.ws_const'] = 'WS/ws_const.lua',
 
 		["service_utils.jwt.luajwt"] = 'jwt/luajwt.lua',
 

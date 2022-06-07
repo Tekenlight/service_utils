@@ -610,7 +610,7 @@ rest_controller.handle_request = function (request, response)
 			return rest_controller.handle_service_request(request, response);
 		end
 	elseif (socket_upgraded == 1) then
-		return require('service_utils.WS.web_socket').handle_msg();
+		return require('service_utils.WS.web_socket').handle_msg(request, response);
 	else
 		error("Protocol not supported in socket implementation");
 	end

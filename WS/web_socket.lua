@@ -6,6 +6,12 @@ local core_utils = require("lua_schema.core_utils");
 local properties_funcs = platform.properties_funcs();
 local utils = require('service_utils.common.utils');
 local client_factory = require('service_utils.REST.client');
+local ffi = require("ffi");
+local ws_util = require("service_utils.WS.ws_util");
+
+ffi.cdef[[
+void * memset(void *b, int c, size_t len);
+]]
 
 local ws = {};
 
@@ -157,7 +163,14 @@ ws.connect = function(url, credentials)
 	return conn, resp_status, resp_hdrs
 end
 
-ws.handle_msg = function()
+ws.recv_frame = function(ss)
+	return ws_util.recv_bytes(ss);
+end
+
+ws.handle_msg = function(request, response)
+	local ss = platform.get_accepted_stream_socket();
+	local buffer = ws_util.recv_frame(ss);
+
 end
 
 
