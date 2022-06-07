@@ -12,23 +12,23 @@ uint16_t host_to_network_byte_order_16(uint16_t h_s, uint16_t * o_h_s);
 ]]
 
 local function net_to_host_uint64(inp)
-	assert(inp ~= nil and ffi.istype("uint64_t", inp))
-	return ffi.C.network_to_host_byte_order(inp, ffi.NULL);
+	assert(inp ~= nil);
+	return ffi.C.network_to_host_byte_order_64(inp, ffi.NULL);
 end
 
 local function net_to_host_uint16(inp)
-	assert(inp ~= nil and ffi.istype("uint16_t", inp))
-	return ffi.C.network_to_host_byte_order(inp, ffi.NULL);
+	assert(inp ~= nil);
+	return ffi.C.network_to_host_byte_order_16(inp, ffi.NULL);
 end
 
 local function host_to_net_uint64(inp)
-	assert(inp ~= nil and ffi.istype("uint64_t", inp))
-	return ffi.C.host_to_network_byte_order(inp, ffi.NULL);
+	assert(inp ~= nil);
+	return ffi.C.host_to_network_byte_order_64(inp, ffi.NULL);
 end
 
 local function host_to_net_uint16(inp)
-	assert(inp ~= nil and ffi.istype("uint16_t", inp))
-	return ffi.C.host_to_network_byte_order(inp, ffi.NULL);
+	assert(inp ~= nil);
+	return ffi.C.host_to_network_byte_order_16(inp, ffi.NULL);
 end
 
 
@@ -148,7 +148,7 @@ ws_util.form_header = function(inp, buf)
 		buf[hdr_len] = ffi.cast("uint8_t", len_byte);
 		hdr_len = hdr_len + 1;
 		local be_len_a = ffi.new("uint16_t [?]", 1);
-		be_len_a[0] = ffi.C.host_to_net_uint16(ffi.cast("uint16_t", inp.size));
+		be_len_a[0] = ffi.cast("uint16_t", host_to_net_uint16(ffi.cast("uint16_t", inp.size)));
 		ffi.C.memcpy((buf+hdr_len), be_len_a, 2);
 		hdr_len = hdr_len + 2;
 	else
@@ -156,7 +156,7 @@ ws_util.form_header = function(inp, buf)
 		buf[hdr_len] = ffi.cast("uint8_t", len_byte);
 		hdr_len = hdr_len + 1;
 		local be_len_a = ffi.new("uint64_t [?]", 1);
-		be_len_a[0] = ffi.C.host_to_net_uint64(ffi.cast("uint64_t", inp.size));
+		be_len_a[0] = ffi.cast("uint64_t", host_to_net_uint64(ffi.cast("uint64_t", inp.size)));
 		ffi.C.memcpy((buf+hdr_len), be_len_a, 8);
 		hdr_len = hdr_len + 8;
 	end
