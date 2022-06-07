@@ -211,7 +211,7 @@ ws_util.send_frame = function(inp)
 	ws_util.form_payload(inp, buf);
 	ws_util.send_bytes(inp.ss, buf, inp.total_len);
 
-	return n;
+	return inp;
 end
 
 return ws_util;
