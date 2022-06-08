@@ -73,7 +73,7 @@ ws_util.recv_header = function(ss)
 
 	buf = ws_util.recv_bytes(ss, 2);
 
-	local flgs = tonumber(buf[0]);
+	local flags = tonumber(buf[0]);
 	local len_byte = tonumber(buf[1]);
 
 	use_mask = ((len_byte & ws_const.FRAME_FLAG_MASK) ~= 0);
@@ -97,7 +97,9 @@ ws_util.recv_header = function(ss)
 		mask = ws_util.recv_bytes(ss, 4);
 	end
 
-	return { payload_len=payload_len, use_mask=use_mask, mask=mask, flgs = flgs};
+	local op_code = flags & 0X0F
+
+	return { payload_len=payload_len, use_mask=use_mask, mask=mask, flags = flags, op_code = op_code};
 end
 
 ws_util.recv_payload = function(ss, inps)

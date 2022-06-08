@@ -40,4 +40,6 @@ ws_const.WS_ERR_UNAUTHORIZED                   = 6;
 ws_const.WS_ERR_PAYLOAD_TOO_BIG                = 10;
 ws_const.WS_ERR_INCOMPLETE_FRAME               = 11;
 
+ws_const.TO_BE_CLOSED            = -1;
+
 return ws_const;

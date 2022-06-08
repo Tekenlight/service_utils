@@ -80,7 +80,10 @@ end
 client.recv_response = function (self)
 	assert(self ~= nil and type(self) == 'table');
 
-	local response = platform.receive_http_response(self._http_conn);
+	local status, response = pcall(platform.receive_http_response, self._http_conn);
+	if (not status) then
+		error(response);
+	end
 	local resp_status = response:get_status();
 	local status = true;
 	if (math.floor(resp_status / 100) ~= 2) then
