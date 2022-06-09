@@ -131,6 +131,9 @@ ws_util.recv_frame = function(conn)
 	do
 		assert(conn ~= nil and type(conn) == 'table');
 	end
+	if (conn.msg_handler ~= nil) then
+		error("Cannot invoke ws_util.recv_frame when message_handler is set for the websocket");
+	end
 	ss = conn._ss
 	return ws_util.__recv_frame(ss);
 end
