@@ -57,7 +57,7 @@ ws_util.send_bytes = function(ss, buf, n)
 	assert(n ~= nil and type(n) == 'number' and n > 0);
 	assert(buf ~= nil and type(buf) == 'cdata');
 
-	status, ret = pcall(platform.send_data_on_socket, ss, ffi.getptr(buf), n);
+	status, ret = pcall(platform.send_data_on_acc_socket, ss, ffi.getptr(buf), n);
 	if (not status) then
 		error(ret);
 	end
@@ -114,7 +114,7 @@ ws_util.recv_payload = function(ss, inps)
 	return buf;
 end
 
-ws_util.recv_frame = function(ss)
+ws_util.__recv_frame = function(ss)
 	do
 		assert(ss ~= nil);
 		local s = (require("pl.stringx")).split(tostring(ss), ":");
@@ -124,6 +124,15 @@ ws_util.recv_frame = function(ss)
 	msg_meta.buf = ws_util.recv_payload(ss, msg_meta);
 
 	return msg_meta;
+end
+
+ws_util.recv_frame = function(conn)
+	local ss;
+	do
+		assert(conn ~= nil and type(conn) == 'table');
+	end
+	ss = conn._ss
+	return ws_util.__recv_frame(ss);
 end
 
 ws_util.form_header = function(inp, buf)

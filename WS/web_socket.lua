@@ -125,9 +125,13 @@ ws.accept = function(request, response)
 	return true;
 end
 
-ws.connect = function(url, credentials)
-	assert(url ~= nil and type(url) == 'string');
-	assert(credentials == nil or type(credentials) == 'table');
+ws.connect = function(inp)
+	assert(inp.url ~= nil and type(inp.url) == 'string');
+	assert(inp.credentials == nil or type(inp.credentials) == 'table');
+	assert(inp.msg_handler == nil or type(inp.msg_handler) == 'string');
+	local url = inp.url;
+	local msg_handler = inp.msg_handler;
+	local credentials = inp.credentials;
 
 	local uri = client_factory.deduce_details(url);
 	local conn = client_factory.new(uri._host, uri._port);
@@ -160,13 +164,16 @@ ws.connect = function(url, credentials)
 			return nil, "Invalid or missing Sec-WebSocket-Accept header in handshake response";
 		end
 	end
+	platform.track_ss_as_websocket(conn._ss, msg_handler);
+
+	conn.msg_handler = inp.msg_handler;
 
 	return conn, resp_status, resp_hdrs
 end
 
 ws.handle_msg = function(request, response)
 	local ss = platform.get_accepted_stream_socket();
-	local msg = ws_util.recv_frame(ss);
+	local msg = ws_util.__recv_frame(ss);
 
 	if (msg.op_code == ws_const.FRAME_OP_PING) then
 		ws_util.send_frame({ss = ss, size = string.len("OK PONG"),
@@ -174,10 +181,20 @@ ws.handle_msg = function(request, response)
 				buf = ffi.cast("unsigned char*", "OK PONG"),
 				use_mask = true});
 		return;
+	elseif (msg.op_code == ws_const.FRAME_OP_PONG) then
+		local ws_msg_handler = platform.get_ws_recvd_msg_handler();
+		local handler;
+		if (ws_msg_handler ~= nil) then handler = require(ws_msg_handler); end
+		if (handler and handler.handle_pong ~= nil) then
+			return handler.handle_pong(msg);
+		else
+			print(ffi.string(msg.buf));
+			return;
+		end
 	elseif (msg.op_code == ws_const.FRAME_OP_TEXT or msg.op_code == ws_const.FRAME_OP_BINARY) then
 		local ws_msg_handler = platform.get_ws_recvd_msg_handler();
 		local handler = require(ws_msg_handler);
-		return handler.handle_message(msg)
+		return handler.handle_message(msg);
 	elseif (msg.op_code == ws_const.FRAME_OP_CLOSE) then
 		platform.set_acc_sock_state(ws_const.TO_BE_CLOSED); -- EVAcceptedStreamSocket::TO_BE_CLOSED
 	else
