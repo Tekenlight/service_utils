@@ -55,7 +55,7 @@ ws_util.recv_bytes = function(ss, n)
 		end
 		status, ret1 = pcall(platform.recv_data_from_socket, ss, ffi.getptr(buf1), n1);
 		if (not status) then
-			error(ret);
+			error(ret1);
 		end
 		if (ret1 <=0) then
 			error("Receving data from websocket failed");
