@@ -228,4 +228,14 @@ ws_util.send_frame = function(inp)
 	return inp;
 end
 
+ws_util.close = function(conn)
+	do
+		assert(conn ~= nil and type(conn) == 'table');
+	end
+	local lbuf = "CLOSING WEBSOCKET";
+	local buf = ffi.cast("unsigned char *", lbuf);
+	return ws_util.send_frame({ss = conn._ss, size = string.len(lbuf),
+                    flags = ws_const.FRAME_OP_CLOSE, buf = buf, use_mask = true});
+end
+
 return ws_util;
