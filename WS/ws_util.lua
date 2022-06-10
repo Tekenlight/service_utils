@@ -238,4 +238,14 @@ ws_util.close = function(conn)
                     flags = ws_const.FRAME_OP_CLOSE, buf = buf, use_mask = true});
 end
 
+ws_util.ping = function(conn)
+	do
+		assert(conn ~= nil and type(conn) == 'table');
+	end
+	local lbuf = "PING";
+	local buf = ffi.cast("unsigned char *", lbuf);
+	return ws_util.send_frame({ss = conn._ss, size = string.len(lbuf),
+                    flags = ws_const.FRAME_OP_PING, buf = buf, use_mask = true});
+end
+
 return ws_util;
