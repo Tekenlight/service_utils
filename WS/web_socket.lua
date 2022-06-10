@@ -176,11 +176,18 @@ ws.handle_msg = function(request, response)
 	local msg = ws_util.__recv_frame(ss);
 
 	if (msg.op_code == ws_const.FRAME_OP_PING) then
+		local handler;
+		local ws_msg_handler = platform.get_ws_recvd_msg_handler();
+		if (ws_msg_handler ~= nil) then handler = require(ws_msg_handler); end
+		if (handler and handler.handle_ping ~= nil) then
+			handler.handle_ping(msg);
+		else
+			print(ffi.string(msg.buf));
+		end
 		ws_util.send_frame({ss = ss, size = string.len("OK PONG"),
 				flags = ws_const.FRAME_OP_PONG,
 				buf = ffi.cast("unsigned char*", "OK PONG"),
 				use_mask = true});
-		return;
 	elseif (msg.op_code == ws_const.FRAME_OP_PONG) then
 		local ws_msg_handler = platform.get_ws_recvd_msg_handler();
 		local handler;
