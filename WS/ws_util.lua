@@ -38,15 +38,29 @@ ws_util.recv_bytes = function(ss, n)
 	assert(n ~= nil and type(n) == 'number' and n > 0);
 
 	local buf = ffi.new("unsigned char[?]", n);
+	local buf1 = buf;
 	local status, ret = false, 0;
 	while (ret < n) do
-		status, ret = pcall(platform.recv_data_from_socket, ss, ffi.getptr(buf), n);
+		local buf1 = buf + ret;
+		local ret1 = 0;
+		local n1 = n - ret;
+		local NEVER = false;
+		if (NEVER) then
+			n1 = n1 - 1;
+			print(debug.getinfo(1).source, debug.getinfo(1).currentline, buf1);
+			print(debug.getinfo(1).source, debug.getinfo(1).currentline, n1);
+			if (n1 == 0) then
+				n1 = n1 + 1;
+			end
+		end
+		status, ret1 = pcall(platform.recv_data_from_socket, ss, ffi.getptr(buf1), n1);
 		if (not status) then
 			error(ret);
 		end
-		if (ret <=0) then
+		if (ret1 <=0) then
 			error("Receving data from websocket failed");
 		end
+		ret = ret + ret1;
 	end
 
 	return buf, n
