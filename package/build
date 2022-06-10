@@ -1,5 +1,12 @@
 #/usr/bin/sh
 
+if [ ! -f rockspec.lua ]
+then
+	echo "build can be run from within a evlua repository only"
+	exit 1
+fi
+
+
 LUA_CPATH="./?.so;$HOME/.luarocks/lib/lua/5.3/?.so;$LUA_CPATH"
 export LUA_CPATH
 
