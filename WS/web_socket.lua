@@ -204,7 +204,8 @@ ws.handle_msg = function(request, response)
 		local handler = require(ws_msg_handler);
 		return handler.handle_message(msg);
 	elseif (msg.op_code == ws_const.FRAME_OP_CLOSE) then
-		platform.shutdown_websocket(ss, 1);
+		platform.set_acc_sock_to_be_closed();
+		--platform.shutdown_websocket(ss, 1);
 	else
 		error("Invalid OP_CODE ".. string.format("%0X", msg.op_code));
 	end
