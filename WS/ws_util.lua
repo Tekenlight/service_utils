@@ -250,7 +250,7 @@ ws_util.close = function(conn)
 	local buf = ffi.cast("unsigned char *", lbuf);
 	local send_meta =  ws_util.send_frame({ss = conn._ss, size = string.len(lbuf),
                     flags = ws_const.FRAME_OP_CLOSE, buf = buf, use_mask = true});
-	platform.shutdown_websocket(conn._ss);
+	platform.shutdown_websocket(conn._ss, 1);
 	return send_meta;
 end
 

@@ -174,8 +174,13 @@ end
 ws.handle_msg = function(request, response)
 	local ss = platform.get_accepted_stream_socket();
 	local msg = ws_util.__recv_frame(ss);
+	msg._ss = ss;
 
 	if (msg.op_code == ws_const.FRAME_OP_PING) then
+		ws_util.send_frame({ss = ss, size = string.len("OK PONG"),
+				flags = ws_const.FRAME_OP_PONG,
+				buf = ffi.cast("unsigned char*", "OK PONG"),
+				use_mask = true});
 		local handler;
 		local ws_msg_handler = platform.get_ws_recvd_msg_handler();
 		if (ws_msg_handler ~= nil) then handler = require(ws_msg_handler); end
@@ -184,10 +189,6 @@ ws.handle_msg = function(request, response)
 		else
 			print(ffi.string(msg.buf));
 		end
-		ws_util.send_frame({ss = ss, size = string.len("OK PONG"),
-				flags = ws_const.FRAME_OP_PONG,
-				buf = ffi.cast("unsigned char*", "OK PONG"),
-				use_mask = true});
 	elseif (msg.op_code == ws_const.FRAME_OP_PONG) then
 		local ws_msg_handler = platform.get_ws_recvd_msg_handler();
 		local handler;
@@ -203,7 +204,7 @@ ws.handle_msg = function(request, response)
 		local handler = require(ws_msg_handler);
 		return handler.handle_message(msg);
 	elseif (msg.op_code == ws_const.FRAME_OP_CLOSE) then
-		platform.set_acc_sock_state(ws_const.TO_BE_CLOSED); -- EVAcceptedStreamSocket::TO_BE_CLOSED
+		platform.shutdown_websocket(ss, 1);
 	else
 		error("Invalid OP_CODE ".. string.format("%0X", msg.op_code));
 	end
