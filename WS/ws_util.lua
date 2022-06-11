@@ -248,8 +248,10 @@ ws_util.close = function(conn)
 	end
 	local lbuf = "CLOSING WEBSOCKET";
 	local buf = ffi.cast("unsigned char *", lbuf);
-	return ws_util.send_frame({ss = conn._ss, size = string.len(lbuf),
+	local send_meta =  ws_util.send_frame({ss = conn._ss, size = string.len(lbuf),
                     flags = ws_const.FRAME_OP_CLOSE, buf = buf, use_mask = true});
+	platform.shutdown_websocket(conn._ss);
+	return send_meta;
 end
 
 ws_util.ping = function(conn)
