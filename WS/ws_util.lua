@@ -4,6 +4,7 @@ local utils = require('service_utils.common.utils');
 local ws_const = require('service_utils.WS.ws_const');
 
 ffi.cdef[[
+char * strncpy(char * dst, const char * src, size_t len);
 void * memcpy(void *restrict dst, const void *restrict src, size_t n);
 uint64_t network_to_host_byte_order_64(uint64_t h_ll, uint64_t * o_h_ll);
 uint16_t network_to_host_byte_order_16(uint16_t h_s, uint16_t * o_h_s);
@@ -242,6 +243,22 @@ ws_util.send_frame = function(inp)
 	return inp;
 end
 
+ws_util.send_msg = function(conn, msg)
+	local ss;
+	do
+		assert(conn ~= nil and type(conn) == 'table');
+		ss = conn._ss;
+		assert(ss ~= nil and type(ss) == 'userdata');
+		local s = (require("pl.stringx")).split(tostring(ss), ":");
+		assert(s[1] ~= nil and s[1] == 'streamsocket');
+		assert(msg ~= nil and type(msg) == 'string');
+	end
+	local buf = ffi.new("unsigned char[?]", string.len(msg));
+	ffi.C.strncpy(buf, msg, string.len(msg));
+
+	return ws_util.send_frame({ss = ss, size = string.len(msg), flags = 0, buf = buf, use_mask = true});
+end
+
 ws_util.close = function(conn)
 	do
 		assert(conn ~= nil and type(conn) == 'table');
@@ -254,13 +271,16 @@ ws_util.close = function(conn)
 	return send_meta;
 end
 
-ws_util.ping = function(conn)
+ws_util.ping = function(conn, payload)
 	do
 		assert(conn ~= nil and type(conn) == 'table');
+		assert(payload == nil or type(payload) == 'string');
 	end
-	local lbuf = "PING";
-	local buf = ffi.cast("unsigned char *", lbuf);
-	return ws_util.send_frame({ss = conn._ss, size = string.len(lbuf),
+	if (payload == nil) then
+		payload = 'PING';
+	end
+	local buf = ffi.cast("unsigned char *", payload);
+	return ws_util.send_frame({ss = conn._ss, size = string.len(payload),
                     flags = ws_const.FRAME_OP_PING, buf = buf, use_mask = true});
 end
 

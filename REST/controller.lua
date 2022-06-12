@@ -229,7 +229,7 @@ local function does_request_need_auth(request, url_parts)
 	return true;
 end
 
-local function prepare_uc(request, url_parts)
+local function prepare_base_uc(request, url_parts)
 	local uc = require('service_utils.common.user_context').new();
 
 	local key = properties_funcs.get_string_property("platform.jwtSignatureKey");
@@ -257,7 +257,16 @@ local function prepare_uc(request, url_parts)
 			uc.uid = 0;
 		end
 	end
+	uc.access_token = jwt_token;
 
+	return uc;
+end
+
+local function prepare_uc(request, url_parts)
+	local uc, msg = prepare_base_uc(request, url_parts);
+	if (uc == nil) then
+		return uc, msg;
+	end
 	--[[
 	-- More functionality in terms of whether the user has permission to 
 	-- perform a specific action or if the user has access to the 
@@ -266,7 +275,6 @@ local function prepare_uc(request, url_parts)
 	--]]
 
 	uc.module_path = get_module_path(url_parts);
-	uc.access_token = jwt_token;
 
 	return uc;
 end
@@ -578,19 +586,51 @@ rest_controller.handle_service_request = function (request, response)
 	return ;
 end
 
-rest_controller.handle_websocket_upgrade = function(request, response, hdr_flds)
-	require('service_utils.WS.web_socket').accept(request, response);
+rest_controller.handle_websocket_upgrade = function(request, response, uc)
+	require('service_utils.WS.web_socket').accept(request, response, uc);
 	return;
 end
 
 
-rest_controller.handle_upgrade_request = function (request, response)
+rest_controller.handle_upgrade_request = function (request, response, uc)
 	local hdr_flds = request:get_hdr_fields();
 	if (stringx.strip(hdr_flds["Upgrade"]) == "websocket") then
-		return rest_controller.handle_websocket_upgrade(request, response, hdr_flds);
+		return rest_controller.handle_websocket_upgrade(request, response, uc);
 	else
 		error("Protocol ["..hdr_flds["Upgrade"].."] not supported");
 	end
+end
+
+local function make_usual_inits(request, response)
+
+	local proc_stat, status, out_obj, flg;
+	local http_method = request:get_method();
+	local uri = URI_CLASS:new(request:get_uri());
+	if (uri == nil) then
+		error('Badly formed URL');
+	end
+	local url_parts = split_path(uri);
+
+	local uc, msg = prepare_base_uc(request, url_parts);
+	if (uc == nil) then
+		if (msg == nil) then
+			out_obj = { error_message = 'Bad Request: Invalid Access token or Access Token not present' };
+		else
+			out_obj = { error_message = 'Bad Request: Invalid Access token or Access Token not present: '..msg };
+		end
+		error(out_obj.error_message);
+	end
+
+	if (supported_http_methods[http_method] == nil) then
+		out_obj = { error_message = 'Unsupported HTTP method' };
+		error(out_obj.error_message);
+	end
+	--tao_factory.init(uc);
+
+	return uc;
+end
+
+local function make_usual_cleanups(request, response, uc)
 end
 
 rest_controller.handle_request = function (request, response)
@@ -605,7 +645,10 @@ rest_controller.handle_request = function (request, response)
 
 	if (socket_upgraded == 0) then
 		if (connection_hdr_field == 'Upgrade') then
-			return rest_controller.handle_upgrade_request(request, response);
+			local uc = make_usual_inits(request, response);
+			local ret = rest_controller.handle_upgrade_request(request, response, uc);
+			make_usual_cleanups(request, response, uc);
+			return  ret;
 		else
 			return rest_controller.handle_service_request(request, response);
 		end

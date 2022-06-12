@@ -55,9 +55,10 @@ local create_key = function()
 	return core_utils.base64_encode(rnd);
 end
 
-ws.accept = function(request, response)
+ws.accept = function(request, response, uc)
 	assert(request ~= nil and tostring(request) == 'httpsreq');
 	assert(response ~= nil and tostring(response) == 'httpsresp');
+	assert(uc ~= nil and type(uc) == 'table');
 
 	local hdr_flds = request:get_hdr_fields();
 	if (hdr_flds["Sec-WebSocket-Version"] == nil) then
@@ -105,7 +106,7 @@ ws.accept = function(request, response)
 			gen_err_resp(request, response, "WS Handler ".. ws_recvd_msg_handler .. "not present");
 			return false;
 		end
-		local flg, msg = handler.init(request, response);
+		local flg, msg = handler.init(request, response, uc);
 		if (not flg) then
 			gen_err_resp(request, response, msg);
 			return false;
@@ -129,20 +130,23 @@ ws.connect = function(inp)
 	assert(inp.url ~= nil and type(inp.url) == 'string');
 	assert(inp.credentials == nil or type(inp.credentials) == 'table');
 	assert(inp.msg_handler == nil or type(inp.msg_handler) == 'string');
+	assert(inp.hdrs ~= nil and type(inp.hdrs) == 'table');
 	local url = inp.url;
 	local msg_handler = inp.msg_handler;
 	local credentials = inp.credentials;
+	local hdrs = inp.hdrs;
 
 	local uri = client_factory.deduce_details(url);
 	local conn = client_factory.new(uri._host, uri._port);
 
-	local hdrs = {};
 	hdrs.method = "GET";
 	hdrs.Connection = "Upgrade";
 	hdrs.Upgrade = "websocket";
 	local nonce = create_key();
 	hdrs["Sec-WebSocket-Key"] = nonce;
 	hdrs["Sec-WebSocket-Version"] = 13;
+	for n,v in pairs(hdrs) do
+	end
 	conn:send_request(uri._path, hdrs);
 
 	local status, msg, resp_status, resp_hdrs = conn:recv_response();
@@ -177,10 +181,6 @@ ws.handle_msg = function(request, response)
 	msg._ss = ss;
 
 	if (msg.op_code == ws_const.FRAME_OP_PING) then
-		ws_util.send_frame({ss = ss, size = string.len("OK PONG"),
-				flags = ws_const.FRAME_OP_PONG,
-				buf = ffi.cast("unsigned char*", "OK PONG"),
-				use_mask = true});
 		local handler;
 		local ws_msg_handler = platform.get_ws_recvd_msg_handler();
 		if (ws_msg_handler ~= nil) then handler = require(ws_msg_handler); end
@@ -189,6 +189,10 @@ ws.handle_msg = function(request, response)
 		else
 			print(ffi.string(msg.buf));
 		end
+		ws_util.send_frame({ss = ss, size = msg.payload_len,
+				flags = ws_const.FRAME_OP_PONG,
+				buf = msg.buf,
+				use_mask = true});
 	elseif (msg.op_code == ws_const.FRAME_OP_PONG) then
 		local ws_msg_handler = platform.get_ws_recvd_msg_handler();
 		local handler;
