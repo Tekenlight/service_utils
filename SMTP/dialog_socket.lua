@@ -227,7 +227,7 @@ dialog_socket.cleanup = function (self)
 		evclient.add_to_pool(self.conn_type, h, self.name, self.ss);
 	else
 		self:close();
-		platform.cleanup_stream_socket(self.ss);
+		--platform.cleanup_stream_socket(self.ss);
 	end
 end
 

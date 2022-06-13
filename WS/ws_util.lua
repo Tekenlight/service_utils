@@ -290,8 +290,16 @@ ws_util.get_ws_from_pool = function(wsname)
 	if (ss and (not platform.websocket_active(ss))) then
 		return nil;
 	else
-		return ss;
+		pool:add_to_pool(wsname, ss);
+		return { _ss = ss};
 	end
+end
+
+ws_util.add_ws_to_pool = function(conn, name)
+	assert(conn ~= nil and type(conn) == 'table');
+	assert(name ~= nil and type(name) == 'string');
+	assert(conn._ss ~= nil and type(conn._ss) == 'userdata');
+	pool:add_to_pool(name, conn._ss);
 end
 
 return ws_util;
