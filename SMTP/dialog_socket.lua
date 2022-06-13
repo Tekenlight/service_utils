@@ -218,7 +218,7 @@ dialog_socket.set_socket_to_be_cached = function(self, flag)
 		error("dialog_socket.set_socket_to_be_cached : invalid inputs");
 	end
 	self.to_be_cached = flag;
-	platform.set_socket_managed(self.ss, flag);
+	--platform.set_socket_managed(self.ss, flag);
 end
 
 dialog_socket.cleanup = function (self)
