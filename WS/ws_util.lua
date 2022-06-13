@@ -290,7 +290,7 @@ ws_util.get_ws_from_pool = function(wsname)
 	if (ss and (not platform.websocket_active(ss))) then
 		return nil;
 	else
-		pool:add_to_pool(wsname, ss);
+		if (ss ~= nil) then pool:add_to_pool(wsname, ss); end
 		return { _ss = ss};
 	end
 end
