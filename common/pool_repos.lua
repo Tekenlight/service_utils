@@ -21,7 +21,7 @@ local p_mt = { __index = pool };
 pool.add_to_pool = function(self, name, ss)
 	do
 		assert(self~= nil and type(self) == 'table');
-		assert(self._pool ~= nil and type(self._pool) == 'userdata' and tostring(self._pool) == 'WEBSOCKETS');
+		assert(self._pool ~= nil and type(self._pool) == 'userdata');
 		assert(name ~= nil and type(name) == 'string');
 		assert(ss ~= nil and type(ss) == 'userdata');
 		local s = (require("pl.stringx")).split(tostring(ss), ":");
@@ -35,13 +35,11 @@ end
 pool.get_from_pool = function(self, name)
 	do
 		assert(self~= nil and type(self) == 'table');
-		assert(self._pool ~= nil and type(self._pool) == 'userdata' and tostring(self._pool) == 'WEBSOCKETS');
+		assert(self._pool ~= nil and type(self._pool) == 'userdata');
 		assert(name ~= nil and type(name) == 'string');
 	end
 	local ss = self._pool.get_from_pool(self._pool, name);
-	if (ss and (not platform.websocket_active(ss))) then
-		platform.set_socket_managed(ss, false);
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	if (ss == nil) then
 		return nil;
 	else
 		return ss;

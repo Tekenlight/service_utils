@@ -2,6 +2,7 @@ local ffi = require("ffi");
 local cu = require('lua_schema.core_utils');
 local utils = require('service_utils.common.utils');
 local ws_const = require('service_utils.WS.ws_const');
+local pool = (require('service_utils.common.pool_repos')).new('WEBSOCKETS')
 
 ffi.cdef[[
 char * strncpy(char * dst, const char * src, size_t len);
@@ -282,6 +283,15 @@ ws_util.ping = function(conn, payload)
 	local buf = ffi.cast("unsigned char *", payload);
 	return ws_util.send_frame({ss = conn._ss, size = string.len(payload),
                     flags = ws_const.FRAME_OP_PING, buf = buf, use_mask = true});
+end
+
+ws_util.get_ws_from_pool = function(wsname)
+	local ss = pool:get_from_pool(wsname);
+	if (ss and (not platform.websocket_active(ss))) then
+		return nil;
+	else
+		return ss;
+	end
 end
 
 return ws_util;
