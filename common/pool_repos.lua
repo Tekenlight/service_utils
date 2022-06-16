@@ -46,11 +46,32 @@ pool.get_from_pool = function(self, name)
 	end
 end
 
-pool_repos.new = function(poolname)
+pool.share_from_pool = function(self, name)
+	do
+		assert(self~= nil and type(self) == 'table');
+		assert(self._pool ~= nil and type(self._pool) == 'userdata');
+		assert(name ~= nil and type(name) == 'string');
+		assert(self.allow_sharing == true);
+	end
+	local ss = self._pool.share_from_pool(self._pool, name);
+	if (ss == nil) then
+		return nil;
+	else
+		return ss;
+	end
+end
+
+pool_repos.new = function(poolname, allow_sharing)
+	if (allow_sharing == nil) then
+		allow_sharing = false;
+	end
 	assert(poolname ~= nil and type(poolname) == 'string');
+	assert(allow_sharing ~= nil and type(allow_sharing) == 'boolean');
+
 	local pool = {};
 	pool._pool = repos_lib.new(poolname);
 	pool = setmetatable(pool, p_mt);
+	pool.allow_sharing = allow_sharing;
 
 	return pool
 end

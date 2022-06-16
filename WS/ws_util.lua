@@ -2,7 +2,7 @@ local ffi = require("ffi");
 local cu = require('lua_schema.core_utils');
 local utils = require('service_utils.common.utils');
 local ws_const = require('service_utils.WS.ws_const');
-local pool = (require('service_utils.common.pool_repos')).new('WEBSOCKETS')
+local pool = (require('service_utils.common.pool_repos')).new('WEBSOCKETS', true)
 
 ffi.cdef[[
 char * strncpy(char * dst, const char * src, size_t len);
@@ -57,9 +57,11 @@ ws_util.recv_bytes = function(ss, n)
 		end
 		status, ret1 = pcall(platform.recv_data_from_socket, ss, ffi.getptr(buf1), n1);
 		if (not status) then
+			platform.shutdown_websocket(ss, 3);
 			error(ret1);
 		end
 		if (ret1 <=0) then
+			platform.shutdown_websocket(ss, 3);
 			error("Receving data from websocket failed");
 		end
 		ret = ret + ret1;
@@ -286,12 +288,16 @@ ws_util.ping = function(conn, payload)
 end
 
 ws_util.get_ws_from_pool = function(wsname)
-	local ss = pool:get_from_pool(wsname);
-	if (ss and (not platform.websocket_active(ss))) then
+	local ss = pool:share_from_pool(wsname);
+	if (ss ~= nil) then
+		while (ss ~= nil and (not platform.websocket_active(ss))) do
+			ss = pool:share_from_pool(wsname);
+		end
+	end
+	if (ss == nil) then
 		return nil;
 	else
-		if (ss ~= nil) then pool:add_to_pool(wsname, ss); end
-		return { _ss = ss};
+		return { _ss = ss, shared = true;};
 	end
 end
 
@@ -299,7 +305,12 @@ ws_util.add_ws_to_pool = function(conn, name)
 	assert(conn ~= nil and type(conn) == 'table');
 	assert(name ~= nil and type(name) == 'string');
 	assert(conn._ss ~= nil and type(conn._ss) == 'userdata');
-	pool:add_to_pool(name, conn._ss);
+	if (conn.shared == nil or conn.shared == false) then
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, "NOT SHARED CONNECTION");
+		pool:add_to_pool(name, conn._ss);
+	else
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, "SHARED CONNECTION");
+	end
 end
 
 return ws_util;
