@@ -158,7 +158,7 @@ function write_makefile()
 		for i,source in ipairs(val_sources_tbl) do
 			local target = "build/output_files/"..source:gsub(".xml$","").."_xml.lua";
 			file:write(target.." : "..source.."\n");
-			file:write("\t~/.luarocks/bin/gval "..source.." "..basic_file.product.."/"..basic_file.package.." build\n")
+			file:write("\tgval "..source.." "..basic_file.product.."/"..basic_file.package.." build\n")
 			file:write("\ttouch build/rockspec.out\n\n");
     	end
     end
@@ -167,7 +167,7 @@ function write_makefile()
 		file:write("#generating xsd files in build \n\n");
 		for i,source in ipairs(xsd_sources_tbl) do
 			local target = "build/output_files/"..source:gsub(".xsd","").."_xsd.lua";
-			file:write(target.." : "..source.."\n\t~/.luarocks/bin/gxsd "..source.." build\n")
+			file:write(target.." : "..source.."\n\tgxsd "..source.." build\n")
 			file:write("\ttouch build/rockspec.out\n\n");
     	end
     end
@@ -176,7 +176,7 @@ function write_makefile()
 		file:write("#generating ddl lua files in build \n\n");
 		for i,source in ipairs(ddl_sources_tbl) do
 			local target = "build/output_files/"..source:gsub(".xml$","").."_xml.lua";
-			file:write(target.." : "..source.."\n\t~/.luarocks/bin/gtbl "
+			file:write(target.." : "..source.."\n\tgtbl "
 					..source.." "..basic_file.product.."/"..basic_file.package.." build\n")
 			file:write("\ttouch build/rockspec.out\n\n");
 		end
@@ -206,12 +206,12 @@ function write_makefile()
 			local parts = stringx.split(source, "/");
 			local target = "build/output_files/"..parts[1].."/"..parts[3]:gsub(".xml$","").."_xml.lua";
 			file:write(target.." : "..source.."\n");
-			file:write("\t~/.luarocks/bin/gidl "..source.." build\n")
+			file:write("\tgidl "..source.." build\n")
 			file:write("\ttouch build/rockspec.out\n\n");
 		end
     end
 	file:write("build/"..basic_file.package.."-"..basic_file.version..".rockspec : build/rockspec.out\n");
-	file:write("\t ~/.luarocks/bin/grockspec build/"
+	file:write("\tgrockspec build/"
 					..basic_file.package.."-"..basic_file.version..".rockspec".."\n\n");
 	file:write("clean :\n");
 	file:write("\trm -f $all_targets)");
