@@ -211,7 +211,7 @@ function write_makefile()
 		end
     end
 	file:write("build/"..basic_file.package.."-"..basic_file.version..".rockspec : build/rockspec.out\n");
-	file:write("\tlua ~/.luarocks/share/lua/5.3/generator.lua build/"
+	file:write("\t ~/.luarocks/bin/grockspec build/"
 					..basic_file.package.."-"..basic_file.version..".rockspec".."\n\n");
 	file:write("clean :\n");
 	file:write("\trm -f $all_targets)");
