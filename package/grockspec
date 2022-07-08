@@ -1,0 +1,29 @@
+#/usr/bin/sh
+
+if [ $# -ne 1 ]
+then
+   echo "Usage: grockspec <filename>"
+   exit 1
+fi
+
+filename=$1
+
+LUA_CPATH="./?.so;$HOME/.luarocks/lib/lua/5.3/?.so;$LUA_CPATH"
+export LUA_CPATH
+
+LUA_PATH="./?.lua;$HOME/.luarocks/share/lua/5.3/?.lua;$LUA_PATH"
+export LUA_PATH
+
+if [ -f $HOME/.luarocks/share/lua/5.3/genmake.lua ]
+then
+    LUA_FILE="$HOME/.luarocks/share/lua/5.3/generator.lua $filename"
+elif [ -f /usr/local/share/lua/5.3/genmake.lua ]
+then
+    LUA_FILE="/usr/local/share/lua/5.3/generator.lua $filename"
+else
+    echo "File generator.lua not found"
+    exit 1
+fi
+
+lua $LUA_FILE
+

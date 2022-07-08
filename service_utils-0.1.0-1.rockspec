@@ -113,7 +113,8 @@ build = {
 			gidl = 'REST/gidl',
 			gtbl = 'orm/gtbl',
 			build = 'package/build',
-			deploy = 'package/deploy';
+			deploy = 'package/deploy',
+			grockspec = 'package/grockspec';
 		}
 	}
 }
