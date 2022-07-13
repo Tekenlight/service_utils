@@ -13,5 +13,5 @@ then
 	luarocks --local make
 else
 	cd build
-	sudo luarocks make
+	luarocks make
 fi
