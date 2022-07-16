@@ -26,5 +26,7 @@ fi
 
 lua $LUA_FILE 
 make
+RET=$?
 rm Makefile
+exit $RET
 
