@@ -16,6 +16,12 @@ then
 	export DYLD_LIBRARY_PATH
 fi
 
+if [ $# -lt 2 ]
+then
+    echo "Usage: gidl <tbl_xml_file> <common_ref_module> [<output_directory>]"
+    exit 1
+fi
+
 file=$1
 common_ref_module=$2
 output_directory=$3

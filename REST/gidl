@@ -17,7 +17,7 @@ fi
 
 if [ $# -lt 1 ]
 then
-    echo "Usage: gidl <validation_xml_file> [<output_directory>]"
+    echo "Usage: gidl <interface_xml_file> [<output_directory>]"
     exit 1
 fi
 
