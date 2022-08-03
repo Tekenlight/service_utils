@@ -3,6 +3,9 @@ local user_context = {};
 local function get_conn(uc, db_name)
 	assert(uc ~= nil and type(uc) == 'table');
 	assert(db_name ~= nil and type(db_name) == 'string');
+	assert(uc.db_connections ~= nil);
+	assert(uc.db_connections[db_name] ~= nil);
+	assert(uc.db_connections[db_name].conn ~= nil);
 	local conn = uc.db_connections[db_name].conn;
 	assert(conn ~= nil)
 
@@ -72,6 +75,14 @@ function user_context:get_systimestamp(db_name)
 
 	local conn = get_conn(self, db_name);
 	return conn:get_systimestamp();
+end
+
+function user_context:get_sysdate(db_name)
+	assert(self ~= nil and type(self) == 'table');
+	assert(db_name ~= nil and type(db_name) == 'string');
+
+	local conn = get_conn(self, db_name);
+	return conn:get_sysdate();
 end
 
 local mt = { __index = user_context };

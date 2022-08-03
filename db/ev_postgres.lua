@@ -357,6 +357,10 @@ ev_postgres_conn.get_systimestamp = function(self)
 	return du.now(true);
 end
 
+ev_postgres_conn.get_sysdate = function(self)
+	return du.today(true);
+end
+
 ev_postgres_conn.get_sequence_nextval = function(self, seq_name)
 	local s = [=[SELECT nextval(']=]..seq_name..[=[')]=]
 	local stmt = self:prepare(s);
