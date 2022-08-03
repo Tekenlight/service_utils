@@ -313,10 +313,16 @@ local invoke_func = function(request, req_processor_interface, req_processor, fu
 	end
 	do
 		error_handler.init();
+		local error_msg_handler = function (msg) 
+			local msg_line = msg;
+			local parts_of_msg_line = require "pl.stringx".split(msg_line, ':');
+			local message = require "pl.stringx".strip(parts_of_msg_line[3]);
+			return debug.traceback(message, 3);
+		end
 		if (obj == nil) then
-			proc_stat, status, out_obj = pcall(req_processor[func], req_processor, uc, qp);
+			proc_stat, status, out_obj = xpcall(req_processor[func], error_msg_handler, req_processor, uc, qp);
 		else
-			proc_stat, status, out_obj = pcall(req_processor[func], req_processor, uc, qp, obj);
+			proc_stat, status, out_obj = xpcall(req_processor[func], error_msg_handler, req_processor, uc, qp, obj);
 		end
 	end
 	local message_validation_context = error_handler.reset_init();
