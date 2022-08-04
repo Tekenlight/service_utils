@@ -154,7 +154,7 @@ local function begin_transaction(req_processor_interface, func, uc)
 			flg = true;
 		elseif (i>1) then
 			if (req_processor_interface.methods[func].db_schema_name == nil) then
-				error("CONNECTION NAME MUST BE SPECIFIED FOR "..func.." IF TRANSACTIONA CONTROL IS REQUIRED");
+				error("CONNECTION NAME MUST BE SPECIFIED FOR "..func.." IF TRANSACTION CONTROL IS REQUIRED");
 				return false;
 			else
 				uc.db_connections[req_processor_interface.methods[func].db_schema_name].conn:begin();
