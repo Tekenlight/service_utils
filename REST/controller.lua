@@ -317,6 +317,11 @@ local invoke_func = function(request, req_processor_interface, req_processor, fu
 			local msg_line = msg;
 			local parts_of_msg_line = require "pl.stringx".split(msg_line, ':');
 			local message = require "pl.stringx".strip(parts_of_msg_line[3]);
+			local i = 4;
+			while (i <= #parts_of_msg_line) do
+				message = message ..":".. parts_of_msg_line[i];
+				i = i + 1;
+			end
 			return debug.traceback(message, 3);
 		end
 		if (obj == nil) then
