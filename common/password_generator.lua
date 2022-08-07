@@ -37,4 +37,20 @@ function pwd_gen.generate_pw()
 	return pwd;
 end
 
+function pwd_gen.gen_rand_num_str(len)
+	assert(len ~= nil and math.type(len) == 'integer');
+	local otp = '';
+	local i = 1;
+	local r1;
+
+	while (i <= 6) do
+		i = i + 1;
+		r1 = get_ran_num((#numbers));
+		r1 = r1 + 1;
+		otp = otp..numbers[r1];
+	end
+
+	return otp;
+end
+
 return pwd_gen;
