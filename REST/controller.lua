@@ -322,7 +322,7 @@ local invoke_func = function(request, req_processor_interface, req_processor, fu
 				message = message ..":".. parts_of_msg_line[i];
 				i = i + 1;
 			end
-			return debug.traceback(message, 3);
+			return debug.traceback(msg, 3);
 		end
 		if (obj == nil) then
 			proc_stat, status, out_obj = xpcall(req_processor[func], error_msg_handler, req_processor, uc, qp);

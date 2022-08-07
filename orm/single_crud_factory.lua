@@ -148,7 +148,7 @@ single_crud.logdel = function (self, context, obj)
 end
 
 single_crud.delete = function (self, context, obj)
-	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
+	--local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 	if (tao.tbl_def.col_props.soft_del) then
 		return self:logdel(context, obj)
 	else
