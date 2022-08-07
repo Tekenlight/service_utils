@@ -179,7 +179,7 @@ local function end_transaction(req_processor_interface, func, uc, status)
 		end
 	end
 	if (i == 1) then
-		uc.db_connections[name].conn:close_open_cursors();
+		pcall(uc.db_connections[name].conn.close_open_cursors,uc.db_connections[name].conn);
 		if (req_processor_interface.methods[func].transactional == true) then
 			if (status) then
 				uc.db_connections[name].conn:commit();

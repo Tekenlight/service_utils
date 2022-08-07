@@ -109,15 +109,10 @@ single_crud.modify = function (self, context, obj)
 	return true, nil, ret;
 end
 
-single_crud.delete = function (self, context, obj)
+single_crud.phydel = function (self, context, obj)
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 
-	local flg, msg, ret;
-	if (tao.tbl_def.col_props.soft_del) then
-		flg, msg, ret = tao:logdel(context, obj);
-	else
-		flg, msg, ret = tao:delete(context, obj);
-	end
+	local flg, msg, ret = tao:delete(context, obj);
 	if (not flg) then
 		if (ret == 0) then
 			local key_params_str = get_key_params_str(tao, obj);
@@ -131,6 +126,34 @@ single_crud.delete = function (self, context, obj)
 	end
 
 	return true, nil, ret;
+end
+
+single_crud.logdel = function (self, context, obj)
+	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
+
+	local flg, msg, ret = tao:logdel(context, obj);
+	if (not flg) then
+		if (ret == 0) then
+			local key_params_str = get_key_params_str(tao, obj);
+			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
+			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			return false, msg, ret;
+		else
+			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			return false, msg, ret;
+		end
+	end
+
+	return true, nil, ret;
+end
+
+single_crud.delete = function (self, context, obj)
+	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
+	if (tao.tbl_def.col_props.soft_del) then
+		return self:logdel(context, obj)
+	else
+		return self:phydel(context, obj)
+	end
 end
 
 single_crud.undelete = function (self, context, obj)

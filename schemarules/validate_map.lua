@@ -11,6 +11,7 @@ validate_map.run = function(context, map, data, additional_data)
 			if (val.argument ~= nil) then
 				if (val.ref_element ~= nil) then error_handler.push_element(val.ref_element); end
 				if (val.argument_type == 'array') then
+					assert(type(val.argument) == 'table');
 					for i,v in ipairs(val.argument) do
 						--error_handler.push_element('['..i..']');
 						error_handler.push_element(i);
@@ -42,6 +43,7 @@ validate_map.run = function(context, map, data, additional_data)
 			if (val.argument ~= nil) then
 				if (val.ref_element ~= nil) then error_handler.push_element(val.ref_element); end
 				if (val.argument_type == 'array') then
+					assert(type(val.argument) == 'table');
 					for i,v in ipairs(val.argument) do
 						--error_handler.push_element('['..i..']');
 						error_handler.push_element(i);
