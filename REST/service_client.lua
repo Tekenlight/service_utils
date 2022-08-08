@@ -103,7 +103,7 @@ service_client.transceive = function(context, inp)
 	end
     client:send_request(uri, headers, request_json);
 
-	local status, response_json = client:recv_response();
+	local status, response_json, http_status = client:recv_response();
     if (not status) then
 		local obj, msg = json_parser.decode(response_json);
 		if (obj == nil) then

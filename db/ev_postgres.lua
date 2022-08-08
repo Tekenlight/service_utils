@@ -365,7 +365,7 @@ ev_postgres_conn.get_sequence_nextval = function(self, seq_name)
 	local s = [=[SELECT nextval(']=]..seq_name..[=[')]=]
 	local stmt = self:prepare(s);
 	if (stmt == nil) then
-		error("COULD NOT PREPARE STATEMENTS FOR systimestamp");
+		error("COULD NOT PREPARE STATEMENTS FOR sequence nextval");
 		return nil;
 	end
 	local flg, msg = stmt:execute();
