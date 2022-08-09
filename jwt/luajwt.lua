@@ -110,7 +110,7 @@ function M.encode(data, key, alg)
 	return table.concat(segments, "."), nil;
 end
 
-function M.decode(data, key, verify)
+function M.deserialize(data, key, verify)
 	if key and verify == nil then verify = true end
 	if type(data) ~= 'string' then return nil, "Argument #1 must be string" end
 	if verify and type(key) ~= 'string' then return nil, "Argument #2 must be string" end
@@ -135,38 +135,58 @@ function M.decode(data, key, verify)
 		return nil, "Invalid json"
 	end
 
+	return header, body, sig, token;
+
+end
+
+function M.valid(header, body, sig, key, token)
+	local headerb64, bodyb64, sigb64 = token[1], token[2], token[3]
+
+	if not header.typ or header.typ ~= "JWT" then
+		return false, "Invalid typ"
+	end
+
+	if not header.alg or type(header.alg) ~= "string" then
+		return false, "Invalid alg"
+	end
+
+	if body.exp and type(body.exp) ~= "number" then
+		return false, "exp must be number"
+	end
+
+	if body.nbf and type(body.nbf) ~= "number" then
+		return false, "nbf must be number"
+	end
+
+	if not alg_verify[header.alg] then
+		return false, "Algorithm not supported"
+	end
+
+	if not alg_verify[header.alg](headerb64 .. "." .. bodyb64, sig, key) then
+		return false, "Invalid signature"
+	end
+
+	if body.exp and os.time() >= body.exp then
+		return false, "Not acceptable by exp"
+	end
+
+	if body.nbf and os.time() < body.nbf then
+		return false, "Not acceptable by nbf"
+	end
+
+	return true;
+end
+
+function M.decode(data, key, verify)
+	local header, body, sig, token = M.deserialize(data, key, verify);
+	if (header == nil) then
+		return header, body;
+	end
+
 	if verify then
-
-		if not header.typ or header.typ ~= "JWT" then
-			return nil, "Invalid typ"
-		end
-
-		if not header.alg or type(header.alg) ~= "string" then
-			return nil, "Invalid alg"
-		end
-
-		if body.exp and type(body.exp) ~= "number" then
-			return nil, "exp must be number"
-		end
-
-		if body.nbf and type(body.nbf) ~= "number" then
-			return nil, "nbf must be number"
-		end
-
-		if not alg_verify[header.alg] then
-			return nil, "Algorithm not supported"
-		end
-
-		if not alg_verify[header.alg](headerb64 .. "." .. bodyb64, sig, key) then
-			return nil, "Invalid signature"
-		end
-
-		if body.exp and os.time() >= body.exp then
-			return nil, "Not acceptable by exp"
-		end
-
-		if body.nbf and os.time() < body.nbf then
-			return nil, "Not acceptable by nbf"
+		local status, msg =  M.valid(header, body, sig, key, token);
+		if (not status) then
+			return status, msg;
 		end
 	end
 

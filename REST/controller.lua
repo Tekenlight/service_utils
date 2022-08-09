@@ -244,10 +244,11 @@ local function prepare_base_uc(request, url_parts)
 	-- It basically decodes the token as well as verifies the signature
 	-- The bearer of the token is the authorized user
 	--]]
+	--[[
 	local token, msg = jwt.decode(jwt_token, key, true);
 	if (token ~= nil) then
 		if (token.typ ~= 'jwt/access') then
-			return nil, [[Only access tokens are allowed]];
+			return nil, "Only access tokens are allowed";
 		end
 		token.exp_time = du.from_xml_datetime(os.date('%Y-%m-%dT%TZ', token.exp));
 		token.nbf_time = du.from_xml_datetime(os.date('%Y-%m-%dT%TZ', token.nbf));
@@ -262,7 +263,45 @@ local function prepare_base_uc(request, url_parts)
 			uc.uid = 0;
 		end
 	end
-	uc.access_token = jwt_token;
+	--]]
+	if (jwt_token == nil) then
+		if (does_request_need_auth(request, url_parts)) then
+			return nil, "header X-Auth: JWT token not present";
+		else
+			uc.uid = ffi.cast("int64_t", 0);
+		end
+	else
+		local token_header, token_body, sig, token_parts = jwt.deserialize(jwt_token, key, true);
+		if (token_header == nil) then
+			local msg = token_body;
+			if (does_request_need_auth(request, url_parts)) then
+				return nil, msg;
+			else
+				uc.uid = ffi.cast("int64_t", 0);
+			end
+		else
+			assert(token_body ~= nil);
+			assert(sig ~= nil);
+			assert(token_parts ~= nil);
+			if (token_body.typ ~= 'jwt/access') then
+				return nil, "Only access tokens are allowed";
+			end
+			if (token_body.verified == nil or (not token_body.verified)) then
+				local token_valid, msg = jwt.valid(token_header, token_body, sig, key, token_parts);
+				if (not token_valid) then
+					return nil, msg;
+				end
+			end
+			token_body.verified = true;
+			uc.access_token = jwt.encode(token_body, key, token_header.alg);;
+			--uc.verified_jwt_token = jwt.encode(token_body, key, token_header.alg);
+			token_body.exp_time = du.from_xml_datetime(os.date('%Y-%m-%dT%TZ', token_body.exp));
+			token_body.nbf_time = du.from_xml_datetime(os.date('%Y-%m-%dT%TZ', token_body.nbf));
+			token_body.uid = ffi.cast("int64_t", tonumber(token_body.uid));
+			uc.uid = token_body.uid;
+			uc.token_body = token_body;
+		end
+	end
 
 	return uc;
 end
