@@ -7,6 +7,7 @@ local properties_funcs = platform.properties_funcs();
 local tao_factory = require('service_utils.orm.tao_factory');
 local jwt = require('service_utils.jwt.luajwt')
 local stringx = require("pl.stringx");
+local du = require('lua_schema.date_utils');
 
 local rest_controller = {};
 
@@ -245,9 +246,13 @@ local function prepare_base_uc(request, url_parts)
 	--]]
 	local token, msg = jwt.decode(jwt_token, key, true);
 	if (token ~= nil) then
-		token.exp_time = os.date('%Y-%m-%d %T', token.exp);
-		token.nbf_time = os.date('%Y-%m-%d %T', token.nbf);
-		uc.uid = ffi.cast("int64_t", tonumber(token.uid));
+		if (token.typ ~= 'jwt/access') then
+			return nil, [[Only access tokens are allowed]];
+		end
+		token.exp_time = du.from_xml_datetime(os.date('%Y-%m-%dT%TZ', token.exp));
+		token.nbf_time = du.from_xml_datetime(os.date('%Y-%m-%dT%TZ', token.nbf));
+		token.uid = ffi.cast("int64_t", tonumber(token.uid));
+		uc.uid = token.uid;
 		uc.token = token;
 		local now = os.time();
 	else
