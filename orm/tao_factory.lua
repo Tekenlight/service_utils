@@ -244,7 +244,14 @@ tao.insert = function(self, context, obj, col_map)
 	local flg, msg = stmt:vexecute(count, inputs, true)
 	if (not flg) then
 		if (conn:get_in_transaction()) then conn:prepare(rollback_savepoint_sql):execute(); end
-		return false, msg, -1;
+		local ret = 0;
+		--((nil ~= string.match(msg, 'duplicate')) or (nil ~= string.match(msg, 'violates unique constraint')))
+		if ((nil ~= string.match(msg, 'duplicate key value violates unique constraint'))) then
+			ret = -1;
+		else
+			ret = -2;
+		end
+		return false, msg, ret;
 	end
 	local ret = stmt:affected();
 	if (0 == ret) then
