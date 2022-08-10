@@ -68,7 +68,7 @@ function harness.prepare_uc(databases, db_schema_name, module_path, jwt_token)
 	local key = properties_funcs.get_string_property("platform.jwtSignatureKey");
 
 	local token, msg = jwt.decode(jwt_token, key, true);
-	if (token == nil) then
+	if (token == nil or token == false) then
 		error(msg);
 	end
 

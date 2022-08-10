@@ -78,7 +78,7 @@ single_crud.add = function (self, context, obj)
 	if (not flg) then
 		if (ret == -1) then
 			local key_params_str = get_key_params_str(tao, obj);
-			local msg = messages:format('DUPLICATE_RECORD_FOUND', key_params_str);
+			--local msg = messages:format('DUPLICATE_RECORD_FOUND', key_params_str);
 			error_handler.raise_error(-1, msg, debug.getinfo(1));
 			return false, msg, ret;
 		else
