@@ -12,7 +12,10 @@ validate_map.run = function(context, map, data, additional_data)
 				if (val.ref_element ~= nil) then error_handler.push_element(val.ref_element); end
 				if (val.argument_type == 'array') then
 					assert(type(val.argument) == 'table');
-					for i,v in ipairs(val.argument) do
+					local num_elements = 0;
+					for i,v in pairs(val.argument) do
+						num_elements = num_elements + 1;
+						assert(type(i) == 'number');
 						--error_handler.push_element('['..i..']');
 						error_handler.push_element(i);
 						do
@@ -23,6 +26,7 @@ validate_map.run = function(context, map, data, additional_data)
 						end
 						error_handler.pop_element();
 					end
+					assert(num_elements == #(val.argument));
 				else
 					local flg = val.val_func(context, val.argument, val.addnl_argument);
 					if (not flg) then
@@ -44,7 +48,10 @@ validate_map.run = function(context, map, data, additional_data)
 				if (val.ref_element ~= nil) then error_handler.push_element(val.ref_element); end
 				if (val.argument_type == 'array') then
 					assert(type(val.argument) == 'table');
-					for i,v in ipairs(val.argument) do
+					local num_elements = 0;
+					for i,v in pairs(val.argument) do
+						num_elements = num_elements + 1;
+						assert(type(i) == 'number');
 						--error_handler.push_element('['..i..']');
 						error_handler.push_element(i);
 						do
@@ -57,6 +64,7 @@ validate_map.run = function(context, map, data, additional_data)
 						end
 						error_handler.pop_element();
 					end
+					assert(num_elements == #(val.argument));
 				else
 					local flg = val.val_func(context, val.argument, val.addnl_argument);
 					if (not flg) then
