@@ -360,14 +360,17 @@ local invoke_func = function(request, req_processor_interface, req_processor, fu
 		local error_msg_handler = function (msg) 
 			local msg_line = msg;
 			local parts_of_msg_line = require "pl.stringx".split(msg_line, ':');
-			local message = require "pl.stringx".strip(parts_of_msg_line[3]);
-			local i = 4;
-			while (i <= #parts_of_msg_line) do
-				message = message ..":".. parts_of_msg_line[i];
-				i = i + 1;
+			if (#parts_of_msg_line > 2) then
+				local message = require "pl.stringx".strip(parts_of_msg_line[3]);
+				local i = 4;
+				while (i <= #parts_of_msg_line) do
+					message = message ..":".. parts_of_msg_line[i];
+					i = i + 1;
+				end
 			end
 			return debug.traceback(msg, 3);
 		end
+		assert((func ~= nil) and (type(req_processor) == 'table') and (req_processor[func] ~= nil));
 		if (obj == nil) then
 			proc_stat, status, out_obj = xpcall(req_processor[func], error_msg_handler, req_processor, uc, qp);
 		else
