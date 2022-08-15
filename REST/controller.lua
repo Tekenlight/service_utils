@@ -8,6 +8,7 @@ local tao_factory = require('service_utils.orm.tao_factory');
 local jwt = require('service_utils.jwt.luajwt')
 local stringx = require("pl.stringx");
 local du = require('lua_schema.date_utils');
+local ffi = require('ffi');
 
 local rest_controller = {};
 
@@ -109,7 +110,7 @@ local function deduce_action(url_parts, qp)
 end
 
 local function make_db_connections(params)
-	db_connections = {};
+	local db_connections = {};
 	for n, v in pairs(params) do
 		local db_access = require(v.handler);
 		local conn = db_access.open_connetion(table.unpack(v.params));

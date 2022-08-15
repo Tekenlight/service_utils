@@ -243,7 +243,10 @@ tao.insert = function(self, context, obj, col_map)
 	if (conn:get_in_transaction()) then conn:prepare(issue_savepoint_sql):execute(); end
 	local flg, msg = stmt:vexecute(count, inputs, true)
 	if (not flg) then
-		if (conn:get_in_transaction()) then conn:prepare(rollback_savepoint_sql):execute(); end
+		if (conn:get_in_transaction()) then
+			conn:prepare(rollback_savepoint_sql):execute();
+			conn:reset_connection_error();
+		end
 		local ret = 0;
 		--((nil ~= string.match(msg, 'duplicate')) or (nil ~= string.match(msg, 'violates unique constraint')))
 		if ((nil ~= string.match(msg, 'duplicate key value violates unique constraint'))) then
@@ -395,7 +398,10 @@ tao.raw_update = function(self, context, obj, col_map)
 	local stmt = conn:prepare(query_stmt);
 	local flg, msg = stmt:vexecute(count, inputs, true)
 	if (not flg) then
-		if (conn:get_in_transaction()) then conn:prepare(rollback_savepoint_sql):execute(); end
+		if (conn:get_in_transaction()) then
+			conn:prepare(rollback_savepoint_sql):execute();
+			conn:reset_connection_error();
+		end
 		return false, msg, -1;
 	end
 	local ret = stmt:affected();
@@ -446,7 +452,10 @@ tao.delete = function(self, context, obj)
 	local stmt = conn:prepare(tbl_def.delete_stmt);
 	local flg, msg = stmt:vexecute(count, inputs, true)
 	if (not flg) then
-		if (conn:get_in_transaction()) then conn:prepare(rollback_savepoint_sql):execute(); end
+		if (conn:get_in_transaction()) then
+			conn:prepare(rollback_savepoint_sql):execute();
+			conn:reset_connection_error();
+		end
 		return false, msg, -1;
 	end
 	local ret = stmt:affected();
@@ -516,7 +525,10 @@ local function logical_del_or_undel(context, conn, action, tbl_def, obj)
 	if (conn:get_in_transaction()) then conn:prepare(issue_savepoint_sql):execute(); end
 	local flg, msg = stmt:vexecute(count, inputs, true)
 	if (not flg) then
-		if (conn:get_in_transaction()) then conn:prepare(rollback_savepoint_sql):execute(); end
+		if (conn:get_in_transaction()) then
+			conn:prepare(rollback_savepoint_sql):execute();
+			conn:reset_connection_error();
+		end
 		return false, msg, -1;
 	end
 	local ret = stmt:affected();

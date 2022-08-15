@@ -92,6 +92,7 @@ ev_postgres_stmt.vexecute = function(self, inp_count, inp_args, return_errors)
 	local strings = {}; -- This is to ensure, no loss of data due to gc
 	local ints = {}; -- This is to ensure, no loss of data due to gc
 	local i = 1;
+	local v;
 	while (i <= inp_count) do
 		--v = select(i, table.unpack(inp_args));
 		v = inp_args[i];
@@ -435,6 +436,10 @@ ev_postgres_conn.prepare = function(self, sql_stmt)
 	p_stmt = setmetatable(p_stmt, s_mt);
 	assert(p_stmt ~= nil);
 	return p_stmt;
+end
+
+ev_postgres_conn.reset_connection_error = function(self)
+	return self._conn:reset_connection_error();
 end
 
 ev_postgres_conn.get_seq_nextval = function(self, seq_name)
