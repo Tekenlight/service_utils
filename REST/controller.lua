@@ -359,6 +359,9 @@ local invoke_func = function(request, req_processor_interface, req_processor, fu
 		error_handler.init();
 		local error_msg_handler = function (msg) 
 			local msg_line = msg;
+			if (msg_line == nil) then
+				msg_line = '';
+			end
 			local parts_of_msg_line = require "pl.stringx".split(msg_line, ':');
 			if (#parts_of_msg_line > 2) then
 				local message = require "pl.stringx".strip(parts_of_msg_line[3]);
