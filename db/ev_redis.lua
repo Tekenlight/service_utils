@@ -111,12 +111,40 @@ ev_redis_connection.zadd = function(self, key, score, value)
 	valid_score(score);
 	valid_value(value);
 
-	local query = 'ZADD '..key..' '..tostring(score)..' \"'..tostring(value)..'\"';
+	--local query = 'ZADD '..key..' '..tostring(score)..' \"'..tostring(value)..'\"';
+	local query = 'ZADD '..key..' '..tostring(score)..' '..tostring(value);
 	local status, response, msg = self._conn:transceive(query);
 	if (not status) then
 		return status,  msg;
 	else
 		return status;
+	end
+end
+
+ev_redis_connection.zremrangebyscore = function(self, key, score1, score1_inclusive, score2, score2_inclusive)
+	valid_self(self);
+	valid_key(key);
+	valid_score(score1);
+	assert(score1_inclusive ~= nil and type(score1_inclusive) == 'boolean');
+	if (score ~= nil) then
+		valid_score(score2);
+		assert(score2_inclusive ~= nil and type(score2_inclusive) == 'boolean');
+	end
+
+	if (score1_inclusive) then score1_inclusive = ''; else score1_inclusive = '('; end
+	if (score2 ~= nil) then
+		if (score2_inclusive) then score2_inclusive = ''; else score2_inclusive = '('; end
+	end
+
+	local query = 'ZREMRANGEBYSCORE '..key..' '..score1_inclusive..tostring(score1);
+	if (score2 ~= nil) then
+		query = query..' '..score2_inclusive..tostring(score2);
+	end
+	local status, response, msg = self._conn:transceive(query);
+	if (not status) then
+		return status, nil, msg;
+	else
+		return status, response;
 	end
 end
 
