@@ -75,7 +75,7 @@ ws_util.send_bytes = function(ss, buf, n)
 	assert(n ~= nil and type(n) == 'number' and n > 0);
 	assert(buf ~= nil and type(buf) == 'cdata');
 
-	status, ret = pcall(platform.send_data_on_acc_socket, ss, ffi.getptr(buf), n);
+	local status, ret = pcall(platform.send_data_on_acc_socket, ss, ffi.getptr(buf), n);
 	if (not status) then
 		error(ret);
 	end

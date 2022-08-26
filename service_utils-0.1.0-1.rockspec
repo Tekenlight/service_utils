@@ -86,6 +86,7 @@ build = {
 		["service_utils.common.pool_repos"] = 'common/pool_repos.lua',
 
 		["service_utils.db.client_params"] = 'db/client_params.lua',
+		["service_utils.db.ev_database"] = 'db/ev_database.lua',
 		["service_utils.db.ev_postgres"] = 'db/ev_postgres.lua',
 		["service_utils.db.ev_redis"] = 'db/ev_redis.lua',
 		["service_utils.db.ev_types"] = 'db/ev_types.lua',
