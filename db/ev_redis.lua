@@ -134,6 +134,21 @@ ev_redis_connection.zadd = function(self, key, score, value)
 	end
 end
 
+ev_redis_connection.zrem = function(self, key, value)
+	valid_self(self);
+	valid_key(key);
+	valid_value(value);
+
+	--local query = 'ZADD '..key..' '..tostring(score)..' \"'..tostring(value)..'\"';
+	local query = 'ZREM '..key..' '..tostring(value);
+	local status, response, msg = self._conn:transceive(query);
+	if (not status) then
+		return status,  msg;
+	else
+		return status;
+	end
+end
+
 ev_redis_connection.zremrangebyscore = function(self, key, score1, score1_inclusive, score2, score2_inclusive)
 	valid_self(self);
 	valid_key(key);
