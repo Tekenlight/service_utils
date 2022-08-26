@@ -60,7 +60,14 @@ local function write_rockspec(basic_file, filename)
 	file:write("\tlicense = \""..basic_file.description.license.."\",\n");
 	file:write("\thomepage = \""..basic_file.description.homepage.."\"\n}\n\n");
 	file:write("dependencies = {\n");
-	file:write("\t\""..basic_file.dependencies[1].."\"\n}\n\n");
+	for i,v in ipairs(basic_file.dependencies) do
+		if (i == 1) then
+			file:write("\t\""..v.."\"\n");
+		else
+			file:write("\t,\""..v.."\"\n");
+		end
+	end
+	file:write("}\n\n");
 	file:write("source = {\n\turl = \""..basic_file.source.url.."\",\n");
 	file:write("\ttag = \""..basic_file.source.tag.."\",\n}\n\n");
 	file:write("build = {\n");
