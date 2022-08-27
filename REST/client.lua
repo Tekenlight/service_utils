@@ -10,9 +10,12 @@ local function get_uri_from_url(url)
 	return string.match(url, '[^?]+');
 end
 
-local function make_new_http_client(hostname, port)
+local function make_new_http_client(hostname, port, secure)
 	assert(hostname ~= nil and type(hostname) == 'string');
 	assert(port ~= nil and math.type(port) == 'integer');
+	assert(secure == nil or type(secure) == boolean);
+
+	if (secure == nil) then secure = false; end
 
 	local new_client = {};
 	new_client = setmetatable(new_client, mt);
@@ -22,6 +25,10 @@ local function make_new_http_client(hostname, port)
 	new_client._http_conn = http_conn;
 	new_client._ss = ss;
 	new_client._host = tostring(hostname)..':'..tostring(port);
+
+	if (secure) then
+		new_client:connect_TLS();
+	end
 
 	return new_client;
 end
@@ -40,12 +47,12 @@ client_maker.deduce_details = function(url, port)
 	return uri;
 end
 
-client_maker.new = function(url, port)
-	return make_new_http_client(url, port);
+client_maker.new = function(url, port, secure)
+	return make_new_http_client(url, port, secure);
 end
 
-client_maker.new_through_proxy = function(url, port)
-	return make_new_http_client(url, port);
+client_maker.new_through_proxy = function(url, port, secure)
+	return make_new_http_client(url, port, secure);
 end
 
 client.send_request = function (self, uri, headers, body)
