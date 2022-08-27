@@ -100,7 +100,7 @@ service_client.make_connection_to_internal_host = function(context, inp)
 	assert(config_conn ~= nil);
 
 	local status, response, msg = config_conn:zrangebyscore(inp.service_name, '-inf', false, '+inf', false);
-    if (not status) then
+	if (not status) then
 		local msg = messages:format('HOST_NOT_RESOLVED_FROM_CONFIG', inp.service_name);
 		error(msg);
 		return false, nil;
