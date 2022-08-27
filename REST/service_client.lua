@@ -111,7 +111,7 @@ service_client.make_connection_to_internal_host = function(context, inp)
 
 	local host_config_element = host_confg_rec_handler:from_json(core_utils.str_base64_decode(response[1]));
 
-	local client = rest_client_factory.new(host_config_element.host, tonumber(host_config_element.port));
+	local client = rest_client_factory.new(host_config_element.host, tonumber(host_config_element.port), host_config_element.secure);
 
 	return client;
 end
