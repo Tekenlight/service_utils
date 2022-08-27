@@ -82,7 +82,8 @@ ws.accept = function(request, response, uc)
 
 	local ws_recvd_msg_handler;
 	if (#url_parts > 0) then
-		local app_base_path = properties_funcs.get_string_property("service_utils.REST.controller.appBasePath");
+		--local app_base_path = properties_funcs.get_string_property("service_utils.REST.controller.appBasePath");
+		local app_base_path = nil;
 		if (app_base_path == nil) then
 			app_base_path = '';
 		else

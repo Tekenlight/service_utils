@@ -44,6 +44,10 @@ client_maker.new = function(url, port)
 	return make_new_http_client(url, port);
 end
 
+client_maker.new_through_proxy = function(url, port)
+	return make_new_http_client(url, port);
+end
+
 client.send_request = function (self, uri, headers, body)
 	assert(self ~= nil and type(self) == 'table');
 	assert(uri ~= nil and type(uri) == 'string');

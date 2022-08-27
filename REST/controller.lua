@@ -14,6 +14,12 @@ local rest_controller = {};
 
 local supported_http_methods = { GET = 1, PUT = 1, POST = 1, DELETE = 1 };
 
+local app_base_path_not_to_be_used = properties_funcs.get_bool_property("service_utils.REST.controller.appBasePath");
+if (app_base_path_not_to_be_used == nil) then
+	app_base_path_not_to_be_used = false;
+end
+local app_base_path = properties_funcs.get_string_property("service_utils.REST.controller.appBasePath");
+
 local function isempty(s)
 	return s == nil or s == '';
 end
@@ -53,8 +59,7 @@ local function get_interface_class_path(url_parts)
 	end
 	i = i + 1;
 	interface_path = interface_path.."."..url_parts[i].."_interface";
-	local app_base_path = properties_funcs.get_string_property("service_utils.REST.controller.appBasePath");
-	if (app_base_path ~= nil) then
+	if ((not app_base_path_not_to_be_used) and (app_base_path ~= nil)) then
 		interface_path = app_base_path.."."..interface_path;
 	end
 
@@ -77,8 +82,7 @@ local function get_module_path(url_parts)
 		end
 	end
 
-	local app_base_path = properties_funcs.get_string_property("service_utils.REST.controller.appBasePath");
-	if (app_base_path ~= nil) then
+	if ((not app_base_path_not_to_be_used) and (app_base_path ~= nil)) then
 		path = app_base_path.."."..path;
 	end
 
@@ -101,8 +105,7 @@ local function deduce_action(url_parts, qp)
 		end
 	end
 
-	local app_base_path = properties_funcs.get_string_property("service_utils.REST.controller.appBasePath");
-	if (app_base_path ~= nil) then
+	if ((not app_base_path_not_to_be_used) and (app_base_path ~= nil)) then
 		path = app_base_path.."."..path;
 	end
 

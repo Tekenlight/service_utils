@@ -393,7 +393,7 @@ end
 local mt = { __index = smtp_client_session };
 local smtp_client_session_factory = {};
 
-smtp_client_session_factory.new = function(conn_type, host, port)
+smtp_client_session_factory.new = function(conn_type, host, port, name)
 	local nc = {};
 	nc = setmetatable(nc, mt);
 	local ss = nil;

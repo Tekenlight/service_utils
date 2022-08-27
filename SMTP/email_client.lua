@@ -29,8 +29,8 @@ local email_services = {
 	gmail_tls = { uri = 'smtp.gmail.com', port = '587' }
 };
 
-local make_connection = function(self, email_service, user_id, password)
-	local status, smtp_c = pcall(smtp_c_f.new, conn_type, email_services[email_service].uri, email_services[email_service].port);
+local make_connection = function(self, email_service, user_id, password, name)
+	local status, smtp_c = pcall(smtp_c_f.new, conn_type, email_services[email_service].uri, email_services[email_service].port, name);
 	if (not status) then
 		error_handler.raise_error(-1, smtp_c, debug.getinfo(1));
 		error(smtp_c);
@@ -50,7 +50,7 @@ local make_connection = function(self, email_service, user_id, password)
 
 	return true, smtp_c;
 end
-local init = function(self, email_service, user_id, password)
+local init = function(self, email_service, user_id, password, name)
 
 	local smtp_c = nil;
 	local host = email_services[email_service].uri ..':'.. email_services[email_service].port;
@@ -70,7 +70,7 @@ local init = function(self, email_service, user_id, password)
 			--error_handler.raise_error(-1, ss, debug.getinfo(1));
 			--return false, nil;
 		--end
-		status, smtp_c = pcall(smtp_c_f.new_from_cached_ss, ss, conn_type, email_services[email_service].uri, email_services[email_service].port, user_id);
+		status, smtp_c = pcall(smtp_c_f.new_from_cached_ss, ss, conn_type, email_services[email_service].uri, email_services[email_service].port, user_id, name);
 		if (not status) then
 			error_handler.raise_error(-1, smtp_c, debug.getinfo(1));
 			return false, nil;
@@ -79,7 +79,7 @@ local init = function(self, email_service, user_id, password)
 	else
 		local status = nil;
 		if (smtp_c == nil) then
-			status, smtp_c = make_connection(self, email_service, user_id, password);
+			status, smtp_c = make_connection(self, email_service, user_id, password, name);
 			if (not status) then
 				return false, nil;
 			end
@@ -112,7 +112,7 @@ email_client.sendmail = function(self, email_service, email_message)
 		return false;
 	end
 
-	local status , smtp_c, conn_from_pool = init(email_client, email_service, email_message.from, email_message.password);
+	local status , smtp_c, conn_from_pool = init(email_client, email_service, email_message.from, email_message.password, email_message.name);
 	if (not status) then
 		return false;
 	end
@@ -149,7 +149,7 @@ email_client.sendmail = function(self, email_service, email_message)
 			if (smtp_c:connetion_is_bad()) then
 				smtp_c:release_connection();
 				smtp_c = nil;
-				status, smtp_c = make_connection(self, email_service, email_message.from, email_message.password);
+				status, smtp_c = make_connection(self, email_service, email_message.from, email_message.password, email_message.name);
 				if (not status) then
 					return false;
 				end
