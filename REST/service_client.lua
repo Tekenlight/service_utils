@@ -67,7 +67,7 @@ service_client.low_transcieve = function(context, rest_client, uri, headers, req
     rest_client:send_request(uri, headers, request_json);
 
 	local status, response_json, http_status = rest_client:recv_response();
-    if (not status) then
+	if (not status) then
 		if (response_json ~= nil) then
 			local obj, msg = json_parser.decode(response_json);
 			if (obj == nil) then
@@ -77,7 +77,7 @@ service_client.low_transcieve = function(context, rest_client, uri, headers, req
 		else
 			return false, nil, http_status;
 		end
-    end
+	end
 
 	return status, response_json, http_status;
 end
