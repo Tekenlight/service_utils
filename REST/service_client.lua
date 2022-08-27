@@ -37,7 +37,7 @@ local function get_output_obj(schema_def, response)
 	assert(msg_handler ~= nil);
 	local obj, msg = msg_handler:from_json(response);
 	if (obj == nil) then
-		error(msg);
+		obj = { error_message = response_json };
 	end
 	return obj;
 end
@@ -71,7 +71,7 @@ service_client.low_transcieve = function(context, rest_client, uri, headers, req
 		if (response_json ~= nil) then
 			local obj, msg = json_parser.decode(response_json);
 			if (obj == nil) then
-				return false, response_json, http_status, msg;
+				return false, { error_message = response_json }, http_status, msg;
 			end
 			return false, obj, http_status;
 		else
@@ -135,9 +135,9 @@ service_client.prepare_uri = function(context, inp)
 
 	local uri;
 	local properties_funcs = platform.properties_funcs();
-	local app_base_path_not_to_be_used = properties_funcs.get_bool_property("service_utils.REST.controller.appBasePath");
-	if (app_base_path_not_to_be_used == nil) then app_base_path_not_to_be_used = true; end
-	if (not app_base_path_not_to_be_used) then
+	local app_base_path_not_to_be_used = properties_funcs.get_bool_property("service_utils.REST.controller.appBasePathNotToBeUsed");
+	if (app_base_path_not_to_be_used == nil) then app_base_path_not_to_be_used = false; end
+	if (app_base_path_not_to_be_used) then
 		uri = "/"..inp.product_name.."/"..string.gsub(inp.module_name, "%.", "/");
 	else
 		uri = "/"..string.gsub(inp.module_name, "%.", "/");
@@ -164,7 +164,7 @@ service_client.prepare_response_obj = function(context, method_properties, respo
 		assert(response_json ~= nil and type(response_json) == 'string');
 		local obj, msg = get_output_obj(method_properties.message.in_out[2], response_json);
 		if (obj == nil) then
-			error(msg);
+			obj = { error_message = response_json };
 		end
 		return obj;
 	else
