@@ -38,36 +38,6 @@ do
     element_handler.properties.attr = {};
     element_handler.properties.attr._attr_properties = {};
     do
-        element_handler.properties.attr._attr_properties['{}tablespace'] = {};
-
-        element_handler.properties.attr._attr_properties['{}tablespace'].base = {};
-        element_handler.properties.attr._attr_properties['{}tablespace'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}tablespace'].base.name = 'token';
-        element_handler.properties.attr._attr_properties['{}tablespace'].bi_type = {};
-        element_handler.properties.attr._attr_properties['{}tablespace'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}tablespace'].bi_type.name = 'token';
-        element_handler.properties.attr._attr_properties['{}tablespace'].bi_type.id = '16';
-        element_handler.properties.attr._attr_properties['{}tablespace'].properties = {};
-        element_handler.properties.attr._attr_properties['{}tablespace'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}token';
-        element_handler.properties.attr._attr_properties['{}tablespace'].properties.default = '';
-        element_handler.properties.attr._attr_properties['{}tablespace'].properties.fixed = false;
-        element_handler.properties.attr._attr_properties['{}tablespace'].properties.use = 'R';
-        element_handler.properties.attr._attr_properties['{}tablespace'].properties.form = 'U';
-
-        element_handler.properties.attr._attr_properties['{}tablespace'].particle_properties = {};
-        element_handler.properties.attr._attr_properties['{}tablespace'].particle_properties.q_name = {};
-        element_handler.properties.attr._attr_properties['{}tablespace'].particle_properties.q_name.ns = '';
-        element_handler.properties.attr._attr_properties['{}tablespace'].particle_properties.q_name.local_name = 'tablespace';
-        element_handler.properties.attr._attr_properties['{}tablespace'].particle_properties.generated_name = 'tablespace';
-
-        element_handler.properties.attr._attr_properties['{}tablespace'].type_handler = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
-
-        element_handler.properties.attr._attr_properties['{}tablespace'].super_element_content_type = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
-        element_handler.properties.attr._attr_properties['{}tablespace'].type_of_simple = 'A';
-        element_handler.properties.attr._attr_properties['{}tablespace'].local_facets = {}
-        element_handler.properties.attr._attr_properties['{}tablespace'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}tablespace']);
-    end
-    do
         element_handler.properties.attr._attr_properties['{}unique'] = {};
 
         element_handler.properties.attr._attr_properties['{}unique'].base = {};
@@ -127,20 +97,50 @@ do
         element_handler.properties.attr._attr_properties['{}name'].local_facets = {}
         element_handler.properties.attr._attr_properties['{}name'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}name']);
     end
+    do
+        element_handler.properties.attr._attr_properties['{}tablespace'] = {};
+
+        element_handler.properties.attr._attr_properties['{}tablespace'].base = {};
+        element_handler.properties.attr._attr_properties['{}tablespace'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}tablespace'].base.name = 'token';
+        element_handler.properties.attr._attr_properties['{}tablespace'].bi_type = {};
+        element_handler.properties.attr._attr_properties['{}tablespace'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}tablespace'].bi_type.name = 'token';
+        element_handler.properties.attr._attr_properties['{}tablespace'].bi_type.id = '16';
+        element_handler.properties.attr._attr_properties['{}tablespace'].properties = {};
+        element_handler.properties.attr._attr_properties['{}tablespace'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}token';
+        element_handler.properties.attr._attr_properties['{}tablespace'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}tablespace'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}tablespace'].properties.use = 'R';
+        element_handler.properties.attr._attr_properties['{}tablespace'].properties.form = 'U';
+
+        element_handler.properties.attr._attr_properties['{}tablespace'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}tablespace'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}tablespace'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}tablespace'].particle_properties.q_name.local_name = 'tablespace';
+        element_handler.properties.attr._attr_properties['{}tablespace'].particle_properties.generated_name = 'tablespace';
+
+        element_handler.properties.attr._attr_properties['{}tablespace'].type_handler = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
+
+        element_handler.properties.attr._attr_properties['{}tablespace'].super_element_content_type = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}tablespace'].type_of_simple = 'A';
+        element_handler.properties.attr._attr_properties['{}tablespace'].local_facets = {}
+        element_handler.properties.attr._attr_properties['{}tablespace'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}tablespace']);
+    end
     element_handler.properties.attr._generated_attr = {};
-    element_handler.properties.attr._generated_attr['unique'] = '{}unique';
-    element_handler.properties.attr._generated_attr['name'] = '{}name';
     element_handler.properties.attr._generated_attr['tablespace'] = '{}tablespace';
+    element_handler.properties.attr._generated_attr['name'] = '{}name';
+    element_handler.properties.attr._generated_attr['unique'] = '{}unique';
 end
 
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
         generated_subelement_name = '_sequence_group',
-        group_type = 'S',
-        max_occurs = 1,
         top_level_group = true,
         min_occurs = 1,
+        max_occurs = 1,
+        group_type = 'S',
         'index_column',
     };
 end

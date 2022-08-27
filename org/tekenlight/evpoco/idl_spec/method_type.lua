@@ -38,6 +38,36 @@ do
     element_handler.properties.attr = {};
     element_handler.properties.attr._attr_properties = {};
     do
+        element_handler.properties.attr._attr_properties['{}transactional'] = {};
+
+        element_handler.properties.attr._attr_properties['{}transactional'].base = {};
+        element_handler.properties.attr._attr_properties['{}transactional'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}transactional'].base.name = 'boolean';
+        element_handler.properties.attr._attr_properties['{}transactional'].bi_type = {};
+        element_handler.properties.attr._attr_properties['{}transactional'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}transactional'].bi_type.name = 'boolean';
+        element_handler.properties.attr._attr_properties['{}transactional'].bi_type.id = '15';
+        element_handler.properties.attr._attr_properties['{}transactional'].properties = {};
+        element_handler.properties.attr._attr_properties['{}transactional'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}boolean';
+        element_handler.properties.attr._attr_properties['{}transactional'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}transactional'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}transactional'].properties.use = 'R';
+        element_handler.properties.attr._attr_properties['{}transactional'].properties.form = 'U';
+
+        element_handler.properties.attr._attr_properties['{}transactional'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}transactional'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}transactional'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}transactional'].particle_properties.q_name.local_name = 'transactional';
+        element_handler.properties.attr._attr_properties['{}transactional'].particle_properties.generated_name = 'transactional';
+
+        element_handler.properties.attr._attr_properties['{}transactional'].type_handler = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
+
+        element_handler.properties.attr._attr_properties['{}transactional'].super_element_content_type = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}transactional'].type_of_simple = 'A';
+        element_handler.properties.attr._attr_properties['{}transactional'].local_facets = {}
+        element_handler.properties.attr._attr_properties['{}transactional'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}transactional']);
+    end
+    do
         element_handler.properties.attr._attr_properties['{}name'] = {};
 
         element_handler.properties.attr._attr_properties['{}name'].base = {};
@@ -66,6 +96,36 @@ do
         element_handler.properties.attr._attr_properties['{}name'].type_of_simple = 'A';
         element_handler.properties.attr._attr_properties['{}name'].local_facets = {}
         element_handler.properties.attr._attr_properties['{}name'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}name']);
+    end
+    do
+        element_handler.properties.attr._attr_properties['{}db_schema_name'] = {};
+
+        element_handler.properties.attr._attr_properties['{}db_schema_name'].base = {};
+        element_handler.properties.attr._attr_properties['{}db_schema_name'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}db_schema_name'].base.name = 'token';
+        element_handler.properties.attr._attr_properties['{}db_schema_name'].bi_type = {};
+        element_handler.properties.attr._attr_properties['{}db_schema_name'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}db_schema_name'].bi_type.name = 'token';
+        element_handler.properties.attr._attr_properties['{}db_schema_name'].bi_type.id = '16';
+        element_handler.properties.attr._attr_properties['{}db_schema_name'].properties = {};
+        element_handler.properties.attr._attr_properties['{}db_schema_name'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}token';
+        element_handler.properties.attr._attr_properties['{}db_schema_name'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}db_schema_name'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}db_schema_name'].properties.use = 'O';
+        element_handler.properties.attr._attr_properties['{}db_schema_name'].properties.form = 'U';
+
+        element_handler.properties.attr._attr_properties['{}db_schema_name'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}db_schema_name'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}db_schema_name'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}db_schema_name'].particle_properties.q_name.local_name = 'db_schema_name';
+        element_handler.properties.attr._attr_properties['{}db_schema_name'].particle_properties.generated_name = 'db_schema_name';
+
+        element_handler.properties.attr._attr_properties['{}db_schema_name'].type_handler = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
+
+        element_handler.properties.attr._attr_properties['{}db_schema_name'].super_element_content_type = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}db_schema_name'].type_of_simple = 'A';
+        element_handler.properties.attr._attr_properties['{}db_schema_name'].local_facets = {}
+        element_handler.properties.attr._attr_properties['{}db_schema_name'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}db_schema_name']);
     end
     do
         element_handler.properties.attr._attr_properties['{}http_method'] = {};
@@ -102,81 +162,21 @@ do
         element_handler.properties.attr._attr_properties['{}http_method'].local_facets.enumeration[4] = 'DELETE';
         element_handler.properties.attr._attr_properties['{}http_method'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}http_method']);
     end
-    do
-        element_handler.properties.attr._attr_properties['{}db_schema_name'] = {};
-
-        element_handler.properties.attr._attr_properties['{}db_schema_name'].base = {};
-        element_handler.properties.attr._attr_properties['{}db_schema_name'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}db_schema_name'].base.name = 'token';
-        element_handler.properties.attr._attr_properties['{}db_schema_name'].bi_type = {};
-        element_handler.properties.attr._attr_properties['{}db_schema_name'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}db_schema_name'].bi_type.name = 'token';
-        element_handler.properties.attr._attr_properties['{}db_schema_name'].bi_type.id = '16';
-        element_handler.properties.attr._attr_properties['{}db_schema_name'].properties = {};
-        element_handler.properties.attr._attr_properties['{}db_schema_name'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}token';
-        element_handler.properties.attr._attr_properties['{}db_schema_name'].properties.default = '';
-        element_handler.properties.attr._attr_properties['{}db_schema_name'].properties.fixed = false;
-        element_handler.properties.attr._attr_properties['{}db_schema_name'].properties.use = 'O';
-        element_handler.properties.attr._attr_properties['{}db_schema_name'].properties.form = 'U';
-
-        element_handler.properties.attr._attr_properties['{}db_schema_name'].particle_properties = {};
-        element_handler.properties.attr._attr_properties['{}db_schema_name'].particle_properties.q_name = {};
-        element_handler.properties.attr._attr_properties['{}db_schema_name'].particle_properties.q_name.ns = '';
-        element_handler.properties.attr._attr_properties['{}db_schema_name'].particle_properties.q_name.local_name = 'db_schema_name';
-        element_handler.properties.attr._attr_properties['{}db_schema_name'].particle_properties.generated_name = 'db_schema_name';
-
-        element_handler.properties.attr._attr_properties['{}db_schema_name'].type_handler = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
-
-        element_handler.properties.attr._attr_properties['{}db_schema_name'].super_element_content_type = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
-        element_handler.properties.attr._attr_properties['{}db_schema_name'].type_of_simple = 'A';
-        element_handler.properties.attr._attr_properties['{}db_schema_name'].local_facets = {}
-        element_handler.properties.attr._attr_properties['{}db_schema_name'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}db_schema_name']);
-    end
-    do
-        element_handler.properties.attr._attr_properties['{}transactional'] = {};
-
-        element_handler.properties.attr._attr_properties['{}transactional'].base = {};
-        element_handler.properties.attr._attr_properties['{}transactional'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}transactional'].base.name = 'boolean';
-        element_handler.properties.attr._attr_properties['{}transactional'].bi_type = {};
-        element_handler.properties.attr._attr_properties['{}transactional'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}transactional'].bi_type.name = 'boolean';
-        element_handler.properties.attr._attr_properties['{}transactional'].bi_type.id = '15';
-        element_handler.properties.attr._attr_properties['{}transactional'].properties = {};
-        element_handler.properties.attr._attr_properties['{}transactional'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}boolean';
-        element_handler.properties.attr._attr_properties['{}transactional'].properties.default = '';
-        element_handler.properties.attr._attr_properties['{}transactional'].properties.fixed = false;
-        element_handler.properties.attr._attr_properties['{}transactional'].properties.use = 'R';
-        element_handler.properties.attr._attr_properties['{}transactional'].properties.form = 'U';
-
-        element_handler.properties.attr._attr_properties['{}transactional'].particle_properties = {};
-        element_handler.properties.attr._attr_properties['{}transactional'].particle_properties.q_name = {};
-        element_handler.properties.attr._attr_properties['{}transactional'].particle_properties.q_name.ns = '';
-        element_handler.properties.attr._attr_properties['{}transactional'].particle_properties.q_name.local_name = 'transactional';
-        element_handler.properties.attr._attr_properties['{}transactional'].particle_properties.generated_name = 'transactional';
-
-        element_handler.properties.attr._attr_properties['{}transactional'].type_handler = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
-
-        element_handler.properties.attr._attr_properties['{}transactional'].super_element_content_type = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
-        element_handler.properties.attr._attr_properties['{}transactional'].type_of_simple = 'A';
-        element_handler.properties.attr._attr_properties['{}transactional'].local_facets = {}
-        element_handler.properties.attr._attr_properties['{}transactional'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}transactional']);
-    end
     element_handler.properties.attr._generated_attr = {};
-    element_handler.properties.attr._generated_attr['transactional'] = '{}transactional';
-    element_handler.properties.attr._generated_attr['db_schema_name'] = '{}db_schema_name';
     element_handler.properties.attr._generated_attr['http_method'] = '{}http_method';
+    element_handler.properties.attr._generated_attr['db_schema_name'] = '{}db_schema_name';
     element_handler.properties.attr._generated_attr['name'] = '{}name';
+    element_handler.properties.attr._generated_attr['transactional'] = '{}transactional';
 end
 
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        top_level_group = true,
-        min_occurs = 1,
-        group_type = 'S',
-        generated_subelement_name = '_sequence_group',
         max_occurs = 1,
+        group_type = 'S',
+        min_occurs = 1,
+        top_level_group = true,
+        generated_subelement_name = '_sequence_group',
         'documentation',
         'query_param',
         'input',
@@ -219,13 +219,6 @@ do
             (basic_stuff.get_element_handler('http://evpoco.tekenlight.org/idl_spec', 'output_dtls_type'):
             new_instance_as_local_element({ns = '', local_name = 'output', generated_name = 'output',
                     root_element = false, min_occurs = 0, max_occurs = 1}));
-    end
-
-    do
-        element_handler.properties.subelement_properties['{}query_param'] = 
-            (basic_stuff.get_element_handler('http://evpoco.tekenlight.org/idl_spec', 'input_dtls_type'):
-            new_instance_as_local_element({ns = '', local_name = 'query_param', generated_name = 'query_param',
-                    root_element = false, min_occurs = 0, max_occurs = -1}));
     end
 
     element_handler.properties.subelement_properties['{}documentation'] = {};
@@ -277,6 +270,13 @@ element_handler.properties.subelement_properties['{}documentation'].type_of_simp
         element_handler.properties.subelement_properties['{}documentation'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{}documentation'].particle_properties.min_occurs = 1;
         element_handler.properties.subelement_properties['{}documentation'].particle_properties.max_occurs = 1;
+    end
+
+    do
+        element_handler.properties.subelement_properties['{}query_param'] = 
+            (basic_stuff.get_element_handler('http://evpoco.tekenlight.org/idl_spec', 'input_dtls_type'):
+            new_instance_as_local_element({ns = '', local_name = 'query_param', generated_name = 'query_param',
+                    root_element = false, min_occurs = 0, max_occurs = -1}));
     end
 
 end

@@ -60,7 +60,7 @@ do
     element_handler.local_facets.enumeration[3] = '2';
     element_handler.local_facets.pattern = {};
     element_handler.local_facets.pattern[1] = {};
-    element_handler.local_facets.pattern[1].str_p = [[([0-9]+)]];
+    element_handler.local_facets.pattern[1].str_p = [=[([0-9]+)]=];
     element_handler.local_facets.pattern[1].com_p = nil;
     element_handler.facets = basic_stuff.inherit_facets(element_handler);
 end

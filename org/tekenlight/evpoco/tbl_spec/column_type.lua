@@ -38,36 +38,6 @@ do
     element_handler.properties.attr = {};
     element_handler.properties.attr._attr_properties = {};
     do
-        element_handler.properties.attr._attr_properties['{}key_column'] = {};
-
-        element_handler.properties.attr._attr_properties['{}key_column'].base = {};
-        element_handler.properties.attr._attr_properties['{}key_column'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}key_column'].base.name = 'boolean';
-        element_handler.properties.attr._attr_properties['{}key_column'].bi_type = {};
-        element_handler.properties.attr._attr_properties['{}key_column'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}key_column'].bi_type.name = 'boolean';
-        element_handler.properties.attr._attr_properties['{}key_column'].bi_type.id = '15';
-        element_handler.properties.attr._attr_properties['{}key_column'].properties = {};
-        element_handler.properties.attr._attr_properties['{}key_column'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}boolean';
-        element_handler.properties.attr._attr_properties['{}key_column'].properties.default = '';
-        element_handler.properties.attr._attr_properties['{}key_column'].properties.fixed = false;
-        element_handler.properties.attr._attr_properties['{}key_column'].properties.use = 'O';
-        element_handler.properties.attr._attr_properties['{}key_column'].properties.form = 'U';
-
-        element_handler.properties.attr._attr_properties['{}key_column'].particle_properties = {};
-        element_handler.properties.attr._attr_properties['{}key_column'].particle_properties.q_name = {};
-        element_handler.properties.attr._attr_properties['{}key_column'].particle_properties.q_name.ns = '';
-        element_handler.properties.attr._attr_properties['{}key_column'].particle_properties.q_name.local_name = 'key_column';
-        element_handler.properties.attr._attr_properties['{}key_column'].particle_properties.generated_name = 'key_column';
-
-        element_handler.properties.attr._attr_properties['{}key_column'].type_handler = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
-
-        element_handler.properties.attr._attr_properties['{}key_column'].super_element_content_type = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
-        element_handler.properties.attr._attr_properties['{}key_column'].type_of_simple = 'A';
-        element_handler.properties.attr._attr_properties['{}key_column'].local_facets = {}
-        element_handler.properties.attr._attr_properties['{}key_column'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}key_column']);
-    end
-    do
         element_handler.properties.attr._attr_properties['{}type'] = {};
 
         element_handler.properties.attr._attr_properties['{}type'].base = {};
@@ -127,20 +97,50 @@ do
         element_handler.properties.attr._attr_properties['{}name'].local_facets = {}
         element_handler.properties.attr._attr_properties['{}name'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}name']);
     end
+    do
+        element_handler.properties.attr._attr_properties['{}key_column'] = {};
+
+        element_handler.properties.attr._attr_properties['{}key_column'].base = {};
+        element_handler.properties.attr._attr_properties['{}key_column'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}key_column'].base.name = 'boolean';
+        element_handler.properties.attr._attr_properties['{}key_column'].bi_type = {};
+        element_handler.properties.attr._attr_properties['{}key_column'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}key_column'].bi_type.name = 'boolean';
+        element_handler.properties.attr._attr_properties['{}key_column'].bi_type.id = '15';
+        element_handler.properties.attr._attr_properties['{}key_column'].properties = {};
+        element_handler.properties.attr._attr_properties['{}key_column'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}boolean';
+        element_handler.properties.attr._attr_properties['{}key_column'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}key_column'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}key_column'].properties.use = 'O';
+        element_handler.properties.attr._attr_properties['{}key_column'].properties.form = 'U';
+
+        element_handler.properties.attr._attr_properties['{}key_column'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}key_column'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}key_column'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}key_column'].particle_properties.q_name.local_name = 'key_column';
+        element_handler.properties.attr._attr_properties['{}key_column'].particle_properties.generated_name = 'key_column';
+
+        element_handler.properties.attr._attr_properties['{}key_column'].type_handler = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
+
+        element_handler.properties.attr._attr_properties['{}key_column'].super_element_content_type = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}key_column'].type_of_simple = 'A';
+        element_handler.properties.attr._attr_properties['{}key_column'].local_facets = {}
+        element_handler.properties.attr._attr_properties['{}key_column'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}key_column']);
+    end
     element_handler.properties.attr._generated_attr = {};
-    element_handler.properties.attr._generated_attr['name'] = '{}name';
     element_handler.properties.attr._generated_attr['type'] = '{}type';
     element_handler.properties.attr._generated_attr['key_column'] = '{}key_column';
+    element_handler.properties.attr._generated_attr['name'] = '{}name';
 end
 
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
         generated_subelement_name = '_sequence_group',
-        group_type = 'S',
-        max_occurs = 1,
         top_level_group = true,
         min_occurs = 1,
+        max_occurs = 1,
+        group_type = 'S',
         'doc',
     };
 end

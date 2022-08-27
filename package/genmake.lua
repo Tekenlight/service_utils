@@ -168,7 +168,7 @@ function write_makefile()
 		file:write("#generating xsd files in build \n\n");
 		for i,source in ipairs(xsd_sources_tbl) do
 			local target = "build/output_files/"..source:gsub(".xsd","").."_xsd.lua";
-			file:write(target.." : "..source.."\n\tgxsd "..source.." build\n")
+			file:write(target.." : "..source.."\n\tgxsd  -b 1 -d build " .. source .. "\n")
 			file:write("\ttouch build/rockspec.out\n\n");
     	end
     end
