@@ -29,7 +29,7 @@ external_service_client.transceive = function(client, headers, inp)
 	local uri = service_client.prepare_uri({}, inp);
 	local request_json = service_client.prepare_request_json({}, method_properties, inp);
 
-	local status, response, http_status = service_client.low_transcieve({}, client, uri, headers, request_json);
+	local status, response, http_status = service_client.core_transcieve({}, client, uri, headers, request_json);
 	if (not status) then
 		return status, response, http_status;
 	end

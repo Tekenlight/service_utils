@@ -42,8 +42,14 @@ function include_src_files(directory)
 	for filename in pfile:lines() do
         i = i + 1
         t[i] = filename;
-		local src_mapping = '[\"'..basic_file.product..'.'..
-			basic_file.package.."."..filename:gsub("%.lua", "").."\"] = ".."\"src/"..filename.."\"";
+		local src_mapping;
+		if (basic_file.product ~= nil) then
+			src_mapping = '[\"'..basic_file.product..'.'..
+				basic_file.package.."."..filename:gsub("%.lua", "").."\"] = ".."\"src/"..filename.."\"";
+		else
+			src_mapping = '[\"'..
+				basic_file.package.."."..filename:gsub("%.lua", "").."\"] = ".."\"src/"..filename.."\"";
+		end
         table.insert(basic_file.build.modules, src_mapping);
     end
     pfile:close()

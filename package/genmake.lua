@@ -159,7 +159,7 @@ function write_makefile()
 			local target = "build/output_files/"..source:gsub(".xml$","").."_xml.lua";
 			file:write(target.." : "..source.."\n");
 			assert(basic_file.ref_common ~= nil);
-			file:write("\tgval "..source.." "..basic_file.product.."/"..basic_file.ref_common.." build\n")
+			file:write("\tgval "..source.." "..basic_file.ref_common.." build\n")
 			file:write("\ttouch build/rockspec.out\n\n");
     	end
     end
@@ -178,7 +178,7 @@ function write_makefile()
 		for i,source in ipairs(ddl_sources_tbl) do
 			local target = "build/output_files/"..source:gsub(".xml$","").."_xml.lua";
 			file:write(target.." : "..source.."\n\tgtbl "
-					..source.." "..basic_file.product.."/"..basic_file.ref_common.." build\n")
+					..source.." "..basic_file.ref_common.." build\n")
 			file:write("\ttouch build/rockspec.out\n\n");
 		end
     end

@@ -6,6 +6,7 @@ local xml = xmlua.XML;
 
 local app_info_xml_name = arg[1];
 local ref_common_module_name = arg[2];
+local build_mode = (arg[3] ~= nil and arg[3] ~= "0");
 local code_output = {};
 
 local function write_to_file(code_output)
@@ -80,12 +81,14 @@ local function write_target_file(code_output)
 
 	local out_file = app_info_xml_name:gsub("%.%.","");
     out_file = out_file:gsub("%.xml$","");
-	os.execute("mkdir -p output_files/val")
-	local target_file_path = "output_files/"..out_file.."_xml.lua";
-	local final = header..c..footer;
-	local tfile = io.open(target_file_path, "w+");
-	tfile:write(final);
-	tfile:close();
+	if (build_mode) then
+		os.execute("mkdir -p output_files/val")
+		local target_file_path = "output_files/"..out_file.."_xml.lua";
+		local final = header..c..footer;
+		local tfile = io.open(target_file_path, "w+");
+		tfile:write(final);
+		tfile:close();
+	end
 	return;
 end
 

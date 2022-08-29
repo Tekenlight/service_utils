@@ -59,7 +59,7 @@ service_client.get_interface_method_properties = function(context, inp)
 	return method_properties, interface_class;
 end
 
-service_client.low_transcieve = function(context, rest_client, uri, headers, request_json)
+service_client.core_transcieve = function(context, rest_client, uri, headers, request_json)
 	assert(type(headers) == 'table');
 	assert(type(uri) == 'string');
 	assert(type(request_json) == 'string');
@@ -93,25 +93,35 @@ service_client.prepare_request_json = function(context, method_properties, inp)
 	return request_json;
 end
 
-service_client.make_connection_to_internal_host = function(context, inp)
-	assert(inp.service_name ~= nil and type(inp.service_name) == 'string');
+service_client.make_connection_to_internal_host = function(context, service_name, clear_cache_on_failure)
+	assert(service_name ~= nil and type(service_name) == 'string');
+	assert(type(clear_cache_on_failure) == 'boolean');
 
 	local config_conn = context.db_connections['CONFIG'].conn;
 	assert(config_conn ~= nil);
 
-	local status, response, msg = config_conn:zrangebyscore(inp.service_name, '-inf', false, '+inf', false);
+	local status, response, msg = config_conn:zrangebyscore(service_name, '-inf', false, '+inf', false);
 	if (not status) then
-		local msg = messages:format('HOST_NOT_RESOLVED_FROM_CONFIG', inp.service_name);
+		local msg = messages:format('HOST_NOT_RESOLVED_FROM_CONFIG', service_name);
 		error(msg);
-		return false, nil;
 	end
+
+	if (response == nil or response[1] == nil) then
+		print("HOST CONFIG FOR ["..service_name.."] NOT FOUND");
+		return nil;
+	end
+
+	local b64_host_str = response[1];
 
 	local host_confg_rec_handler =
 		schema_processor:get_message_handler('host_config_rec', 'http://evpoco.tekenlight.org/idl_spec');
-
-	local host_config_element = host_confg_rec_handler:from_json(core_utils.str_base64_decode(response[1]));
+	local host_config_element = host_confg_rec_handler:from_json(core_utils.str_base64_decode(b64_host_str));
 
 	local client = rest_client_factory.new(host_config_element.host, tonumber(host_config_element.port), host_config_element.secure);
+
+	if (client == nil and clear_cache_on_failure) then
+		config_conn:zrem(service_name, b64_host_str);
+	end
 
 	return client;
 end
@@ -174,18 +184,17 @@ service_client.prepare_response_obj = function(context, method_properties, respo
 	return obj;
 end
 
-service_client.transceive = function(context, inp)
+service_client.transceive_using_client = function(context, inp, client)
 	assert(context ~= nil and type(context) == 'table');
 	assert(inp ~= nil and type(inp) == 'table');
+	assert(type(client) == 'table');
 
 	local method_properties, interface_class = service_client.get_interface_method_properties(context, inp);
-
-	local client = service_client.make_connection_to_internal_host(context, inp);
 	local uri = service_client.prepare_uri(context, inp);
 	local headers = service_client.prepare_headers(context, inp, method_properties);
 	local request_json = service_client.prepare_request_json(context, method_properties, inp);
 
-	local status, response, http_status = service_client.low_transcieve(context, client, uri, headers, request_json);
+	local status, response, http_status = service_client.core_transcieve(context, client, uri, headers, request_json);
 	if (not status) then
 		return status, response, http_status;
 	end
@@ -194,6 +203,20 @@ service_client.transceive = function(context, inp)
 	local obj = service_client.prepare_response_obj(context, method_properties, response_json);
 
 	return status, obj, http_status;
+end
+
+service_client.transceive = function(context, inp, clear_cache_on_failure)
+	if (clear_cache_on_failure == nil) then
+		clear_cache_on_failure = false;
+	end
+	assert(type(clear_cache_on_failure) == 'boolean');
+	assert(context ~= nil and type(context) == 'table');
+	assert(inp ~= nil and type(inp) == 'table');
+
+
+	local client = service_client.make_connection_to_internal_host(context, inp.service_name, clear_cache_on_failure);
+
+	return service_client.transceive_using_client(context, inp, client);
 end
 
 
