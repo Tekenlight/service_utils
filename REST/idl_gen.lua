@@ -5,6 +5,7 @@ local stringx = require("pl.stringx");
 
 local idl_file_name = arg[1];
 assert(idl_file_name ~= nil and type(idl_file_name) == 'string');
+local build_mode = (arg[2] ~= nil and arg[2] ~= "0");
 local idl_file = io.open(idl_file_name, "r");
 assert(idl_file ~= nil);
 
@@ -162,15 +163,17 @@ do
 	out_file = out_file:gsub(".xml$","");
 	print(out_file);
 	local parts = stringx.split(out_file,"/");
-	os.execute("mkdir -p output_files/idl")
-	local target_file_path = "output_files/idl/"..parts[3].."_xml.lua";
-	file_path1 = file_path1:gsub(".lua$","");
-	local c = "local build_mapping = {\n\t[\""..file_path1.."\"] = \""..file_path.."\"\n}\n\nreturn build_mapping;"
+	if (build_mode) then
+		os.execute("mkdir -p output_files/idl")
+		local target_file_path = "output_files/idl/"..parts[3].."_xml.lua";
+		file_path1 = file_path1:gsub(".lua$","");
+		local c = "local build_mapping = {\n\t[\""..file_path1.."\"] = \""..file_path.."\"\n}\n\nreturn build_mapping;"
 
-	local file1 = io.open(target_file_path, "w+");
+		local file1 = io.open(target_file_path, "w+");
 
-	file1:write(c);
-	file1:close();
+		file1:write(c);
+		file1:close();
+	end
 end
 
 

@@ -22,7 +22,21 @@ then
 fi
 
 file=$1
-output_directory=$2
+shift
+output_directory=
+# while getopts b:d: flag
+while getopts b:d: opt
+do
+	case $opt in
+		d) output_directory=$OPTARG;;
+		b) build_mode=$OPTARG;;
+		\?) echo >&2 "usage: cha [-b 0/1] [-d <output_directory>] file"
+			exit 1;;
+	esac
+	echo $OPTIND
+done
+shift `expr $OPTIND - 1`
+
 echo "Generating IDL:"$file
 echo "--------------"
 if [ -f $HOME/.luarocks/share/lua/5.3/idl_gen.lua ]
@@ -40,9 +54,9 @@ if [ "$output_directory" != "" ]
 then
     mkdir -p $output_directory
     cd $output_directory
-	lua $LUA_FILE ../$file $output_directory
+	lua $LUA_FILE ../$file $build_mode
 else
-	lua $LUA_FILE $file 
+	lua $LUA_FILE $file $build_mode
 fi
 
 if [ $? -ne 0 ]
