@@ -207,7 +207,7 @@ function write_makefile()
 			local parts = stringx.split(source, "/");
 			local target = "build/output_files/"..parts[1].."/"..parts[3]:gsub(".xml$","").."_xml.lua";
 			file:write(target.." : "..source.."\n");
-			file:write("\tgidl "..source.." build\n")
+			file:write("\tgidl "..source.." -b 1 -d build\n")
 			file:write("\ttouch build/rockspec.out\n\n");
 		end
     end
