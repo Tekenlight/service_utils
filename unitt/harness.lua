@@ -1,3 +1,4 @@
+local ffi = require('ffi');
 local jwt = require('service_utils.jwt.luajwt')
 local master_db_params = require("db_params");
 local tao_factory = require('service_utils.orm.tao_factory');
@@ -7,7 +8,7 @@ local error_handler = require("lua_schema.error_handler");
 local harness = {};
 
 local function make_db_connections(params)
-	db_connections = {};
+	local db_connections = {};
 	for n, v in pairs(params) do
 		local db_access = require(v.handler);
 		local conn = db_access.open_connetion(table.unpack(v.params));
