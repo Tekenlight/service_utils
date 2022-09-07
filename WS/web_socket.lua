@@ -146,8 +146,7 @@ ws.connect = function(inp)
 	local nonce = create_key();
 	hdrs["Sec-WebSocket-Key"] = nonce;
 	hdrs["Sec-WebSocket-Version"] = 13;
-	for n,v in pairs(hdrs) do
-	end
+
 	conn:send_request(uri._path, hdrs);
 
 	local status, msg, resp_status, resp_hdrs = conn:recv_response();

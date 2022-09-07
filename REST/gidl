@@ -33,7 +33,7 @@ do
 		\?) echo >&2 "usage: cha [-b 0/1] [-d <output_directory>] file"
 			exit 1;;
 	esac
-	echo $OPTIND
+	#echo $OPTIND
 done
 shift `expr $OPTIND - 1`
 
