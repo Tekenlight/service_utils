@@ -32,6 +32,7 @@ build = {
 		["service_utils.REST.service_client"] = 'REST/service_client.lua',
 		["service_utils.REST.external_service_client"] = 'REST/external_service_client.lua',
 		["service_utils.REST.host_utils"] = 'REST/host_utils.lua',
+		["service_utils.REST.context_harness"] = 'REST/context_harness.lua',
 		["idl_gen"] = 'REST/idl_gen.lua',
 
 		['service_utils.WS.web_socket'] = 'WS/web_socket.lua',
