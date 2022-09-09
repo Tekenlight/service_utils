@@ -31,6 +31,11 @@ targetNamespace="http://evpoco.tekenlight.org/idl_spec" xmlns:ns="http://evpoco.
 		</xsd:restriction>
 	</xsd:simpleType>
 
+	<xsd:simpleType name="host_url_type">
+		<xsd:restriction base="xsd:anyURI">
+		</xsd:restriction>
+	</xsd:simpleType>
+
 	<xsd:complexType name="input_dtls_type">
 		<xsd:attribute name="namespace" type="xsd:token" use="required"/>
 		<xsd:attribute name="name" type="xsd:token" use="required"/>
@@ -69,7 +74,7 @@ targetNamespace="http://evpoco.tekenlight.org/idl_spec" xmlns:ns="http://evpoco.
 
 	<xsd:complexType name="host_config_rec_type">
 		<xsd:sequence>
-			<xsd:element name="host" type="ns:host_ipv4_address_type"/>
+			<xsd:element name="host" type="ns:host_url_type"/>
 			<xsd:element name="port" type="xsd:int"/>
 			<xsd:element name="secure" type="xsd:boolean" minOccurs="0"/>
 		</xsd:sequence>

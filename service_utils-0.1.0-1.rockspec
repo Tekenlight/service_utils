@@ -31,6 +31,7 @@ build = {
 		["service_utils.REST.client"] = 'REST/client.lua',
 		["service_utils.REST.service_client"] = 'REST/service_client.lua',
 		["service_utils.REST.external_service_client"] = 'REST/external_service_client.lua',
+		["service_utils.REST.host_utils"] = 'REST/host_utils.lua',
 		["idl_gen"] = 'REST/idl_gen.lua',
 
 		['service_utils.WS.web_socket'] = 'WS/web_socket.lua',
@@ -70,6 +71,10 @@ build = {
 		['org.tekenlight.evpoco.idl_spec.input_dtls_type'] = 'org/tekenlight/evpoco/idl_spec/input_dtls_type.lua',
 		['org.tekenlight.evpoco.idl_spec.error_response_type'] = 'org/tekenlight/evpoco/idl_spec/error_response_type.lua',
 		['org.tekenlight.evpoco.idl_spec.error_response'] = 'org/tekenlight/evpoco/idl_spec/error_response.lua',
+		['org.tekenlight.evpoco.idl_spec.host_ipv4_address_type'] = 'org/tekenlight/evpoco/idl_spec/host_ipv4_address_type.lua',
+		['org.tekenlight.evpoco.idl_spec.host_url_type'] = 'org/tekenlight/evpoco/idl_spec/host_url_type.lua',
+		['org.tekenlight.evpoco.idl_spec.host_config_rec_type'] = 'org/tekenlight/evpoco/idl_spec/host_config_rec_type.lua',
+		['org.tekenlight.evpoco.idl_spec.host_config_rec'] = 'org/tekenlight/evpoco/idl_spec/host_config_rec.lua',
 
 		['org.tekenlight.evpoco.tbl_spec.tbldef_type'] = 'org/tekenlight/evpoco/tbl_spec/tbldef_type.lua',
 		['org.tekenlight.evpoco.tbl_spec.tbldef'] = 'org/tekenlight/evpoco/tbl_spec/tbldef.lua',

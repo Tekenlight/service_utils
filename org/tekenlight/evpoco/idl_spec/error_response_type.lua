@@ -44,8 +44,8 @@ end
 do
     element_handler.properties.content_model = {
         max_occurs = 1,
-        group_type = 'S',
         min_occurs = 1,
+        group_type = 'S',
         generated_subelement_name = '_sequence_group',
         top_level_group = true,
         'error_message',

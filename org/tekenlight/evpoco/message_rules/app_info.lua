@@ -44,11 +44,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        group_type = 'S',
-        max_occurs = 1,
         min_occurs = 1,
         top_level_group = true,
         generated_subelement_name = '_sequence_group',
+        group_type = 'S',
+        max_occurs = 1,
         'rule_set',
         'mappings',
     };
@@ -74,17 +74,17 @@ end
 do
     element_handler.properties.subelement_properties = {};
     do
-        element_handler.properties.subelement_properties['{}mappings'] = 
-            (basic_stuff.get_element_handler('http://evpoco.tekenlight.org/message_rules', 'mappings_type'):
-            new_instance_as_local_element({ns = '', local_name = 'mappings', generated_name = 'mappings',
-                    root_element = false, min_occurs = 0, max_occurs = 1}));
-    end
-
-    do
         element_handler.properties.subelement_properties['{}rule_set'] = 
             (basic_stuff.get_element_handler('http://evpoco.tekenlight.org/message_rules', 'rule_set_type'):
             new_instance_as_local_element({ns = '', local_name = 'rule_set', generated_name = 'rule_set',
                     root_element = false, min_occurs = 0, max_occurs = -1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{}mappings'] = 
+            (basic_stuff.get_element_handler('http://evpoco.tekenlight.org/message_rules', 'mappings_type'):
+            new_instance_as_local_element({ns = '', local_name = 'mappings', generated_name = 'mappings',
+                    root_element = false, min_occurs = 0, max_occurs = 1}));
     end
 
 end

@@ -13,7 +13,7 @@ end
 local function make_new_http_client(hostname, port, secure)
 	assert(hostname ~= nil and type(hostname) == 'string');
 	assert(port ~= nil and math.type(port) == 'integer');
-	assert(secure == nil or type(secure) == boolean);
+	assert(secure == nil or type(secure) == 'boolean');
 
 	if (secure == nil) then secure = false; end
 

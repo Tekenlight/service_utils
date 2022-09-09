@@ -98,18 +98,18 @@ do
         element_handler.properties.attr._attr_properties['{}package'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}package']);
     end
     element_handler.properties.attr._generated_attr = {};
-    element_handler.properties.attr._generated_attr['rule_set_name'] = '{}rule_set_name';
     element_handler.properties.attr._generated_attr['package'] = '{}package';
+    element_handler.properties.attr._generated_attr['rule_set_name'] = '{}rule_set_name';
 end
 
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        group_type = 'S',
-        max_occurs = 1,
         min_occurs = 1,
         top_level_group = true,
         generated_subelement_name = '_sequence_group',
+        group_type = 'S',
+        max_occurs = 1,
         'rule',
     };
 end
