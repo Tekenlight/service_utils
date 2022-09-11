@@ -70,19 +70,22 @@ function context_harness.prepare_uc(databases, module_path, jwt_token)
 	local uc = require('service_utils.common.user_context').new();
 	local key = properties_funcs.get_string_property("platform.jwtSignatureKey");
 
-	local token, msg = jwt.decode(jwt_token, key, true);
+	local token, header, sig = jwt.decode(jwt_token, key, true);
 	if (token == nil or token == false) then
+		local msg = header;
 		error(msg);
 	end
 
 	token.exp_time = os.date('%Y-%m-%d %T', token.exp);
 	token.nbf_time = os.date('%Y-%m-%d %T', token.nbf);
+	token.verified = true;
+
 	uc.uid = ffi.cast("int64_t", tonumber(token.uid));
 	uc.token = token;
-	local now = os.time();
+	uc.access_token = jwt.encode(token, key, header.alg);;
+	uc.module_path = module_path;
 
 	tao_factory.init(uc);
-	uc.module_path = module_path;
 
 	if (nil ~= db_conection_params) then
 		uc.db_connections = make_db_connections(db_conection_params);

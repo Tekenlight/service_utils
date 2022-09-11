@@ -190,7 +190,7 @@ function M.decode(data, key, verify)
 		end
 	end
 
-	return body
+	return body, header, sig;
 end
 
 return M
