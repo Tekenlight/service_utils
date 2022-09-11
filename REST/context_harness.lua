@@ -70,10 +70,17 @@ function context_harness.prepare_uc(databases, module_path, jwt_token)
 	local uc = require('service_utils.common.user_context').new();
 	local key = properties_funcs.get_string_property("platform.jwtSignatureKey");
 
-	local token, header, sig = jwt.decode(jwt_token, key, true);
-	if (token == nil or token == false) then
-		local msg = header;
+	local header, token, sig, token_parts = jwt.deserialize(jwt_token, key, true);
+	if (header == nil or header == false) then
+		local msg = token;
 		error(msg);
+	end
+
+	if (token.verified ~= true) then
+		local token_valid, msg = jwt.valid(header, token, sig, key, token_parts);
+		if (not token_valid) then
+			error(msg);
+		end
 	end
 
 	token.exp_time = os.date('%Y-%m-%d %T', token.exp);
