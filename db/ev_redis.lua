@@ -104,6 +104,19 @@ ev_redis_connection.del = function(self, key)
 	end
 end
 
+ev_redis_connection.getdel = function(self, key)
+	valid_self(self);
+	valid_key(key);
+
+	local query = 'GETDEL '..key;
+	local status, response, msg = self._conn:transceive(query);
+	if (not status) then
+		return status, nil, msg;
+	else
+		return status, response;
+	end
+end
+
 ev_redis_connection.set = function(self, key, value)
 	valid_self(self);
 	valid_key(key);
