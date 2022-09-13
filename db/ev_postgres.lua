@@ -214,6 +214,9 @@ local split_field = function(s)
 end
 
 ev_postgres_stmt.map = function(q_out, fields)
+	if (q_out == nil) then
+		return nil;
+	end
 	if (type(fields) ~= 'table') then
 		error("Invalid inputs");
 		return nil;
