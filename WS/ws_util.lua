@@ -3,6 +3,7 @@ local cu = require('lua_schema.core_utils');
 local utils = require('service_utils.common.utils');
 local ws_const = require('service_utils.WS.ws_const');
 local pool = (require('service_utils.common.pool_repos')).new('WEBSOCKETS', true)
+local constants = require('service_utils.common.constants');
 
 ffi.cdef[[
 char * strncpy(char * dst, const char * src, size_t len);
@@ -55,7 +56,7 @@ ws_util.recv_bytes = function(ss, n)
 				n1 = n1 + 1;
 			end
 		end
-		status, ret1 = pcall(platform.recv_data_from_socket, ss, ffi.getptr(buf1), n1);
+		status, ret1 = pcall(platform.recv_data_from_socket, ss, ffi.getptr(buf1), n1, constants.RECV_TIMEOUT_EXTERNAL_SOCKETS);
 		if (not status) then
 			platform.shutdown_websocket(ss, 3);
 			error(ret1);

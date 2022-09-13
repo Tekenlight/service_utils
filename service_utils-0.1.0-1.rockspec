@@ -91,6 +91,7 @@ build = {
 		["service_utils.common.user_context"] = 'common/user_context.lua',
 		["service_utils.common.utils"] = 'common/utils.lua',
 		["service_utils.common.pool_repos"] = 'common/pool_repos.lua',
+		["service_utils.common.constants"] = 'common/constants.lua',
 
 		["service_utils.db.client_params"] = 'db/client_params.lua',
 		["service_utils.db.ev_database"] = 'db/ev_database.lua',
