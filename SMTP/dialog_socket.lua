@@ -49,6 +49,7 @@ dialog_socket.receive_data = function(self)
 	local status, ret = pcall(platform.recv_data_from_socket, self.ss,
 						ffi.getptr(buffer_element.buf), 1024, constants.RECV_TIMEOUT_SMTP_SOCKETS);
 	if (not status) then
+		platform.debug_ss_ptr(self.ss);
 		error_handler.raise_error(-1, ret, debug.getinfo(1));
 		self.socket_in_error = true;
 		error(ret);

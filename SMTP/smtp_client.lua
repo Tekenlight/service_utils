@@ -401,6 +401,7 @@ smtp_client_session_factory.new = function(conn_type, host, port, name)
 	if (ss == nil) then
 		error('Unable to connect to connect to the SMTP server '.. host..':'..port);
 	end
+	platform.stop_tracking_conn_sock(ss);
 	nc.ds = sock_factory.new(ss, conn_type, host, port);
 	nc.is_open = false;
 	nc.ds:set_name(name);
