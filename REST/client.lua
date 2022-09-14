@@ -10,21 +10,25 @@ local function get_uri_from_url(url)
 	return string.match(url, '[^?]+');
 end
 
-local function make_new_http_client(hostname, port, secure)
+local function make_new_http_client(hostname, port, secure, external, timeout)
 	assert(hostname ~= nil and type(hostname) == 'string');
 	assert(port ~= nil and math.type(port) == 'integer');
-	assert(secure == nil or type(secure) == 'boolean');
+	assert(type(secure) == 'boolean');
+	assert(type(external) == 'boolean');
+	assert(type(timeout) == 'number');
 
 	if (secure == nil) then secure = false; end
 
 	local new_client = {};
 	new_client = setmetatable(new_client, mt);
 
-	local http_conn, msg, ss = platform.make_http_connection(hostname, port);
+	local http_conn, msg, ss = platform.make_http_connection(hostname, port, timeout);
 
 	new_client._http_conn = http_conn;
 	new_client._ss = ss;
 	new_client._host = tostring(hostname)..':'..tostring(port);
+	new_client._send_timeout = -1;
+	new_client._recv_timeout = -1;
 
 	if (secure) then
 		new_client:connect_TLS();
@@ -47,12 +51,12 @@ client_maker.deduce_details = function(url, port)
 	return uri;
 end
 
-client_maker.new = function(url, port, secure)
-	return make_new_http_client(url, port, secure);
+client_maker.new = function(url, port, secure, external, timeout)
+	return make_new_http_client(url, port, secure, external, timeout);
 end
 
-client_maker.new_through_proxy = function(url, port, secure)
-	return make_new_http_client(url, port, secure);
+client_maker.new_through_proxy = function(url, port, secure, external, timeout)
+	return make_new_http_client(url, port, secure, external, timeout);
 end
 
 client.send_request = function (self, uri, headers, body)
@@ -91,7 +95,7 @@ end
 client.recv_response = function (self)
 	assert(self ~= nil and type(self) == 'table');
 
-	local status, response = pcall(platform.receive_http_response, self._http_conn);
+	local status, response = pcall(platform.receive_http_response, self._http_conn, self._recv_timeout);
 	if (not status) then
 		error(response);
 	end

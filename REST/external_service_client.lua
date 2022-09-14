@@ -5,6 +5,7 @@ local json_parser = cjson.new();
 local core_utils = require("lua_schema.core_utils");
 local properties_funcs = platform.properties_funcs();
 local service_client = require('service_utils.REST.service_client');
+local constatns = require('service_utils.common.constants');
 
 local external_service_client = {};
 
@@ -13,8 +14,16 @@ external_service_client.make_connection = function(inp)
 	assert(type(inp.url) == 'string');
 	assert(inp.port == nil or math.type(inp.port) == 'integer');
 	assert(inp.secure == nil or type(inp.secure) == 'boolean');
+	if (inp.secure == nil) then
+		inp.secure = false;
+	end
 
-	local client = rest_client_factory.new(inp.url, tonumber(inp.port), inp.secure);
+	local client = rest_client_factory.new(inp.url, tonumber(inp.port), inp.secure,
+									true, constants.RECV_TIMEOUT_EXTERNAL_SOCKETS);
+	if (client ~= nil) then
+		client._recv_timeout = constants.RECV_TIMEOUT_EXTERNAL_SOCKETS;
+		client._send_timeout = constants.SEND_TIMEOUT_EXTERNAL_SOCKETS;
+	end
 
 	return client;
 end

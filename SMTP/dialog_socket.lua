@@ -35,7 +35,7 @@ local dialog_socket = {};
 dialog_socket.send_bytes = function(self)
 	local buffer_element = self.output_buffer;
 	local status, ret = pcall(platform.send_data_on_socket, self.ss,
-			ffi.getptr(buffer_element.buf), buffer_element.size, constants.SEND_TIMEOUT_EXTERNAL_SOCKETS);
+			ffi.getptr(buffer_element.buf), buffer_element.size, constants.SEND_TIMEOUT_SMTP_SOCKETS);
 	if (not status) then
 		error_handler.raise_error(-1, ret, debug.getinfo(1));
 		self.socket_in_error = true;
@@ -47,7 +47,7 @@ end
 dialog_socket.receive_data = function(self)
 	local buffer_element = self.input_buffer;
 	local status, ret = pcall(platform.recv_data_from_socket, self.ss,
-						ffi.getptr(buffer_element.buf), 1024, constants.RECV_TIMEOUT_EXTERNAL_SOCKETS);
+						ffi.getptr(buffer_element.buf), 1024, constants.RECV_TIMEOUT_SMTP_SOCKETS);
 	if (not status) then
 		error_handler.raise_error(-1, ret, debug.getinfo(1));
 		self.socket_in_error = true;
@@ -199,7 +199,7 @@ dialog_socket.start_tls = function(self)
 end
 
 dialog_socket.transport_cms = function(self, cms)
-	local ret = platform.send_cms_on_socket(self.ss, cms, constants.SEND_TIMEOUT_EXTERNAL_SOCKETS);
+	local ret = platform.send_cms_on_socket(self.ss, cms, constants.SEND_TIMEOUT_SMTP_SOCKETS);
 	if (ret <= 0) then
 		return false;
 	else

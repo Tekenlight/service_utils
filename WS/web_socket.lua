@@ -9,6 +9,7 @@ local client_factory = require('service_utils.REST.client');
 local ffi = require("ffi");
 local ws_util = require("service_utils.WS.ws_util");
 local ws_const = require('service_utils.WS.ws_const');
+local constants = require('service_utils.common.constants');
 
 ffi.cdef[[
 void * memset(void *b, int c, size_t len);
@@ -132,13 +133,22 @@ ws.connect = function(inp)
 	assert(inp.credentials == nil or type(inp.credentials) == 'table');
 	assert(inp.msg_handler == nil or type(inp.msg_handler) == 'string');
 	assert(inp.hdrs ~= nil and type(inp.hdrs) == 'table');
+	assert(type(inp.external) == 'boolean');
+	assert(inp.secure == nil or type(inp.secure) == 'boolean');
+	if (inp.secure == nil) then
+		inp.secure = false;
+	end
+	assert(inp.timeout == nil or type(inp.timeout) == 'number');
+	if (inp.timeout == nil) then
+		inp.timeout = constants.RECV_TIMEOUT_EXTERNAL_SOCKETS;
+	end
 	local url = inp.url;
 	local msg_handler = inp.msg_handler;
 	local credentials = inp.credentials;
 	local hdrs = inp.hdrs;
 
 	local uri = client_factory.deduce_details(url);
-	local conn = client_factory.new(uri._host, uri._port);
+	local conn = client_factory.new(uri._host, uri._port, inp.secure, inp.external, inp.timeout);
 
 	hdrs.method = "GET";
 	hdrs.Connection = "Upgrade";

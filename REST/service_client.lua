@@ -116,8 +116,12 @@ service_client.make_connection_to_internal_host = function(context, service_name
 	local host_confg_rec_handler =
 		schema_processor:get_message_handler('host_config_rec', 'http://evpoco.tekenlight.org/idl_spec');
 	local host_config_element = host_confg_rec_handler:from_json(core_utils.str_base64_decode(b64_host_str));
+	if (host_config_element.secure == nil) then
+		host_config_element.secure = false;
+	end
 
-	local client = rest_client_factory.new(host_config_element.host, tonumber(host_config_element.port), host_config_element.secure);
+	local client = rest_client_factory.new(host_config_element.host,
+					tonumber(host_config_element.port), host_config_element.secure, false, -1);
 
 	if (client == nil and clear_cache_on_failure) then
 		config_conn:zrem(service_name, b64_host_str);
