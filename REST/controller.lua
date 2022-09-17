@@ -198,13 +198,14 @@ local function end_transaction(req_processor_interface, func, uc, status)
 			error("CONNECTION NAME MUST BE SPECIFIED FOR "..func.." IF TRANSACTIONA CONTROL IS REQUIRED");
 			return false
 		else
-			uc.db_connections[req_processor_interface.methods[func].db_schema_name].conn:close_open_cursors();
+			local conn = uc.db_connections[req_processor_interface.methods[func].db_schema_name].conn;
+			pcall(conn.close_open_cursors, conn);
 			if (req_processor_interface.methods[func].transactional == true) then
 				if (status) then
-					uc.db_connections[req_processor_interface.methods[func].db_schema_name].conn:commit();
+					pcall(conn.commit, conn);
 					flg = true;
 				else
-					uc.db_connections[req_processor_interface.methods[func].db_schema_name].conn:rollback();
+					pcall(conn.rollback, conn);
 					flg = true;
 				end
 			end
@@ -593,9 +594,9 @@ rest_controller.handle_service_request = function (request, response)
 			response:set_status(ret);
 			response:set_chunked_trfencoding(true);
 			response:set_content_type("application/json");
-			response:send();
 			local flg, json_output, out = pcall(json_parser.encode, output_obj);
 			response:set_hdr_field("X-msg", json_output);
+			response:send();
 			response:write(json_output);
 		else
 			successfully_processed = true;

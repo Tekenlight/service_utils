@@ -9,15 +9,37 @@ local properties_funcs = platform.properties_funcs();
 local host_utils = {};
 local client;
 
+host_utils.parse_url = function(property_name)
+	assert(type(property_name) == 'string');
+
+	local host_url = properties_funcs.get_string_property(property_name);
+	assert(type(host_url) == 'string');
+	assert(string.sub(host_url, 1, 1) == '/');
+
+	local url_parts = {};
+	for i,v in ipairs((require "pl.stringx".split(host_url, '/'))) do
+		if (i ~= 1) then
+			url_parts[i-1] = v;
+		end
+	end
+
+	assert(url_parts[1] ~= nil);
+	assert(url_parts[2] ~= nil);
+	assert(url_parts[3] ~= nil);
+	assert(url_parts[4] ~= nil);
+
+	return url_parts;
+end
+
 host_utils.resolve = function(property_name)
 	assert(type(property_name) == 'string');
 
-	local aaa_host_config_json = properties_funcs.get_string_property(property_name);
-	assert(type(aaa_host_config_json) == 'string');
+	local host_config_json = properties_funcs.get_string_property(property_name);
+	assert(type(host_config_json) == 'string');
 
 	local host_confg_rec_handler =
 			schema_processor:get_message_handler('host_config_rec', 'http://evpoco.tekenlight.org/idl_spec');
-    local host_ent, msg = host_confg_rec_handler:from_json(aaa_host_config_json);
+    local host_ent, msg = host_confg_rec_handler:from_json(host_config_json);
 	assert(type(host_ent) == 'table');
 	assert(host_ent.host ~= nil);
 
