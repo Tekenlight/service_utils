@@ -66,20 +66,20 @@ service_client.core_transcieve = function(context, rest_client, uri, headers, re
 
     rest_client:send_request(uri, headers, request_json);
 
-	local status, response_json, http_status = rest_client:recv_response();
+	local status, response_json, http_status, hdrs = rest_client:recv_response();
 	if (not status) then
 		if (response_json ~= nil) then
 			local obj, msg = json_parser.decode(response_json);
 			if (obj == nil) then
-				return false, { error_message = response_json }, http_status, msg;
+				return false, { error_message = response_json, msg = msg }, http_status, hdrs;
 			end
-			return false, obj, http_status;
+			return false, obj, http_status, hdrs;
 		else
-			return false, nil, http_status;
+			return false, nil, http_status, hdrs;
 		end
 	end
 
-	return status, response_json, http_status;
+	return status, response_json, http_status, hdrs;
 end
 
 service_client.prepare_request_json = function(context, method_properties, inp)
@@ -91,6 +91,21 @@ service_client.prepare_request_json = function(context, method_properties, inp)
 	end
 
 	return request_json;
+end
+
+service_client.remove_internal_hostent = function(context, client)
+	assert(type(context) == 'table');
+	assert(type(client) == 'table');
+
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline, client.service_name);
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline, client.host_config_value);
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	local config_conn = context.db_connections['CONFIG'].conn;
+	if (client.host_config_value ~= nil and client.service_name ~= nil) then
+		config_conn:zrem(client.service_name, client.host_config_value);
+	end
+
+	return;
 end
 
 service_client.make_connection_to_internal_host = function(context, service_name, clear_cache_on_failure)
@@ -115,7 +130,7 @@ service_client.make_connection_to_internal_host = function(context, service_name
 
 	local host_confg_rec_handler =
 		schema_processor:get_message_handler('host_config_rec', 'http://evpoco.tekenlight.org/idl_spec');
-	local host_config_element = host_confg_rec_handler:from_json(core_utils.str_base64_decode(b64_host_str));
+	local host_config_element = host_confg_rec_handler:from_xml(core_utils.str_base64_decode(b64_host_str));
 	if (host_config_element.secure == nil) then
 		host_config_element.secure = false;
 	end
@@ -125,6 +140,9 @@ service_client.make_connection_to_internal_host = function(context, service_name
 
 	if (client == nil and clear_cache_on_failure) then
 		config_conn:zrem(service_name, b64_host_str);
+	else
+		client.host_config_value = b64_host_str;
+		client.service_name = service_name;
 	end
 
 	return client;
@@ -198,15 +216,15 @@ service_client.transceive_using_client = function(context, inp, client)
 	local headers = service_client.prepare_headers(context, inp, method_properties);
 	local request_json = service_client.prepare_request_json(context, method_properties, inp);
 
-	local status, response, http_status = service_client.core_transcieve(context, client, uri, headers, request_json);
+	local status, response, http_status, hdrs = service_client.core_transcieve(context, client, uri, headers, request_json);
 	if (not status) then
-		return status, response, http_status;
+		return status, response, http_status, hdrs;
 	end
 
 	local response_json = response;
 	local obj = service_client.prepare_response_obj(context, method_properties, response_json);
 
-	return status, obj, http_status;
+	return status, obj, http_status, hdrs, client;
 end
 
 service_client.transceive = function(context, inp, clear_cache_on_failure)

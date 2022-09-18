@@ -34,12 +34,12 @@ end
 host_utils.resolve = function(property_name)
 	assert(type(property_name) == 'string');
 
-	local host_config_json = properties_funcs.get_string_property(property_name);
-	assert(type(host_config_json) == 'string');
+	local host_config_xml = properties_funcs.get_string_property(property_name);
+	assert(type(host_config_xml) == 'string');
 
 	local host_confg_rec_handler =
 			schema_processor:get_message_handler('host_config_rec', 'http://evpoco.tekenlight.org/idl_spec');
-    local host_ent, msg = host_confg_rec_handler:from_json(host_config_json);
+    local host_ent, msg = host_confg_rec_handler:from_xml(host_config_xml);
 	assert(type(host_ent) == 'table');
 	assert(host_ent.host ~= nil);
 
