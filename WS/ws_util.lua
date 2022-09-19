@@ -39,6 +39,9 @@ local ws_util = {};
 
 ws_util.recv_bytes = function(ss, n)
 	assert(n ~= nil and type(n) == 'number' and n > 0);
+	if (not platform.socket_active(ss)) then
+		error("SOCKET INACTIVE");
+	end
 
 	local buf = ffi.new("unsigned char[?]", n);
 	local buf1 = buf;
@@ -76,6 +79,9 @@ ws_util.send_bytes = function(ss, buf, n)
 	assert(n ~= nil and type(n) == 'number' and n > 0);
 	assert(buf ~= nil and type(buf) == 'cdata');
 
+	if (not platform.socket_active(ss)) then
+		error("SOCKET INACTIVE");
+	end
 	local status, ret = pcall(platform.send_data_on_acc_socket, ss, ffi.getptr(buf), n);
 	if (not status) then
 		error(ret);
