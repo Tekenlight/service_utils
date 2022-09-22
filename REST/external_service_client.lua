@@ -49,5 +49,9 @@ external_service_client.transceive = function(client, headers, inp)
 	return status, obj, http_status, hdrs, client;
 end
 
+external_service_client.transceive_using_client = function(context, inp, client)
+	return service_client.transceive_using_client(context, inp, client);
+end
+
 return external_service_client;
 
