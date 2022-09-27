@@ -266,7 +266,7 @@ return ]=]..package_parts[n]..[=[;
 						error("ae_condtions are applicable only for array type of arguments");
 					end -- }
 					code = code ..[=[
-		validations_array[j].ae_condition = function(context, obj, addnl_obj)  return (]=]..tostring(v.validation._attr.ae_condition)..[=[); end;
+		validations_array[j].ae_condition = function(context, i, obj, addnl_obj)  return (]=]..tostring(v.validation._attr.ae_condition)..[=[); end;
 ]=]
 				end --}
 				code = code ..[=[
@@ -303,7 +303,7 @@ return ]=]..package_parts[n]..[=[;
 						error("ae_condtions are applicable only for array type of arguments");
 					end -- }
 					code = code ..[=[
-	validations_array[j].ae_condition = function(context, obj, addnl_obj)  return (]=]..tostring(v.validation._attr.ae_condition)..[=[); end;
+	validations_array[j].ae_condition = function(context, i, obj, addnl_obj)  return (]=]..tostring(v.validation._attr.ae_condition)..[=[); end;
 ]=]
 				end --}
 				code = code ..[=[
