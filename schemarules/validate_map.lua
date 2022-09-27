@@ -2,7 +2,6 @@ local error_handler = require('lua_schema.error_handler');
 
 local validate_map = {};
 
-
 validate_map.run = function(context, map, data, additional_data)
 	-- Fist pass for independent validations
 	local status = true;
@@ -17,8 +16,12 @@ validate_map.run = function(context, map, data, additional_data)
 						num_elements = num_elements + 1;
 						assert(type(i) == 'number');
 						--error_handler.push_element('['..i..']');
+						local ae_val = true;
+						if (val.ae_condition ~= nil) then
+							ae_val = (val.ae_condition(context, val.argument[i], val.addnl_argument) == true);
+						end
 						error_handler.push_element(i);
-						do
+						if (ae_val == true) then
 							local flg = val.val_func(context, val.argument[i], val.addnl_argument);
 							if (not flg) then
 								status = flg;
@@ -53,8 +56,12 @@ validate_map.run = function(context, map, data, additional_data)
 						num_elements = num_elements + 1;
 						assert(type(i) == 'number');
 						--error_handler.push_element('['..i..']');
+						local ae_val = true;
+						if (val.ae_condition ~= nil) then
+							ae_val = (val.ae_condition(context, val.argument[i], val.addnl_argument) == true);
+						end
 						error_handler.push_element(i);
-						do
+						if (ae_val == true) then
 							local flg = val.val_func(context, val.argument[i], val.addnl_argument);
 							if (not flg) then
 								error_handler.pop_element();

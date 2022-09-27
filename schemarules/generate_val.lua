@@ -99,7 +99,7 @@ local function generate_validation_routine(rule_set, ref_common_module_name, cod
 	local n = #package_parts;
 	local package = rule_set._attr.package;
 	local function_name = rule_set._attr.rule_set_name;
-	if (code_output[rule_set._attr.package] == nil) then
+	if (code_output[rule_set._attr.package] == nil) then -- {
 		code_output[rule_set._attr.package] = {};
 		code_output[rule_set._attr.package].package_parts = package_parts;
 		code_output[rule_set._attr.package].package_name = rule_set._attr.package;
@@ -121,7 +121,7 @@ return ]=]..package_parts[n]..[=[;
 ]=];
 		code_output[rule_set._attr.package].footer = code;
 		code_output[rule_set._attr.package].functions = {};
-	end
+	end -- }
 
 	local code = [=[
 ]=]..package_parts[n]..'.'..rule_set._attr.rule_set_name..[=[ = function(context, obj, addnl_obj)
@@ -129,9 +129,9 @@ return ]=]..package_parts[n]..[=[;
 	local j = 1;
 
 ]=];
-	for i,v in ipairs(rule_set.rule) do
-		if (v.assertion ~= nil) then
-			if (v.assertion._attr ~= nil and v.assertion._attr.condition ~= nil) then
+	for i,v in ipairs(rule_set.rule) do -- {
+		if (v.assertion ~= nil) then -- {
+			if (v.assertion._attr ~= nil and v.assertion._attr.condition ~= nil) then -- {
 				code = code .. [=[
 	if (]=] .. v.assertion._attr.condition..[=[) then
 		validations_array[j] = {};
@@ -139,25 +139,25 @@ return ]=]..package_parts[n]..[=[;
 			if (not (]=]..v.assertion._contained_value..[=[)) then
 ]=];
 				local error_msg_inp_elements = '';
-				if (v.error_def.input ~= nil) then
-					for i,v in ipairs(v.error_def.input) do
+				if (v.error_def.input ~= nil) then -- {
+					for i,v in ipairs(v.error_def.input) do -- {
 						error_msg_inp_elements = error_msg_inp_elements..', tostring('..v..')';
-					end
-				end
+					end --}
+				end --}
 				code = code ..[=[
 				local msg = nil;
 ]=];
-					if (v.error_def.error_code ~= nil) then
-						code = code .. [=[
+				if (v.error_def.error_code ~= nil) then -- {
+					code = code .. [=[
 				msg = messages:format(']=]..v.error_def.error_code..[=[']=]..error_msg_inp_elements..[=[);
 ]=];
-					else
-						code = code .. [=[
+				else --} {
+					code = code .. [=[
 				local msg1 = ']=].. v.error_def.error_message..[=[';
 				msg = messages:format_with_string(msg1]=]..error_msg_inp_elements..[=[);
 ]=];
-					end
-					code = code..[=[
+				end --}
+				code = code..[=[
 				error_handler.raise_validation_error(-1, msg, debug.getinfo(1));
 				return false;
 ]=];
@@ -166,16 +166,16 @@ return ]=]..package_parts[n]..[=[;
 			return true;
 		end
 ]=];
-		if (v._attr.ref_element ~= nil) then
-			code = code ..[=[
+				if (v._attr.ref_element ~= nil) then --{
+					code = code ..[=[
 		validations_array[j].ref_element = ']=]..tostring(v._attr.ref_element)..[=[';
 ]=];
-		else
-			code = code .. [=[
+				else -- } {
+					code = code .. [=[
 		validations_array[j].ref_element = ]=]..tostring(v._attr.ref_element)..[=[;
 ]=];
-		end
-		code = code ..[=[
+				end --}
+				code = code ..[=[
 		validations_array[j].type = ']=]..tostring(v._attr.type)..[=[';
 		validations_array[j].argument = obj;
 		validations_array[j].argument_type = 'scalar';
@@ -184,31 +184,31 @@ return ]=]..package_parts[n]..[=[;
 	end
 
 ]=];
-			else
+			else -- } {
 				code = code .. [=[
 	validations_array[j] = {};
 	validations_array[j].val_func = function(context, obj, addnl_obj)
 		if (not (]=]..v.assertion._contained_value..[=[)) then
 ]=];
 				local error_msg_inp_elements = '';
-				if (v.error_def.input ~= nil) then
-					for i,v in ipairs(v.error_def.input) do
+				if (v.error_def.input ~= nil) then --{
+					for i,v in ipairs(v.error_def.input) do --{
 						error_msg_inp_elements = error_msg_inp_elements..', tostring('..v..')';
-					end
-				end
+					end --}
+				end --}
 				code = code ..[=[
 			local msg = nil;
 ]=];
-					if (v.error_def.error_code ~= nil) then
-						code = code .. [=[
+				if (v.error_def.error_code ~= nil) then --{
+					code = code .. [=[
 			msg = messages:format(']=]..v.error_def.error_code..[=[']=]..error_msg_inp_elements..[=[);
 ]=];
-					else
-						code = code .. [=[
+				else -- } {
+					code = code .. [=[
 			msg = ']=].. v.error_def.error_message..[=[';
 ]=];
-					end
-					code = code..[=[
+				end --}
+				code = code..[=[
 			error_handler.raise_validation_error(-1, msg, debug.getinfo(1));
 			return false;
 ]=];
@@ -217,16 +217,16 @@ return ]=]..package_parts[n]..[=[;
 		return true;
 	end
 ]=];
-		if (v._attr.ref_element ~= nil) then
-			code = code ..[=[
+				if (v._attr.ref_element ~= nil) then --{
+					code = code ..[=[
 	validations_array[j].ref_element = ']=]..tostring(v._attr.ref_element)..[=[';
 ]=];
-		else
-			code = code .. [=[
+				else -- } {
+					code = code .. [=[
 	validations_array[j].ref_element = ]=]..tostring(v._attr.ref_element)..[=[;
 ]=];
-		end
-		code = code ..[=[
+				end --}
+				code = code ..[=[
 	validations_array[j].type = ']=]..tostring(v._attr.type)..[=[';
 	validations_array[j].argument = obj;
 	validations_array[j].argument_type = 'scalar';
@@ -234,23 +234,23 @@ return ]=]..package_parts[n]..[=[;
 	j = j+1;
 
 ]=];
-			end
-		else
-			if (v.validation._attr ~= nil and v.validation._attr.condition ~= nil) then
+			end --}
+		else -- } {
+			if (v.validation._attr ~= nil and v.validation._attr.condition ~= nil) then --{
 				code = code..[=[
 	if (]=] .. v.validation._attr.condition..[=[) then
 		validations_array[j] = {};
 ]=];
-		if (v._attr.ref_element ~= nil) then
-			code = code ..[=[
+				if (v._attr.ref_element ~= nil) then --{
+					code = code ..[=[
 		validations_array[j].ref_element = ']=]..tostring(v._attr.ref_element)..[=[';
 ]=];
-		else
-			code = code .. [=[
+				else -- } {
+					code = code .. [=[
 		validations_array[j].ref_element = ]=]..tostring(v._attr.ref_element)..[=[;
 ]=];
-		end
-		code = code ..[=[
+				end --}
+				code = code ..[=[
 		validations_array[j].type = ']=]..tostring(v._attr.type)..[=[';
 		local package = require(']=]..v.validation._attr.package..[=[');
 		validations_array[j].val_func = package[']=]..v.validation._attr.method..[=['];
@@ -260,24 +260,34 @@ return ]=]..package_parts[n]..[=[;
 		validations_array[j].argument_type = ']=]..tostring(v.validation._attr.argument_type)..[=[';
 		validations_array[j].argument = ]=]..tostring(v.validation._attr.argument)..[=[;
 		validations_array[j].addnl_argument = ]=]..tostring(v.validation._attr.addnl_argument)..[=[;
+]=]
+				if (v.validation._attr.ae_condition ~= nil) then --{
+					if (v.validation._attr.argument_type ~= 'array') then -- {
+						error("ae_condtions are applicable only for array type of arguments");
+					end -- }
+					code = code ..[=[
+		validations_array[j].ae_condition = function(context, obj, addnl_obj)  return (]=]..tostring(v.validation._attr.ae_condition)..[=[); end;
+]=]
+				end --}
+				code = code ..[=[
 		j = j+1;
 	end
 
 ]=];
-			else
+			else -- } {
 				code = code .. [=[
 	validations_array[j] = {};
 ]=];
-		if (v._attr.ref_element ~= nil) then
-			code = code ..[=[
+				if (v._attr.ref_element ~= nil) then --{
+					code = code ..[=[
 	validations_array[j].ref_element = ']=]..tostring(v._attr.ref_element)..[=[';
 ]=];
-		else
-			code = code .. [=[
+				else -- } {
+					code = code .. [=[
 	validations_array[j].ref_element = ]=]..tostring(v._attr.ref_element)..[=[;
 ]=];
-		end
-		code = code ..[=[
+				end --}
+				code = code ..[=[
 	validations_array[j].type = ']=]..tostring(v._attr.type)..[=[';
 	local package = require(']=]..v.validation._attr.package..[=[');
 	validations_array[j].val_func = package[']=]..v.validation._attr.method..[=['];
@@ -287,12 +297,22 @@ return ]=]..package_parts[n]..[=[;
 	validations_array[j].argument_type = ']=]..tostring(v.validation._attr.argument_type)..[=[';
 	validations_array[j].argument = ]=]..tostring(v.validation._attr.argument)..[=[;
 	validations_array[j].addnl_argument = ]=]..tostring(v.validation._attr.addnl_argument)..[=[;
+]=]
+				if (v.validation._attr.ae_condition ~= nil) then --{
+					if (v.validation._attr.argument_type ~= 'array') then -- {
+						error("ae_condtions are applicable only for array type of arguments");
+					end -- }
+					code = code ..[=[
+	validations_array[j].ae_condition = function(context, obj, addnl_obj)  return (]=]..tostring(v.validation._attr.ae_condition)..[=[); end;
+]=]
+				end --}
+				code = code ..[=[
 	j = j+1;
 
 ]=];
-			end
-		end
-	end
+			end --}
+		end --}
+	end --}
 	code = code..  [=[
 
 	return validate_map.run(context, validations_array, obj, addnl_obj);
