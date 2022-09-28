@@ -46,8 +46,6 @@ function include_src_files(directory, submodule)
 		package_name = basic_file.package;
 		dir = "";
 	end
-	print(basic_file.package);
-	print(submodule);
     local i, t = 0, {}
     local pfile = io.popen([[ls -1 ]]..directory..[[ |grep '.lua']]);
 	for filename in pfile:lines() do
