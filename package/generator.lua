@@ -36,7 +36,18 @@ function include_files(directory)
     pfile:close()
 end
 
-function include_src_files(directory)
+function include_src_files(directory, submodule)
+	local dir;
+	local package_name;
+	if(submodule ~= nil) then
+		package_name = basic_file.package.."."..submodule;
+		dir = submodule.."/";
+	else 
+		package_name = basic_file.package;
+		dir = "";
+	end
+	print(basic_file.package);
+	print(submodule);
     local i, t = 0, {}
     local pfile = io.popen([[ls -1 ]]..directory..[[ |grep '.lua']]);
 	for filename in pfile:lines() do
@@ -45,10 +56,10 @@ function include_src_files(directory)
 		local src_mapping;
 		if (basic_file.product ~= nil) then
 			src_mapping = '[\"'..basic_file.product..'.'..
-				basic_file.package.."."..filename:gsub("%.lua", "").."\"] = ".."\"src/"..filename.."\"";
+				package_name.."."..filename:gsub("%.lua", "").."\"] = ".."\""..dir.."src/"..filename.."\"";
 		else
 			src_mapping = '[\"'..
-				basic_file.package.."."..filename:gsub("%.lua", "").."\"] = ".."\"src/"..filename.."\"";
+				package_name.."."..filename:gsub("%.lua", "").."\"] = ".."\""..dir.."src/"..filename.."\"";
 		end
         table.insert(basic_file.build.modules, src_mapping);
     end
@@ -115,6 +126,14 @@ end
 if(folder_exists("build/src") == true) then
 	include_src_files("build/src");
 end
+
+if(basic_file.list_of_submodules ~= nil) then
+    for i=1, #basic_file.list_of_submodules do
+        file_path = "build/"..basic_file.list_of_submodules[i].."/src";
+		include_src_files(file_path, basic_file.list_of_submodules[i]);
+    end
+end
+
 
 local File=arg[1];
 

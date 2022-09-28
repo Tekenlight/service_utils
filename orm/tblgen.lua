@@ -371,6 +371,11 @@ local n = #package_parts;
 local local_path = ""; 
 local i = 1;
 
+function returnfile(path)
+    local parts = stringx.split(path, "/");
+    local filename = parts[#parts]
+    return filename;
+end
 
 while (i <= n) do
 	if(local_path == "") then
@@ -384,8 +389,8 @@ local command ='mkdir -p '..local_path;
 os.execute(command);
 local table_name = tbl_struct._attr.name;
 local generated_file_name = tbl_file_name:gsub("%.%.","");
-generated_file_name = generated_file_name:gsub("/ddl/","");
-generated_file_name = generated_file_name:gsub(".xml$","");
+local generated_file_name = generated_file_name:gsub(".xml$","");
+generated_file_name = returnfile(generated_file_name);
 local file_path = local_path..'/'..generated_file_name..'.lua';
 local module_path = local_path..'/'..table_name..'.lua';
 local module_path_parts = stringx.split(module_path, "/");

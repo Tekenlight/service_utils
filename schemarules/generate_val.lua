@@ -40,6 +40,11 @@ local function write_to_file(code_output)
 	return;
 end
 
+function returnfile(path)
+    local parts = stringx.split(path, "/");
+    return parts[#parts]
+end
+
 local function write_target_file(code_output)
 	 local c, header, footer, package_parts;
      for package, package_content in pairs(code_output) do
@@ -80,10 +85,11 @@ local function write_target_file(code_output)
 	end
 
 	local out_file = app_info_xml_name:gsub("%.%.","");
-    out_file = out_file:gsub("%.xml$","");
+	out_file = app_info_xml_name:gsub(".xml$","");
+    out_file = returnfile(out_file);
 	if (build_mode) then
 		os.execute("mkdir -p output_files/val")
-		local target_file_path = "output_files/"..out_file.."_xml.lua";
+		local target_file_path = "output_files/val/"..out_file.."_xml.lua";
 		local final = header..c..footer;
 		local tfile = io.open(target_file_path, "w+");
 		tfile:write(final);
