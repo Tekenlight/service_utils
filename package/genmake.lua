@@ -102,7 +102,7 @@ function add_idl_targets(directory)
         pfile1 = io.popen([[ls -1 ]] .. directory .. [[/]] .. modules .. [[ | grep '\.xml$']]);
         for filename in pfile1:lines() do
             local source_filename = directory .. modules .. filename;
-            local target_filename = "build/output_files/idl" .. filename:gsub(".xml$", "") .. "_xml.lua";
+            local target_filename = "build/output_files/idl/" .. filename:gsub(".xml$", "") .. "_xml.lua";
             table.insert(idl_targets_tbl, target_filename);
             table.insert(idl_sources_tbl, source_filename);
         end
