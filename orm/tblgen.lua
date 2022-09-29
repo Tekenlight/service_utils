@@ -389,7 +389,7 @@ local command ='mkdir -p '..local_path;
 os.execute(command);
 local table_name = tbl_struct._attr.name;
 local generated_file_name = tbl_file_name:gsub("%.%.","");
-local generated_file_name = generated_file_name:gsub(".xml$","");
+generated_file_name = generated_file_name:gsub(".xml$","");
 generated_file_name = returnfile(generated_file_name);
 local file_path = local_path..'/'..generated_file_name..'.lua';
 local module_path = local_path..'/'..table_name..'.lua';
