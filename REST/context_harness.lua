@@ -1,11 +1,13 @@
 
 local ffi = require('ffi');
+local cjson = require('cjson.safe');
 local date_utils = require('lua_schema.date_utils');
 local jwt = require('service_utils.jwt.luajwt')
 local master_db_params = require("db_params");
 local tao_factory = require('service_utils.orm.tao_factory');
 local properties_funcs = platform.properties_funcs();
 local error_handler = require("lua_schema.error_handler");
+local URI_CLASS = require("uri");
 
 
 local context_harness = {};

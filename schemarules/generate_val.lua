@@ -319,12 +319,12 @@ return ]=]..package_parts[n]..[=[;
 		validations_array[j].ae_condition = function(context, i, argument_obj, obj, addnl_obj)
 			return (]=]..tostring(v.validation._attr.ae_condition)..[=[);
 		end;
-		j = j+1;
-	end
-
 ]=]
 				end --}
 				code = code ..[=[
+		j = j+1;
+	end
+
 ]=];
 			end --}
 		end --}
