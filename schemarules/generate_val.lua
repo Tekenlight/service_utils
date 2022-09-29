@@ -244,7 +244,51 @@ return ]=]..package_parts[n]..[=[;
 		else -- } {
 			if (v.validation._attr ~= nil and v.validation._attr.condition ~= nil) then --{
 				code = code..[=[
-	if (]=] .. v.validation._attr.condition..[=[) then
+	do
+		local argument_obj = ]=]..tostring(v.validation._attr.argument)..[=[;
+		if (]=] .. v.validation._attr.condition..[=[) then
+			validations_array[j] = {};
+]=];
+				if (v._attr.ref_element ~= nil) then --{
+					code = code ..[=[
+			validations_array[j].ref_element = ']=]..tostring(v._attr.ref_element)..[=[';
+]=];
+				else -- } {
+					code = code .. [=[
+			validations_array[j].ref_element = ]=]..tostring(v._attr.ref_element)..[=[;
+]=];
+				end --}
+				code = code ..[=[
+			validations_array[j].type = ']=]..tostring(v._attr.type)..[=[';
+			local package = require(']=]..v.validation._attr.package..[=[');
+			validations_array[j].val_func = package[']=]..v.validation._attr.method..[=['];
+			if (validations_array[j].val_func == nil) then
+				error("Function []=]..v.validation._attr.method..[=[] not found in package []=]..v.validation._attr.package..[=[]");
+			end
+			validations_array[j].argument_type = ']=]..tostring(v.validation._attr.argument_type)..[=[';
+			validations_array[j].argument = ]=]..tostring(v.validation._attr.argument)..[=[;
+			validations_array[j].addnl_argument = ]=]..tostring(v.validation._attr.addnl_argument)..[=[;
+]=]
+				if (v.validation._attr.ae_condition ~= nil) then --{
+					if (v.validation._attr.argument_type ~= 'array') then -- {
+						error("ae_condtions are applicable only for array type of arguments");
+					end -- }
+					code = code ..[=[
+			validations_array[j].ae_condition = function(context, i, argument_obj, obj, addnl_obj)
+				return (]=]..tostring(v.validation._attr.ae_condition)..[=[);
+			end;
+]=]
+				end --}
+				code = code ..[=[
+			j = j+1;
+		end
+	end
+
+]=];
+			else -- } {
+				code = code .. [=[
+	do
+		local argument_obj = ]=]..tostring(v.validation._attr.argument)..[=[;
 		validations_array[j] = {};
 ]=];
 				if (v._attr.ref_element ~= nil) then --{
@@ -272,49 +316,15 @@ return ]=]..package_parts[n]..[=[;
 						error("ae_condtions are applicable only for array type of arguments");
 					end -- }
 					code = code ..[=[
-		validations_array[j].ae_condition = function(context, i, obj, addnl_obj)  return (]=]..tostring(v.validation._attr.ae_condition)..[=[); end;
-]=]
-				end --}
-				code = code ..[=[
+		validations_array[j].ae_condition = function(context, i, argument_obj, obj, addnl_obj)
+			return (]=]..tostring(v.validation._attr.ae_condition)..[=[);
+		end;
 		j = j+1;
 	end
 
-]=];
-			else -- } {
-				code = code .. [=[
-	validations_array[j] = {};
-]=];
-				if (v._attr.ref_element ~= nil) then --{
-					code = code ..[=[
-	validations_array[j].ref_element = ']=]..tostring(v._attr.ref_element)..[=[';
-]=];
-				else -- } {
-					code = code .. [=[
-	validations_array[j].ref_element = ]=]..tostring(v._attr.ref_element)..[=[;
-]=];
-				end --}
-				code = code ..[=[
-	validations_array[j].type = ']=]..tostring(v._attr.type)..[=[';
-	local package = require(']=]..v.validation._attr.package..[=[');
-	validations_array[j].val_func = package[']=]..v.validation._attr.method..[=['];
-	if (validations_array[j].val_func == nil) then
-		error("Function []=]..v.validation._attr.method..[=[] not found in package []=]..v.validation._attr.package..[=[]");
-	end
-	validations_array[j].argument_type = ']=]..tostring(v.validation._attr.argument_type)..[=[';
-	validations_array[j].argument = ]=]..tostring(v.validation._attr.argument)..[=[;
-	validations_array[j].addnl_argument = ]=]..tostring(v.validation._attr.addnl_argument)..[=[;
-]=]
-				if (v.validation._attr.ae_condition ~= nil) then --{
-					if (v.validation._attr.argument_type ~= 'array') then -- {
-						error("ae_condtions are applicable only for array type of arguments");
-					end -- }
-					code = code ..[=[
-	validations_array[j].ae_condition = function(context, i, obj, addnl_obj)  return (]=]..tostring(v.validation._attr.ae_condition)..[=[); end;
 ]=]
 				end --}
 				code = code ..[=[
-	j = j+1;
-
 ]=];
 			end --}
 		end --}
