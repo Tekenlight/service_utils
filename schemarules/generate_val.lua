@@ -267,6 +267,7 @@ return ]=]..package_parts[n]..[=[;
 			end
 			validations_array[j].argument_type = ']=]..tostring(v.validation._attr.argument_type)..[=[';
 			validations_array[j].argument = ]=]..tostring(v.validation._attr.argument)..[=[;
+			validations_array[j].main_obj = obj;
 			validations_array[j].addnl_argument = ]=]..tostring(v.validation._attr.addnl_argument)..[=[;
 ]=]
 				if (v.validation._attr.ae_condition ~= nil) then --{
@@ -309,6 +310,7 @@ return ]=]..package_parts[n]..[=[;
 		end
 		validations_array[j].argument_type = ']=]..tostring(v.validation._attr.argument_type)..[=[';
 		validations_array[j].argument = ]=]..tostring(v.validation._attr.argument)..[=[;
+		validations_array[j].main_obj = obj;
 		validations_array[j].addnl_argument = ]=]..tostring(v.validation._attr.addnl_argument)..[=[;
 ]=]
 				if (v.validation._attr.ae_condition ~= nil) then --{

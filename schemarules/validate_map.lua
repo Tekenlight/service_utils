@@ -18,7 +18,7 @@ validate_map.run = function(context, map, data, additional_data)
 						--error_handler.push_element('['..i..']');
 						local ae_val = true;
 						if (val.ae_condition ~= nil) then
-							ae_val = (val.ae_condition(context, i, val.argument, val.addnl_argument) == true);
+							ae_val = (val.ae_condition(context, i, val.argument, val.main_obj, val.addnl_argument) == true);
 						end
 						error_handler.push_element(i);
 						if (ae_val == true) then
@@ -58,7 +58,7 @@ validate_map.run = function(context, map, data, additional_data)
 						--error_handler.push_element('['..i..']');
 						local ae_val = true;
 						if (val.ae_condition ~= nil) then
-							ae_val = (val.ae_condition(context, i, val.argument, val.addnl_argument) == true);
+							ae_val = (val.ae_condition(context, i, val.argument, val.main_obj, val.addnl_argument) == true);
 						end
 						error_handler.push_element(i);
 						if (ae_val == true) then
