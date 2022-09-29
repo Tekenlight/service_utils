@@ -7,8 +7,9 @@ local properties_funcs = platform.properties_funcs();
 local tao_factory = require('service_utils.orm.tao_factory');
 local jwt = require('service_utils.jwt.luajwt')
 local stringx = require("pl.stringx");
-local du = require('lua_schema.date_utils');
 local ffi = require('ffi');
+
+local context_harness = require('service_utils.REST.context_harness');
 
 local rest_controller = {};
 
@@ -215,104 +216,8 @@ local function end_transaction(req_processor_interface, func, uc, status)
 	return flg;
 end
 
-local function does_request_need_auth(request, url_parts)
-	local json_parser = cjson.new();
-	local prop_str = properties_funcs.get_string_property("service_utils.REST.controller.noAuthUrls");
-	if (prop_str == nil) then
-		return true;
-	end
-	local obj, msg = json_parser.decode(prop_str);
-	if (obj == nil) then
-		return true;
-	end
-	local url = (URI_CLASS:new(request:get_uri())):path();
-	for i,v in ipairs(obj.urls) do
-		if (v == url) then
-			return false;
-		end
-	end
-
-	return true;
-end
-
-local function prepare_base_uc(request, url_parts)
-	local uc = require('service_utils.common.user_context').new();
-
-	local key = properties_funcs.get_string_property("platform.jwtSignatureKey");
-
-	local hdr_flds = request:get_hdr_fields();
-	local jwt_token = hdr_flds['X-Auth'];
-	local offset = 1;
-
-	--[[
-	--jwt.decode does the auth as well
-	-- It basically decodes the token as well as verifies the signature
-	-- The bearer of the token is the authorized user
-	--]]
-	--[[
-	local token, msg = jwt.decode(jwt_token, key, true);
-	if (token ~= nil) then
-		if (token.typ ~= 'jwt/access') then
-			return nil, "Only access tokens are allowed";
-		end
-		token.exp_time = du.from_xml_datetime(os.date('%Y-%m-%dT%TZ', token.exp));
-		token.nbf_time = du.from_xml_datetime(os.date('%Y-%m-%dT%TZ', token.nbf));
-		token.uid = ffi.cast("int64_t", tonumber(token.uid));
-		uc.uid = token.uid;
-		uc.token = token;
-		local now = os.time();
-	else
-		if (does_request_need_auth(request, url_parts)) then
-			return nil, msg;
-		else
-			uc.uid = 0;
-		end
-	end
-	--]]
-	if (jwt_token == nil) then
-		if (does_request_need_auth(request, url_parts)) then
-			return nil, "header X-Auth: JWT token not present";
-		else
-			uc.uid = ffi.cast("int64_t", 0);
-		end
-	else
-		local token_header, token_body, sig, token_parts = jwt.deserialize(jwt_token, key, true);
-		if (token_header == nil) then
-			local msg = token_body;
-			if (does_request_need_auth(request, url_parts)) then
-				return nil, msg;
-			else
-				uc.uid = ffi.cast("int64_t", 0);
-			end
-		else
-			assert(token_body ~= nil);
-			assert(sig ~= nil);
-			assert(token_parts ~= nil);
-			if (token_body.typ ~= 'jwt/access') then
-				return nil, "Only access tokens are allowed";
-			end
-			if (token_body.verified == nil or (not token_body.verified)) then
-				local token_valid, msg = jwt.valid(token_header, token_body, sig, key, token_parts);
-				if (not token_valid) then
-					return nil, msg;
-				end
-			end
-			token_body.verified = true;
-			uc.access_token = jwt.encode(token_body, key, token_header.alg);;
-			--uc.verified_jwt_token = jwt.encode(token_body, key, token_header.alg);
-			token_body.exp_time = du.from_xml_datetime(os.date('%Y-%m-%dT%TZ', token_body.exp));
-			token_body.nbf_time = du.from_xml_datetime(os.date('%Y-%m-%dT%TZ', token_body.nbf));
-			token_body.uid = ffi.cast("int64_t", tonumber(token_body.uid));
-			uc.uid = token_body.uid;
-			uc.token_body = token_body;
-		end
-	end
-
-	return uc;
-end
-
 local function prepare_uc(request, url_parts)
-	local uc, msg = prepare_base_uc(request, url_parts);
+	local uc, msg = context_harness.prepare_uc_REST(request, url_parts);
 	if (uc == nil) then
 		return uc, msg;
 	end
@@ -677,7 +582,7 @@ local function make_usual_inits(request, response)
 	end
 	local url_parts = split_path(uri);
 
-	local uc, msg = prepare_base_uc(request, url_parts);
+	local uc, msg = context_harness.prepare_uc_REST(request, url_parts);
 	if (uc == nil) then
 		if (msg == nil) then
 			out_obj = { error_message = 'Bad Request: Invalid Access token or Access Token not present' };
