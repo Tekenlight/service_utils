@@ -91,7 +91,8 @@ function context_harness.prepare_uc(databases, module_path, jwt_token)
 	token.verified = true;
 
 	uc.uid = ffi.cast("int64_t", tonumber(token.uid));
-	uc.token = token;
+	uc.token_body = token;
+	uc.orig_token = jwt_token;
 	uc.access_token = jwt.encode(token, key, header.alg);;
 	uc.module_path = module_path;
 
@@ -165,6 +166,7 @@ context_harness.prepare_uc_REST = function(request, url_parts)
 			end
 			token_body.verified = true;
 			uc.access_token = jwt.encode(token_body, key, token_header.alg);;
+			uc.orig_token = jwt_token;
 			--uc.verified_jwt_token = jwt.encode(token_body, key, token_header.alg);
 			token_body.exp_time = date_utils.from_xml_datetime(os.date('%Y-%m-%dT%TZ', token_body.exp));
 			token_body.nbf_time = date_utils.from_xml_datetime(os.date('%Y-%m-%dT%TZ', token_body.nbf));

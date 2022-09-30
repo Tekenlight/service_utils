@@ -401,7 +401,6 @@ rest_controller.handle_service_request = function (request, response)
 	local interface_class_name = get_interface_class_path(url_parts);
 	local req_processor_interface = require(interface_class_name);
 
-
 	local obj, msg;
 	local error_cond = 0;
 	do --{
@@ -483,7 +482,7 @@ rest_controller.handle_service_request = function (request, response)
 		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		require 'pl.pretty'.dump(hdr_flds);
 		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-		--]]
+		]]
 		local status, table_output, ret = invoke_func(request, req_processor_interface, req_processor, func, url_parts, qp, obj)
 		if (type(ret) ~= 'number' or ret < 200 or ret > 550) then
 			error('Invalid error code returned '..ret);

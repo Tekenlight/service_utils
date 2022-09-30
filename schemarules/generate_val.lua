@@ -276,6 +276,7 @@ return ]=]..package_parts[n]..[=[;
 					end -- }
 					code = code ..[=[
 			validations_array[j].ae_condition = function(context, i, argument_obj, obj, addnl_obj)
+				local main_obj = obj;
 				return (]=]..tostring(v.validation._attr.ae_condition)..[=[);
 			end;
 ]=]
@@ -319,6 +320,7 @@ return ]=]..package_parts[n]..[=[;
 					end -- }
 					code = code ..[=[
 		validations_array[j].ae_condition = function(context, i, argument_obj, obj, addnl_obj)
+			local main_obj = obj;
 			return (]=]..tostring(v.validation._attr.ae_condition)..[=[);
 		end;
 ]=]
