@@ -71,6 +71,16 @@ crypto_utils.form_rsa_key_from_private_key = function(private_key)
 	return rsa_private_key;
 end
 
+crypto_utils.generate_symmetric_key = function(name)
+	assert(type(name) == 'string');
+	local status, symmetric_key = pcall(evl_crypto.generate_symmetric_key, name);
+	if (not status) then
+		error(symmetric_key);
+	end
+
+	return symmetric_key;
+end
+
 crypto_utils.generate_aes_key = function(size)
 	assert(type(size) == 'number');
 	local status, symmetric_key = pcall(evl_crypto.generate_aes_key, size);
