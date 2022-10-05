@@ -9,6 +9,122 @@ struct cipher_text_s {
 };
 ]]
 
+local cipher_algorithms = {
+	["AES-128-CBC"] = 1,
+	["AES-128-CFB"] = 1,
+	["AES-128-CFB1"] = 1,
+	["AES-128-CFB8"] = 1,
+	["AES-128-CTR"] = 1,
+	["AES-128-ECB"] = 1,
+	["AES-128-OFB"] = 1,
+	["AES-128-XTS"] = 1,
+	["AES-192-CBC"] = 1,
+	["AES-192-CFB"] = 1,
+	["AES-192-CFB1"] = 1,
+	["AES-192-CFB8"] = 1,
+	["AES-192-CTR"] = 1,
+	["AES-192-ECB"] = 1,
+	["AES-192-OFB"] = 1,
+	["AES-256-CBC"] = 1,
+	["AES-256-CFB"] = 1,
+	["AES-256-CFB1"] = 1,
+	["AES-256-CFB8"] = 1,
+	["AES-256-CTR"] = 1,
+	["AES-256-ECB"] = 1,
+	["AES-256-OFB"] = 1,
+	["AES-256-XTS"] = 1,
+	["BF-CBC"] = 1,
+	["BF-CFB"] = 1,
+	["BF-ECB"] = 1,
+	["BF-OFB"] = 1,
+	["CAMELLIA-128-CBC"] = 1,
+	["CAMELLIA-128-CFB"] = 1,
+	["CAMELLIA-128-CFB1"] = 1,
+	["CAMELLIA-128-CFB8"] = 1,
+	["CAMELLIA-128-ECB"] = 1,
+	["CAMELLIA-128-OFB"] = 1,
+	["CAMELLIA-192-CBC"] = 1,
+	["CAMELLIA-192-CFB"] = 1,
+	["CAMELLIA-192-CFB1"] = 1,
+	["CAMELLIA-192-CFB8"] = 1,
+	["CAMELLIA-192-ECB"] = 1,
+	["CAMELLIA-192-OFB"] = 1,
+	["CAMELLIA-256-CBC"] = 1,
+	["CAMELLIA-256-CFB"] = 1,
+	["CAMELLIA-256-CFB1"] = 1,
+	["CAMELLIA-256-CFB8"] = 1,
+	["CAMELLIA-256-ECB"] = 1,
+	["CAMELLIA-256-OFB"] = 1,
+	["CAST5-CBC"] = 1,
+	["CAST5-CFB"] = 1,
+	["CAST5-ECB"] = 1,
+	["CAST5-OFB"] = 1,
+	["ChaCha"] = 1,
+	["DES-CBC"] = 1,
+	["DES-CFB"] = 1,
+	["DES-CFB1"] = 1,
+	["DES-CFB8"] = 1,
+	["DES-ECB"] = 1,
+	["DES-EDE"] = 1,
+	["DES-EDE-CBC"] = 1,
+	["DES-EDE-CFB"] = 1,
+	["DES-EDE-OFB"] = 1,
+	["DES-EDE3"] = 1,
+	["DES-EDE3-CBC"] = 1,
+	["DES-EDE3-CFB"] = 1,
+	["DES-EDE3-CFB1"] = 1,
+	["DES-EDE3-CFB8"] = 1,
+	["DES-EDE3-OFB"] = 1,
+	["DES-OFB"] = 1,
+	["DESX-CBC"] = 1,
+	["RC2-40-CBC"] = 1,
+	["RC2-64-CBC"] = 1,
+	["RC2-CBC"] = 1,
+	["RC2-CFB"] = 1,
+	["RC2-ECB"] = 1,
+	["RC2-OFB"] = 1,
+	["RC4"] = 1,
+	["RC4-40"] = 1,
+	["RC4-HMAC-MD5"] = 1,
+	["gost89"] = 1,
+	["gost89-cnt"] = 1,
+	["gost89-ecb"] = 1,
+	["id-aes128-GCM"] = 1,
+	["id-aes192-GCM"] = 1,
+	["id-aes256-GCM"] = 1
+}
+
+
+--[[
+"AES128 => AES-128-CBC"
+"AES192 => AES-192-CBC"
+"AES256 => AES-256-CBC"
+"BF => BF-CBC"
+"CAMELLIA128 => CAMELLIA-128-CBC"
+"CAMELLIA192 => CAMELLIA-192-CBC"
+"CAMELLIA256 => CAMELLIA-256-CBC"
+"CAST => CAST5-CBC"
+"CAST-cbc => CAST5-CBC"
+"DES => DES-CBC"
+"DES3 => DES-EDE3-CBC"
+"DESX => DESX-CBC"
+"RC2 => RC2-CBC"
+"aes128 => AES-128-CBC"
+"aes192 => AES-192-CBC"
+"aes256 => AES-256-CBC"
+"bf => BF-CBC"
+"blowfish => BF-CBC"
+"camellia128 => CAMELLIA-128-CBC"
+"camellia192 => CAMELLIA-192-CBC"
+"camellia256 => CAMELLIA-256-CBC"
+"cast => CAST5-CBC"
+"cast-cbc => CAST5-CBC"
+"des => DES-CBC"
+"des3 => DES-EDE3-CBC"
+"desx => DESX-CBC"
+"rc2 => RC2-CBC"
+]]
+
 local evl_crypto_loader = package.loadlib('libevlcrypto.so','luaopen_libevlcrypto');
 local loaded, evl_crypto = pcall(evl_crypto_loader);
 if(not loaded) then
@@ -73,6 +189,7 @@ end
 
 crypto_utils.generate_symmetric_key = function(name)
 	assert(type(name) == 'string');
+	assert(cipher_algorithms[string.upper(name)] == 1);
 	local status, symmetric_key = pcall(evl_crypto.generate_symmetric_key, name);
 	if (not status) then
 		error(symmetric_key);
