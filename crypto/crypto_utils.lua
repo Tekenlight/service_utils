@@ -86,12 +86,12 @@ local cipher_algorithms = {
 	["RC4"] = 1,
 	["RC4-40"] = 1,
 	["RC4-HMAC-MD5"] = 1,
-	["gost89"] = 1,
-	["gost89-cnt"] = 1,
-	["gost89-ecb"] = 1,
-	["id-aes128-GCM"] = 1,
-	["id-aes192-GCM"] = 1,
-	["id-aes256-GCM"] = 1
+	["gost89"] = 0,
+	["gost89-cnt"] = 0,
+	["gost89-ecb"] = 0,
+	["id-aes128-GCM"] = 0,
+	["id-aes192-GCM"] = 0,
+	["id-aes256-GCM"] = 0
 }
 
 
@@ -189,7 +189,7 @@ end
 
 crypto_utils.generate_symmetric_key = function(name)
 	assert(type(name) == 'string');
-	assert(cipher_algorithms[string.upper(name)] == 1);
+	assert((cipher_algorithms[string.upper(name)] == 1) or (cipher_algorithms[name] == 1));
 	local status, symmetric_key = pcall(evl_crypto.generate_symmetric_key, name);
 	if (not status) then
 		error(symmetric_key);
