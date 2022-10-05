@@ -48,6 +48,8 @@ build = {
 		["service_utils.SMTP.mail_message"] = 'SMTP/mail_message.lua',
 		["service_utils.SMTP.smtp_client"] = 'SMTP/smtp_client.lua',
 
+		["service_utils.crypto.crypto_utils"] = 'crypto/crypto_utils.lua',
+
 		["org.tekenlight.evpoco.user_name_type"] = 'org/tekenlight/evpoco/user_name_type.lua',
 		["org.tekenlight.evpoco.recipient_type_type"] = 'org/tekenlight/evpoco/recipient_type_type.lua',
 		["org.tekenlight.evpoco.recipient_dtls_type"] = 'org/tekenlight/evpoco/recipient_dtls_type.lua',
