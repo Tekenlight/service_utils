@@ -50,6 +50,7 @@ for i, v in ipairs(tbl_struct.columns.column) do
 	tbl_def.declared_col_names[i] = v._attr.name;
 	tbl_def.declared_columns[v._attr.name] = {};
 	tbl_def.declared_columns[v._attr.name].datatype = v._attr.type
+	tbl_def.declared_columns[v._attr.name].default_value = v._attr.default_value
 	if (v._attr.key_column ~= nil and v._attr.key_column) then
 		local n = #tbl_def.key_col_names;
 		tbl_def.key_col_names[n+1] = v._attr.name;
@@ -482,6 +483,9 @@ for i,name in ipairs(tbl_def.declared_col_names) do
 	end
 	code = code ..[=[
     ]=]..name..[=[ ]=]..tbl_def.declared_columns[name].datatype..[=[]=]
+	if (tbl_def.declared_columns[name].default_value ~= nil) then
+		code = code .. [=[ DEFAULT ]=]..tbl_def.declared_columns[name].default_value;
+	end
 end
 if (tbl_def.col_props.soft_del) then
 	code = code ..[=[,
