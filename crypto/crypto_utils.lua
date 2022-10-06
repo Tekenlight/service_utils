@@ -163,38 +163,38 @@ local cipher_algorithms = {
 	["gost89-ecb"] = 0,
 	["id-aes128-GCM"] = 0,
 	["id-aes192-GCM"] = 0,
-	["id-aes256-GCM"] = 0
+	["id-aes256-GCM"] = 0,
+	["AES128"] = 1,
+	["AES192"] = 1,
+	["AES256"] = 1,
+	["BF"] = 1,
+	["CAMELLIA128"] = 1,
+	["CAMELLIA192"] = 1,
+	["CAMELLIA256"] = 1,
+	["CAST"] = 1,
+	["CAST-cbc"] = 1,
+	["DES"] = 1,
+	["DES3"] = 1,
+	["DESX"] = 1,
+	["RC2"] = 1,
+	["aes128"] = 1,
+	["aes192"] = 1,
+	["aes256"] = 1,
+	["bf"] = 1,
+	["blowfish"] = 1,
+	["camellia128"] = 1,
+	["camellia192"] = 1,
+	["camellia256"] = 1,
+	["cast"] = 1,
+	["cast-cbc"] = 1,
+	["des"] = 1,
+	["des3"] = 1,
+	["desx"] = 1,
+	["rc2"] = 1
 }
 
 
 --[[
-"AES128 => AES-128-CBC"
-"AES192 => AES-192-CBC"
-"AES256 => AES-256-CBC"
-"BF => BF-CBC"
-"CAMELLIA128 => CAMELLIA-128-CBC"
-"CAMELLIA192 => CAMELLIA-192-CBC"
-"CAMELLIA256 => CAMELLIA-256-CBC"
-"CAST => CAST5-CBC"
-"CAST-cbc => CAST5-CBC"
-"DES => DES-CBC"
-"DES3 => DES-EDE3-CBC"
-"DESX => DESX-CBC"
-"RC2 => RC2-CBC"
-"aes128 => AES-128-CBC"
-"aes192 => AES-192-CBC"
-"aes256 => AES-256-CBC"
-"bf => BF-CBC"
-"blowfish => BF-CBC"
-"camellia128 => CAMELLIA-128-CBC"
-"camellia192 => CAMELLIA-192-CBC"
-"camellia256 => CAMELLIA-256-CBC"
-"cast => CAST5-CBC"
-"cast-cbc => CAST5-CBC"
-"des => DES-CBC"
-"des3 => DES-EDE3-CBC"
-"desx => DESX-CBC"
-"rc2 => RC2-CBC"
 ]]
 
 local evl_crypto_loader = package.loadlib('libevlcrypto.so','luaopen_libevlcrypto');
