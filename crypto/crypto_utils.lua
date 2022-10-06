@@ -194,10 +194,6 @@ local cipher_algorithms = {
 	["rc2"] = 1
 }
 
-
---[[
-]]
-
 local evl_crypto_loader = package.loadlib('libevlcrypto.so','luaopen_libevlcrypto');
 local loaded, evl_crypto = pcall(evl_crypto_loader);
 if(not loaded) then
