@@ -386,6 +386,7 @@ rest_controller.handle_service_request = function (request, response)
 	local class_name, func = deduce_action(url_parts, qp);
 	if (class_name == nil or func == nil) then
 		local err = 'Unable to deduce Controller class name and/or method';
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline, err);
 		response:set_status(400);
 		response:set_chunked_trfencoding(true);
 		response:set_content_type("application/json");
@@ -467,6 +468,9 @@ rest_controller.handle_service_request = function (request, response)
 	end --}
 	local successfully_processed = false;
 	if (not flg) then
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline, "deserialization of json request failed");
+		require 'pl.pretty'.dump(output_obj);
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		output_obj.error_message = msg;
 		local flg, json_output, err = pcall(json_parser.encode, output_obj);
 		local status = 400;
