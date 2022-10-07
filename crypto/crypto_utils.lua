@@ -281,12 +281,16 @@ crypto_utils.encrypt_plain_text = function(plain_text, symmetric_key)
 	assert(type(plain_text) == 'string');
 	assert(type(symmetric_key) == 'userdata');
 
-	local status, ct, len = pcall(evl_crypto.encrypt_text, plain_text, symmetric_key);
+	local status, ct, len, ptr = pcall(evl_crypto.encrypt_text, plain_text, symmetric_key);
 	if (not status) then
 		error(ct);
 	end
 
-	return ct, len;
+	local ct_s = ffi.new("hex_data_s_type", 0);
+	ct_s.value = ffi.C.malloc(ffi.cast("size_t", len));
+	ffi.C.memcpy(ct_s.value, ptr, len);
+	ct_s.size = ffi.cast("size_t", len);
+	return ct, len, ct_s;
 end
 
 crypto_utils.b64_encrypt_plain_text = function(plain_text, symmetric_key)
@@ -340,12 +344,16 @@ crypto_utils.rsa_encrypt_symmetric_key = function(symmetric_key, rsa_pub_key)
 	assert(type(symmetric_key) == 'userdata');
 	assert(type(rsa_pub_key) == 'userdata');
 
-	local status, e_symm_key, len = pcall(evl_crypto.rsa_encrypt_symm_key, symmetric_key, rsa_pub_key);
+	local status, e_symm_key, len, ptr = pcall(evl_crypto.rsa_encrypt_symm_key, symmetric_key, rsa_pub_key);
 	if (not status) then
 		error(e_symm_key);
 	end
 
-	return e_symm_key, len;
+	local ct_s = ffi.new("hex_data_s_type", 0);
+	ct_s.value = ffi.C.malloc(ffi.cast("size_t", len));
+	ffi.C.memcpy(ct_s.value, ptr, len);
+	ct_s.size = ffi.cast("size_t", len);
+	return e_symm_key, len, ct_s;
 end
 
 crypto_utils.rsa_b64_encrypt_symmetric_key = function(symmetric_key, rsa_pub_key)
