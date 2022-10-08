@@ -291,7 +291,8 @@ ev_postgres_stmt.fetch_result = function(self)
 			local v = bc.new(lua_values[i+1]);
 			out[i+1] = v;
 		elseif (row[i].type == ffi.C.ev_lua_binary) then
-			local v = ffi.new("hex_data_s_type");
+			--local v = ffi.new("hex_data_s_type");
+			local v = cu.new_hex_data_s_type();
 			v.size = row[i].size;
 			v.value = cu.alloc(v.size);
 			ffi.C.memcpy(v.value, row[i].val, v.size);

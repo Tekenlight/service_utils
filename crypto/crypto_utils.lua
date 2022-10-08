@@ -286,9 +286,9 @@ crypto_utils.encrypt_plain_text = function(plain_text, symmetric_key)
 		error(ct);
 	end
 
-	local ct_s = ffi.new("hex_data_s_type", 0);
-	ct_s.value = ffi.C.malloc(ffi.cast("size_t", len));
-	ffi.C.memcpy(ct_s.value, ptr, len);
+	local ct_s = cu.new_hex_data_s_type();
+	ct_s.buf_mem_managed = 1; -- In order to overcome freeing of pointers twice
+	ct_s.value = ptr;
 	ct_s.size = ffi.cast("size_t", len);
 	return ct, len, ct_s;
 end
@@ -302,12 +302,12 @@ crypto_utils.b64_encrypt_plain_text = function(plain_text, symmetric_key)
 		error(ct);
 	end
 
-	local ct_s = ffi.new("hex_data_s_type", 0);
+	local ct_s = cu.new_hex_data_s_type();
+	ct_s.buf_mem_managed = 1; -- In order to overcome freeing of pointers twice
 	local ctp = ffi.cast("cipher_text_s*", ct);
 	ct_s.value = ctp.buffer;
 	ct_s.size = ctp.len;
 	local b64_ct = cu.base64_encode(ct_s);
-	ct_s.value = ffi.NULL; -- In order to overcome freeing of pointers twice
 
 	return b64_ct;
 end
@@ -324,13 +324,29 @@ crypto_utils.decrypt_cipher_text = function(cipher_text, symmetric_key)
 	return pt;
 end
 
+crypto_utils.decrypt_hex_s_cipher_text = function(ct_s, symmetric_key)
+	assert(type(ct_s) == 'cdata');
+	assert(ffi.istype("hex_data_s_type", ct_s));
+	assert(type(symmetric_key) == 'userdata');
+
+	local ptr = ffi.getptr(ct_s.value);
+	local size = tonumber(ct_s.size);
+
+	local status, pt = pcall(evl_crypto.decrypt_udata_cipher_text, ptr, size, symmetric_key);
+	if (not status) then
+		error(pt);
+	end
+
+	return pt;
+end
+
 crypto_utils.decrypt_b64_cipher_text = function(b64_cipher_text, symmetric_key)
 	assert(type(b64_cipher_text) == 'string');
 	assert(type(symmetric_key) == 'userdata');
 
-	local ct = cu.base64_decode(b64_cipher_text);
-	local ptr = ffi.getptr(ct.value);
-	local size = tonumber(ct.size);
+	local ct_s = cu.base64_decode(b64_cipher_text);
+	local ptr = ffi.getptr(ct_s.value);
+	local size = tonumber(ct_s.size);
 
 	local status, pt = pcall(evl_crypto.decrypt_udata_cipher_text, ptr, size, symmetric_key);
 	if (not status) then
@@ -349,9 +365,9 @@ crypto_utils.rsa_encrypt_symmetric_key = function(symmetric_key, rsa_pub_key)
 		error(e_symm_key);
 	end
 
-	local ct_s = ffi.new("hex_data_s_type", 0);
-	ct_s.value = ffi.C.malloc(ffi.cast("size_t", len));
-	ffi.C.memcpy(ct_s.value, ptr, len);
+	local ct_s = cu.new_hex_data_s_type();
+	ct_s.buf_mem_managed = 1; -- In order to overcome freeing of pointers twice
+	ct_s.value = ptr;
 	ct_s.size = ffi.cast("size_t", len);
 	return e_symm_key, len, ct_s;
 end
@@ -365,12 +381,12 @@ crypto_utils.rsa_b64_encrypt_symmetric_key = function(symmetric_key, rsa_pub_key
 		error(e_symm_key);
 	end
 
-	local ct_s = ffi.new("hex_data_s_type", 0);
+	local ct_s = cu.new_hex_data_s_type();
+	ct_s.buf_mem_managed = 1; -- In order to overcome freeing of pointers twice
 	local ctp = ffi.cast("cipher_text_s*", e_symm_key);
 	ct_s.value = ctp.buffer;
 	ct_s.size = ctp.len;
 	local b64_e_symm_key = cu.base64_encode(ct_s);
-	ct_s.value = ffi.NULL; -- In order to overcome freeing of pointers twice
 
 	return b64_e_symm_key;
 end
@@ -380,6 +396,22 @@ crypto_utils.rsa_decrypt_enc_symmetric_key = function(e_symm_key, rsa_prv_key)
 	assert(type(rsa_prv_key) == 'userdata');
 
 	local status, o_symm_key = pcall(evl_crypto.rsa_decrypt_enc_symm_key, e_symm_key, rsa_prv_key);
+	if (not status) then
+		error(o_symm_key);
+	end
+
+	return o_symm_key;
+end
+
+crypto_utils.rsa_decrypt_hex_s_enc_symmetric_key = function(e_symm_key_s, rsa_prv_key)
+	assert(type(e_symm_key_s) == 'cdata');
+	assert(ffi.istype("hex_data_s_type", e_symm_key_s));
+	assert(type(rsa_prv_key) == 'userdata');
+
+	local ptr = ffi.getptr(e_symm_key_s.value);
+	local size = tonumber(e_symm_key_s.size);
+
+	local status, o_symm_key = pcall(evl_crypto.rsa_decrypt_udata_enc_symm_key, ptr, size, rsa_prv_key);
 	if (not status) then
 		error(o_symm_key);
 	end

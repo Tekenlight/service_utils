@@ -97,9 +97,6 @@ service_client.remove_internal_hostent = function(context, client)
 	assert(type(context) == 'table');
 	assert(type(client) == 'table');
 
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline, client.service_name);
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline, client.host_config_value);
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	local config_conn = context.db_connections['CONFIG'].conn;
 	if (client.host_config_value ~= nil and client.service_name ~= nil) then
 		config_conn:zrem(client.service_name, client.host_config_value);

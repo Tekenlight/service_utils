@@ -1,9 +1,9 @@
 local ffi = require("ffi");
+local core_utils = require('lua_schema.core_utils');
 local utils = {}
 
 ffi.cdef[[
 int getentropy(void *buf, size_t buflen);
-typedef binary_data_s1_type hex_data_s_type;
 ]]
 
 function utils.get_rand_int()
@@ -18,7 +18,7 @@ function utils.get_rand_bytes(size)
 	local cp = ffi.new("unsigned char [?]", size);
 	ffi.C.getentropy(cp, size);
 
-	local bin_inp = ffi.new("hex_data_s_type", 0);
+	local bin_inp = core_utils.new_hex_data_s_type();
 	bin_inp.size = size;
 
 	bin_inp.value = ffi.C.malloc(size+1);
