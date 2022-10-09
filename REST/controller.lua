@@ -516,7 +516,11 @@ rest_controller.handle_service_request = function (request, response)
 					local msg_handler = schema_processor:get_message_handler(t.name, t.ns);
 					json_output, msg = msg_handler:to_json(table_output);
 					if (json_output ~= nil) then
-						successfully_processed = false;
+						--[[
+						successfully_processed is true because processing is already done
+						optionally be commit is also done
+						]]
+						successfully_processed = true;
 					end
 				else
 					-- OOPS function returned outut in an unexpected format
@@ -536,6 +540,8 @@ rest_controller.handle_service_request = function (request, response)
 			if (msg ~= nil) then
 				output_obj.error_message = msg;
 				flg, json_output, msg = pcall(json_parser.encode, output_obj);
+				assert(flg);
+				response:set_status(500);
 			end
 			if (json_output == nil or json_output == '') then
 				json_output = '{}';
