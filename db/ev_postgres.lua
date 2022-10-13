@@ -16,7 +16,7 @@ ffi.cdef[[
 void * pin_loaded_so(const char * libname);
 ]]
 local libname = 'libevpostgres.so';
-local loaded, lib = pcall(ffi.C.pin_loaded_so, libname);
+local loaded, lib = pcall(ffi.C.pin_loaded_so, ffi.cast("const char*", libname));
 if (not loaded) then
 	error("Could not load library [libevpostgres.so] : "..lib);
 end
