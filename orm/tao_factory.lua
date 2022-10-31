@@ -333,16 +333,24 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 		end
 	end
 	j = nil;
-	if (count == 0) then
-		error("None of the columns for table ["..tbl_def.tbl_props.database_schema .. "." .. tbl_def.tbl_props.name.."] present in the input object");
+	--[[if (count == 0) then
+		error("None of the columns for table ["
+			..tbl_def.tbl_props.database_schema .. "."
+			.. tbl_def.tbl_props.name
+			.."] present in the input object");
 	end
+	]]
 	if (tbl_def.col_props.update_fields == true) then
 		local now = conn:get_systimestamp();
 		local new_version = obj.version + 1;
 
 		count = count + 1;
 		inputs[count] = context.uid;
-		stmt = stmt..", update_uid=?";
+		if (count == 1) then
+			stmt = stmt.." update_uid=?";
+		else
+			stmt = stmt..", update_uid=?";
+		end
 
 		count = count + 1;
 		inputs[count] = now;

@@ -281,7 +281,8 @@ local invoke_func = function(request, req_processor_interface, req_processor, fu
 					i = i + 1;
 				end
 			end
-			return debug.traceback(msg, 3);
+			print (debug.traceback(msg, 3));
+			return msg;
 		end
 		assert((func ~= nil) and (type(req_processor) == 'table') and (req_processor[func] ~= nil));
 		if (obj == nil) then
