@@ -12,7 +12,11 @@ description = {
 }
 
 dependencies = {
-   "lua > 5.2, < 5.5"
+   "lua > 5.2, < 5.5",
+   "lua-cjson",
+   "penlight",
+   "luaposix",
+   "lua-uri"
 }
 
 source = {

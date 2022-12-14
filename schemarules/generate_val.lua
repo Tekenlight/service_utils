@@ -1,8 +1,5 @@
 local stringx = require("pl.stringx");
-local xmlua = require("xmlua")
 local schema_processor = require("schema_processor")
-local xsd = xmlua.XSD.new();
-local xml = xmlua.XML;
 
 local app_info_xml_name = arg[1];
 local ref_common_module_name = arg[2];
