@@ -10,3 +10,6 @@
 	1. Scripting, therefore easy closures callbacks, dynamic code, faster development
 	2. good support for multi-threaded (parallel) event driven code through coroutines
 	3. first-class type system support
+	
+
+[Documentation](https://github.com/Tekenlight/service_utils/wiki)
