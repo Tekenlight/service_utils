@@ -1,5 +1,19 @@
 <img src="doc/images/logotk.png" width="200"/>
 
+service_utils are:
+------
+A set of lua libraries which expose the platform capabilities of [evpoco](https://github.com/Tekenlight/evpoco) to lua programming environment.
+
+A set of modules comprising of various utilities needed to develop a web-application are available as part of this library
+* REST: Set of classes to deal with client and server side infrastructure code to deal with REST request handling
+* SMTP: Set of classes to manage sending of emails
+* db: Set of classes to interface with Postgresql and Redis
+* jwt: Class to deal with JWT tokens
+* WS: Set of classes to deal with client and server sides of websocket protocol
+* orm: A set of tools and classes to deal with SELECT/INSERT/UPDATE/DELETE of RDBMS table records.
+* crypto: Set of classes to deal with cryptographic encryption and decryption and hashing
+* common: Generic utilities namely, message formatting, FILE IO, password generation, connection pool repository, user context
+
 # Why lua?
 
 1. Should be a scripting language, it therefore brings all the advantages of scripting (therefore python, javascript and lua)
