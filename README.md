@@ -1,3 +1,5 @@
+<img src="doc/images/logotk.png" width="200"/>
+
 # Why lua?
 
 1. Should be a scripting language, it therefore brings all the advantages of scripting (therefore python, javascript and lua)

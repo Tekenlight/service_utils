@@ -615,10 +615,6 @@ local function make_usual_cleanups(request, response, uc)
 end
 
 rest_controller.handle_request = function (request, response)
-	response:set_hdr_field("Access-Control-Allow-Origin", "*");
-	response:set_hdr_field("Access-Control-Allow-Methods", "*");
-	response:set_hdr_field("Access-Control-Allow-Headers", "*");
-	response:set_hdr_field("Access-Control-Allow-Credentials", "true");
 
 	local connection_hdr_field = stringx.strip(request:get_hdr_field(request, "Connection"));
 

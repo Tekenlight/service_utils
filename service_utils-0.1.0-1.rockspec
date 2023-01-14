@@ -8,7 +8,7 @@ description = {
       The utilities are built on top of evpoco platform
    ]],
    license = "MIT",
-   homepage = "https://github.com/Tekenlight/service_utils",
+   homepage = "git+https://github.com/Tekenlight/service_utils",
 }
 
 dependencies = {
@@ -16,12 +16,15 @@ dependencies = {
    "lua-cjson",
    "penlight",
    "luaposix",
-   "lua-uri"
+   "lua-uri",
+   "luafilesystem",
+   "markdown",
+   "ldoc"
 }
 
 source = {
-   url = "git://github.com/Tekenlight/service_utils",
-   tag = "version_0.1",
+   url = "git+https://github.com/Tekenlight/service_utils",
+   --tag = "version_0.1",
 }
 
 build = {
