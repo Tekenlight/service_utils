@@ -1,0 +1,19 @@
+<ns:interface xmlns:ns="http://evpoco.tekenlight.org/idl_spec"
+                name="rest_sample" db_schema_name="" package="">
+	<documentation>
+		ABCD
+	</documentation>
+    <method name="fetch" transactional="false" http_method="GET">
+        <documentation>
+			fetch
+        </documentation>
+        <query_param namespace="" name="query_param" mandatory="false"/>
+        <output namespace="" name="partner"/>
+    </method>
+    <method name="add" transactional="true" http_method="POST">
+        <documentation>
+            add:
+        </documentation>
+        <input namespace="" name="rest_sample_struct"/>
+	</method>
+</ns:interface>
