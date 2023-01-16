@@ -30,3 +30,4 @@ A set of modules comprising of various utilities needed to develop a web-applica
 
 
 [Documentation](https://github.com/Tekenlight/service_utils/wiki)
+Other links: [evlua documentation](https://github.com/Tekenlight/.github/wiki)
