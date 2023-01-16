@@ -117,10 +117,13 @@ return ]=]..class_name..[=[;
 
 
 local package_parts = stringx.split(idl_struct._attr.package, ".");
-assert(#package_parts > 0);
+--assert(#package_parts > 0);
 
 local n = #package_parts;
 local local_path = ""; 
+if (n == 0) then
+	local_path = local_path .. "."
+end
 local i = 1;
 while (i <= n) do
 	if(local_path == "") then
