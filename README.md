@@ -28,6 +28,11 @@ A set of modules comprising of various utilities needed to develop a web-applica
 	3. first-class type system support
 	
 
+Sample REST API
+
+
+![alt text][samples/REST/rest_sample.md]
+
 
 [Documentation](https://github.com/Tekenlight/service_utils/wiki)<br/>
 Other links: [evlua documentation](https://github.com/Tekenlight/.github/wiki)
