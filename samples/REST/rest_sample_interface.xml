@@ -8,7 +8,7 @@
 			fetch
         </documentation>
         <query_param namespace="" name="query_param" mandatory="false"/>
-        <output namespace="" name="partner"/>
+        <output namespace="" name="rest_sample_struct"/>
     </method>
     <method name="add" transactional="true" http_method="POST">
         <documentation>

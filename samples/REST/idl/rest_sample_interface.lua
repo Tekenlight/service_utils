@@ -25,7 +25,7 @@ rest_sample_interface.methods.fetch.message.in_out[1] = nil;
 
 rest_sample_interface.methods.fetch.message.in_out[2] = {};
 rest_sample_interface.methods.fetch.message.in_out[2].ns = '';
-rest_sample_interface.methods.fetch.message.in_out[2].name = 'partner';
+rest_sample_interface.methods.fetch.message.in_out[2].name = 'rest_sample_struct';
 
 
 rest_sample_interface.methods.add = {};
