@@ -1,5 +1,12 @@
 This is sample implementation of a REST API
 
+The essential things to expose a REST API in the evlua platform are
+1. xsd file containing the element declarations of either query parameters, post body or response body
+2. idl file exposing the lua class functions as RESP API
+3. lua class containing the implementation of the interface
+4. evluaserver.properties, the property file to set the environment for evluaserver
+
+
 
 ### rest_sample.xsd
 ```
