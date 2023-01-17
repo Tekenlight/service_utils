@@ -27,7 +27,7 @@ A set of modules comprising of various utilities needed to develop a web-applica
 	2. good support for multi-threaded (parallel) event driven code through coroutines
 	3. first-class type system support
 
-#Dependencies
+# Dependencies
 [evpoco](https://github.com/Tekenlight/evpoco) and its dependencies must be downloaded built and installed 
 [lua-cjson](https://github.com/Tekenlight/lua-cjson)
 [Penlight](https://github.com/Tekenlight/Penlight)
@@ -40,7 +40,7 @@ A set of modules comprising of various utilities needed to develop a web-applica
 Note: lua-uri has been customized in the fork, hence the fork has to be cloned and installed
 
 
-#Installation steps
+# Installation steps
 
 1. Download, build and install evpoco and its dependenies
 2. Clone and install lua-uri from Tekenlight (There are a few cusomizations done on the fork)
