@@ -71,30 +71,35 @@ function context_harness.prepare_uc(databases, module_path, jwt_token)
 	local db_conection_params = master_db_params:get_params(table.unpack(databases));
 
 	local uc = require('service_utils.common.user_context').new();
-	local key = properties_funcs.get_string_property("platform.jwtSignatureKey");
+	uc.module_path = module_path;
 
-	local header, token, sig, token_parts = jwt.deserialize(jwt_token, key, true);
-	if (header == nil or header == false) then
-		local msg = token;
-		error(msg);
-	end
+	--[[ TBD: To consider implementation of disabling auth check for this ]]
+	--local disable_auth_check = properties_funcs.get_bool_property("platform.disableAuthCheck");
+	--if (disable_auth_check ~= true) then
+		local key = properties_funcs.get_string_property("platform.jwtSignatureKey");
 
-	if (token.verified ~= true) then
-		local token_valid, msg = jwt.valid(header, token, sig, key, token_parts);
-		if (not token_valid) then
+		local header, token, sig, token_parts = jwt.deserialize(jwt_token, key, true);
+		if (header == nil or header == false) then
+			local msg = token;
 			error(msg);
 		end
-	end
 
-	token.exp_time = os.date('%Y-%m-%d %T', token.exp);
-	token.nbf_time = os.date('%Y-%m-%d %T', token.nbf);
-	token.verified = true;
+		if (token.verified ~= true) then
+			local token_valid, msg = jwt.valid(header, token, sig, key, token_parts);
+			if (not token_valid) then
+				error(msg);
+			end
+		end
 
-	uc.uid = ffi.cast("int64_t", tonumber(token.uid));
-	uc.token_body = token;
-	uc.orig_token = jwt_token;
-	uc.access_token = jwt.encode(token, key, header.alg);;
-	uc.module_path = module_path;
+		token.exp_time = os.date('%Y-%m-%d %T', token.exp);
+		token.nbf_time = os.date('%Y-%m-%d %T', token.nbf);
+		token.verified = true;
+
+		uc.uid = ffi.cast("int64_t", tonumber(token.uid));
+		uc.token_body = token;
+		uc.orig_token = jwt_token;
+		uc.access_token = jwt.encode(token, key, header.alg);;
+	--end
 
 	tao_factory.init(uc);
 
@@ -108,15 +113,23 @@ function context_harness.prepare_uc(databases, module_path, jwt_token)
 end
 
 local function does_request_need_auth(request, url_parts)
-	local json_parser = cjson.new();
+
+	local disable_auth_check = properties_funcs.get_bool_property("platform.disableAuthCheck");
+	if (disable_auth_check ~= true) then
+		return false;
+	end
+
 	local prop_str = properties_funcs.get_string_property("service_utils.REST.controller.noAuthUrls");
 	if (prop_str == nil) then
 		return true;
 	end
+
+	local json_parser = cjson.new();
 	local obj, msg = json_parser.decode(prop_str);
 	if (obj == nil) then
 		return true;
 	end
+
 	local url = (URI_CLASS:new(request:get_uri())):path();
 	for i,v in ipairs(obj.urls) do
 		if (v == url) then
