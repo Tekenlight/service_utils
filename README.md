@@ -32,7 +32,7 @@ A set of modules comprising of various utilities needed to develop a web-applica
 [lua-cjson](https://github.com/Tekenlight/lua-cjson)  
 [Penlight](https://github.com/Tekenlight/Penlight)  
 [luaposix](https://github.com/Tekenlight/luaposix)  
-[lua-uri](https://github.com/Tekenlight/lua-uri)  
+[lua-uri](https://github.com/Tekenlight/lua-uri): Customised repository  
 [luafilesystem](https://github.com/Tekenlight/luafilesystem)  
 [markdown](https://github.com/Tekenlight/markdown)  
 [ldoc](https://github.com/Tekenlight/LDoc)  
