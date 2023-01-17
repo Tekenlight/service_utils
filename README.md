@@ -26,7 +26,35 @@ A set of modules comprising of various utilities needed to develop a web-applica
 	1. Scripting, therefore easy closures callbacks, dynamic code, faster development
 	2. good support for multi-threaded (parallel) event driven code through coroutines
 	3. first-class type system support
-	
+
+#Dependencies
+[evpoco](https://github.com/Tekenlight/evpoco) and its dependencies must be downloaded built and installed 
+[lua-cjson](https://github.com/Tekenlight/lua-cjson)
+[Penlight](https://github.com/Tekenlight/Penlight)
+[luaposix](https://github.com/Tekenlight/luaposix)
+[lua-uri](https://github.com/Tekenlight/lua-uri)
+[luafilesystem](https://github.com/Tekenlight/luafilesystem)
+[markdown](https://github.com/Tekenlight/markdown)
+[ldoc](https://github.com/Tekenlight/LDoc)
+
+Note: lua-uri has been customized in the fork, hence the fork has to be cloned and installed
+
+
+#Installation steps
+
+1. Download, build and install evpoco and its dependenies
+2. Clone and install lua-uri from Tekenlight (There are a few cusomizations done on the fork)
+
+Assuming evpoco is already installed
+```
+git clone https://github.com/Tekenlight/lua-uri
+cd lua-uri
+luarocks make lua-uri-scm-1.rockspec
+
+git clone https://github.com/Tekenlight/service_utils
+cd service_utils
+luarocks make service_utils-0.1.0-1.rockspec
+```
 
 [Sample REST API](samples/REST/rest_sample.md)
 
