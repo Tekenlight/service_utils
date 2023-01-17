@@ -1,6 +1,6 @@
 <img src="doc/images/logotk.png" width="200"/>
 
-service_utils are:
+# service_utils are:
 ------
 A set of lua libraries which expose the platform capabilities of [evpoco](https://github.com/Tekenlight/evpoco) to lua programming environment.
 
