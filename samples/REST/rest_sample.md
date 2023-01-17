@@ -76,6 +76,8 @@ return rest_sample;
 
 ### evluaserver.properties
 ```
+# This is a sample configuration file for HTTPFormServer
+
 logging.loggers.root.channel.class = ConsoleChannel
 logging.loggers.app.name = Application
 logging.loggers.app.channel = c1
@@ -99,6 +101,8 @@ evluaserver.clMappingScript = evlua_mapper.lua
 
 platform.jwtSignatureKey = example_key
 
+service_utils.REST.controller.disableAuthCheck = true
+
 ```
 
 Set environmental variable EVLUA_PATH
@@ -115,5 +119,7 @@ evluaserver -n
 
 From another terminal run the curl command to test the server
 ```
-curl -X GET -d$HOME/BIOP/header http://localhost:9982/rest_sample/fetch
+cd ..../service_utils/samples/REST
+curl -X GET http://localhost:9982/rest_sample/fetch
+curl -X POST -d@post_body.json http://localhost:9982/rest_sample/fetch
 ```
