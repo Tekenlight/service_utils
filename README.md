@@ -49,11 +49,11 @@ Assuming evpoco is already installed
 ```
 git clone https://github.com/Tekenlight/lua-uri
 cd lua-uri
-luarocks make lua-uri-scm-1.rockspec
+sudo luarocks make
 
 git clone https://github.com/Tekenlight/service_utils
 cd service_utils
-luarocks make service_utils-0.1.0-1.rockspec
+sudo luarocks make
 ```
 
 [Sample REST API](samples/REST/rest_sample.md)
