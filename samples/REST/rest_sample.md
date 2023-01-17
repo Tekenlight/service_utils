@@ -5,6 +5,7 @@ The essential things to expose a REST API in the evlua platform are
 2. idl file exposing the lua class functions as RESP API
 3. lua class containing the implementation of the interface
 4. evluaserver.properties, the property file to set the environment for evluaserver
+5. run evluaserver
 
 
 
