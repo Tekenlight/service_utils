@@ -28,14 +28,14 @@ A set of modules comprising of various utilities needed to develop a web-applica
 	3. first-class type system support
 
 # Dependencies
-[evpoco](https://github.com/Tekenlight/evpoco) and its dependencies must be downloaded built and installed 
-[lua-cjson](https://github.com/Tekenlight/lua-cjson)
-[Penlight](https://github.com/Tekenlight/Penlight)
-[luaposix](https://github.com/Tekenlight/luaposix)
-[lua-uri](https://github.com/Tekenlight/lua-uri)
-[luafilesystem](https://github.com/Tekenlight/luafilesystem)
-[markdown](https://github.com/Tekenlight/markdown)
-[ldoc](https://github.com/Tekenlight/LDoc)
+[evpoco](https://github.com/Tekenlight/evpoco) and its dependencies must be downloaded built and installed   
+[lua-cjson](https://github.com/Tekenlight/lua-cjson)  
+[Penlight](https://github.com/Tekenlight/Penlight)  
+[luaposix](https://github.com/Tekenlight/luaposix)  
+[lua-uri](https://github.com/Tekenlight/lua-uri)  
+[luafilesystem](https://github.com/Tekenlight/luafilesystem)  
+[markdown](https://github.com/Tekenlight/markdown)  
+[ldoc](https://github.com/Tekenlight/LDoc)  
 
 Note: lua-uri has been customized in the fork, hence the fork has to be cloned and installed
 
