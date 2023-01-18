@@ -17,7 +17,7 @@ local function make_db_connections(params)
 	local db_connections = {};
 	for n, v in pairs(params) do
 		local db_access = require(v.handler);
-		local conn = db_access.open_connetion(table.unpack(v.params));
+		local conn = db_access.open_connection(table.unpack(v.params));
 		db_connections[n] = { client_type = v.client_type, conn = conn, handler = db_access };
 	end
 	return db_connections;

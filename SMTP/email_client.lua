@@ -146,7 +146,7 @@ email_client.sendmail = function(self, email_service, email_message)
 	local status, ret, msg = pcall(smtp_c.pipeline_send_message, smtp_c, mm);
 	if (not status) then
 		if (conn_from_pool) then
-			if (smtp_c:connetion_is_bad()) then
+			if (smtp_c:connection_is_bad()) then
 				smtp_c:release_connection();
 				smtp_c = nil;
 				status, smtp_c = make_connection(self, email_service, email_message.from, email_message.password, email_message.name);

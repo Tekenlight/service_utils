@@ -26,7 +26,7 @@ local ev_redis_db = {};
 
 local c_mt = { __index = ev_redis_connection };
 
-local open_connetion_internal = function(host, port, dbname, user, password)
+local open_connection_internal = function(host, port, dbname, user, password)
 	local conn, msg = evredis.new(host, port, dbname, user, password);
 	if (nil == conn) then
 		return nil, msg;
@@ -36,14 +36,14 @@ local open_connetion_internal = function(host, port, dbname, user, password)
 	return c;
 end
 
-ev_redis_db.open_connetion = function(host, port, dbname, user, password)
+ev_redis_db.open_connection = function(host, port, dbname, user, password)
 	assert(host ~= nil and type(host) == 'string');
 	assert(port ~= nil and type(port) == 'string');
 	assert(dbname ~= nil and type(dbname) == 'string');
 	assert(user ~= nil and type(user) == 'string');
 	assert(password ~= nil and type(password) == 'string');
 
-	local conn, msg = open_connetion_internal(host, port, dbname, user, password)
+	local conn, msg = open_connection_internal(host, port, dbname, user, password)
 	if (conn == nil) then
 		error("ERROR INITIATING CONNECTION:"..tostring(msg));
 		return nil;

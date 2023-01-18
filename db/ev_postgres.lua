@@ -53,7 +53,7 @@ ev_postgres_db.get_statement_id = function(dinfo)
 	return id;
 end
 
-local open_connetion_internal = function(host, port, dbname, user, password)
+local open_connection_internal = function(host, port, dbname, user, password)
 	local conn, msg = pg_lib.new(host, port, dbname, user, password);
 	if (nil == conn) then
 		return nil, msg;
@@ -63,8 +63,8 @@ local open_connetion_internal = function(host, port, dbname, user, password)
 	return c;
 end
 
-ev_postgres_db.open_connetion = function(host, port, dbname, user, password)
-	local conn, msg = open_connetion_internal(host, port, dbname, user, password)
+ev_postgres_db.open_connection = function(host, port, dbname, user, password)
+	local conn, msg = open_connection_internal(host, port, dbname, user, password)
 	if (conn == nil) then
 		error("ERROR INITIATING CONNECTION:"..tostring(msg));
 		return nil;

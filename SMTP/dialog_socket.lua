@@ -142,7 +142,7 @@ dialog_socket.receive_status_line = function(self, i_msg, limit)
 	return ret, line;
 end
 
-dialog_socket.connetion_is_bad = function(self)
+dialog_socket.connection_is_bad = function(self)
 	return self.socket_in_error
 end
 
