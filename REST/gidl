@@ -30,7 +30,7 @@ do
 	case $opt in
 		d) output_directory=$OPTARG;;
 		b) build_mode=$OPTARG;;
-		\?) echo >&2 "usage: cha [-b 0/1] [-d <output_directory>] file"
+		\?) echo >&2 "usage: gidl [-b 0/1] [-d <output_directory>] file"
 			exit 1;;
 	esac
 	#echo $OPTIND
