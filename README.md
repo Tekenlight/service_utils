@@ -16,7 +16,7 @@ A set of modules comprising of various utilities needed to develop a web-applica
 
 # Why lua?
 
-1. Should be a scripting language, it therefore brings all the advantages of scripting (therefore python, javascript and lua)
+1. Should be a scripting language because, scripting languages bring a host of advantages to make application development faster and easier, (therefore python, javascript and lua)
 2. Should support multiple threads and not have global interpreter lock (therefore javascript and lua)
 3. It should support asynchronous IO (javascript and lua)
 4. Good support for coroutines (At this stage  only lua scores, but we will still keep javascript because there are so many open-source and pre-built libraries)
