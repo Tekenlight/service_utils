@@ -1,8 +1,8 @@
 <img src="doc/images/logotk.png" width="200"/>
 
-# service_utils are:
+# service\_utils are:
 ------
-A set of lua libraries which expose the platform capabilities of [evpoco](https://github.com/Tekenlight/evpoco) to lua programming environment.
+A set of lua libraries which expose the platform capabilities of [evpoco](https://github.com/Tekenlight/evpoco) to lua ([evlua](https://github.com/Tekenlight/.github/wiki)) programming environment.
 
 A set of modules comprising of various utilities needed to develop a web-application are available as part of this library
 * REST: Set of classes to deal with client and server side infrastructure code to deal with REST request handling
