@@ -15,7 +15,7 @@ local rest_controller = {};
 
 local supported_http_methods = { GET = 1, PUT = 1, POST = 1, DELETE = 1 };
 
-local app_base_path_not_to_be_used = properties_funcs.get_bool_property("service_utils.REST.controller.appBasePath");
+local app_base_path_not_to_be_used = properties_funcs.get_bool_property("service_utils.REST.controller.appBasePathNotToBeUsed");
 if (app_base_path_not_to_be_used == nil) then
 	app_base_path_not_to_be_used = false;
 end
