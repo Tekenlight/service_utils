@@ -66,7 +66,7 @@ function harness.prepare_uc(databases, db_schema_name, module_path, jwt_token)
 	local db_conection_params = master_db_params:get_params(table.unpack(databases));
 
 	local uc = require('service_utils.common.user_context').new();
-	local key = properties_funcs.get_string_property("platform.jwtSignatureKey");
+	local key = properties_funcs.get_string_property("service_utils.jwtSignatureKey");
 
 	local token, msg = jwt.decode(jwt_token, key, true);
 	if (token == nil or token == false) then

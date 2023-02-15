@@ -107,13 +107,13 @@ evluaserver.requestMappingScript = mapper.lua
 evluaserver.wsMessageMappingScript = mapper.lua
 evluaserver.clMappingScript = evlua_mapper.lua
 
-platform.jwtSignatureKey = example_key
+service_utils.jwtSignatureKey = example_key
 
 service_utils.REST.controller.disableAuthCheck = true
 
 ```
 
-Set environmental variable EVLUA_PATH
+Set environmental variable EVLUA\_PATH
 ```
 EVLUA_PATH=`pwd`
 export EVLUA_PATH

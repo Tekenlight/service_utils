@@ -76,7 +76,7 @@ function context_harness.prepare_uc(databases, module_path, jwt_token)
 	--[[ TBD: To consider implementation of disabling auth check for this ]]
 	--local disable_auth_check = properties_funcs.get_bool_property("platform.disableAuthCheck");
 	--if (disable_auth_check ~= true) then
-		local key = properties_funcs.get_string_property("platform.jwtSignatureKey");
+		local key = properties_funcs.get_string_property("service_utils.jwtSignatureKey");
 
 		local header, token, sig, token_parts = jwt.deserialize(jwt_token, key, true);
 		if (header == nil or header == false) then
@@ -114,8 +114,8 @@ end
 
 local function does_request_need_auth(request, url_parts)
 
-	local disable_auth_check = properties_funcs.get_bool_property("platform.disableAuthCheck");
-	if (disable_auth_check ~= true) then
+	local enable_auth_check = properties_funcs.get_bool_property("service_utils.enableAuthCheck");
+	if (enable_auth_check ~= true) then
 		return false;
 	end
 
@@ -143,7 +143,7 @@ end
 context_harness.prepare_uc_REST = function(request, url_parts)
 	local uc = require('service_utils.common.user_context').new();
 
-	local key = properties_funcs.get_string_property("platform.jwtSignatureKey");
+	local key = properties_funcs.get_string_property("service_utils.jwtSignatureKey");
 
 	local hdr_flds = request:get_hdr_fields();
 	local jwt_token = hdr_flds['X-Auth'];

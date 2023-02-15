@@ -1,5 +1,6 @@
+local ffi = require('ffi');
 local stringx = require("pl.stringx");
-local xmlua = require("lua_schema.xmlua")
+local xmlua = require("xmlua")
 local mhf = require("schema_processor")
 local xsd = xmlua.XSD.new();
 local xml = xmlua.XML;
