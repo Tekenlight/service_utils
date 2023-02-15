@@ -9,7 +9,7 @@ The essential things to expose a REST API in the evlua platform are
 
 
 
-### rest_sample.xsd
+### rest\_sample.xsd
 ```
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
     <xsd:element name="rest_sample_struct">
@@ -30,7 +30,7 @@ Run the following command
 gxsd rest_sample.xsd
 ```
 
-### rest_sample_interface.idl
+### rest\_sample\_interface.idl
 
 ```
 <ns:interface xmlns:ns="http://evpoco.tekenlight.org/idl_spec"
@@ -60,7 +60,7 @@ run the command
 gidl rest_sample_interface.idl
 ```
 
-### rest_sample.lua
+### rest\_sample.lua
 ```
 local rest_sample = {};
 
@@ -113,6 +113,11 @@ service_utils.REST.controller.disableAuthCheck = true
 
 ```
 
+### post\_body.json
+```
+{ name = "Dr. John H. Watson" , address = "221B, Baker Street, London" }
+```
+
 Set environmental variable EVLUA\_PATH
 ```
 EVLUA_PATH=`pwd`
@@ -129,5 +134,5 @@ From another terminal run the curl command to test the server
 ```
 cd ..../service_utils/samples/REST
 curl -X GET http://localhost:9982/rest_sample/fetch
-curl -X POST -d@post_body.json http://localhost:9982/rest_sample/fetch
+curl -X POST -d@post_body.json http://localhost:9982/rest_sample/add
 ```
