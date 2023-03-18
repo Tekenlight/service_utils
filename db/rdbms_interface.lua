@@ -5,12 +5,8 @@ local _M = {}
 local utils = require('service_utils.common.utils');
 -- Driver to module_loader mapping
 local name_to_module_loader = {
-    mysql = utils.load_library('libevmysql'),
     postgresql = utils.load_library('libevpostgresql'),
     sqlite = utils.load_library('libevsqlite'),
-    db2 = utils.load_library('libevdb2'),
-    oracle = utils.load_library('libevoracle'),
-    odbc = utils.load_library('libevodbc'),
 }
 
 local driver_to_initfuncs = {};
