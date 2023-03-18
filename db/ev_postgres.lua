@@ -2,24 +2,8 @@ local ffi = require("ffi");
 local bc = require("bigdecimal");
 local du = require('lua_schema.date_utils');
 local cu = require('lua_schema.core_utils');
-local pg = package.loadlib('libevpostgres.so','luaopen_evrdbms_postgres');
 local types = require('service_utils.db.ev_types');
-local loaded, pg_lib = pcall(pg);
-if(not loaded) then
-	error("Could not load library");
-end
-
---[[
---The below is done to ensure that libevpostgres.so remains loaded even when dlclose is called
---]]
-ffi.cdef[[
-void * pin_loaded_so(const char * libname);
-]]
-local libname = 'libevpostgres.so';
-local loaded, lib = pcall(ffi.C.pin_loaded_so, ffi.cast("const char*", libname));
-if (not loaded) then
-	error("Could not load library [libevpostgres.so] : "..lib);
-end
+local pg_lib = (require('service_utils.common.utils')).load_library('libevpostgres');
 
 ffi.cdef[[
 

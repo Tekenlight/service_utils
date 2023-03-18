@@ -3,23 +3,7 @@ local bc = require("bigdecimal");
 local du = require('lua_schema.date_utils');
 local cu = require('lua_schema.core_utils');
 local types = require('service_utils.db.ev_types');
-local evredis_init = package.loadlib('libevredis.so','luaopen_evredis');
-local loaded, evredis = pcall(evredis_init);
-if(not loaded) then
-	error("Could not load library");
-end
-
---[[
---The below is done to ensure that libevpostgres.so remains loaded even when dlclose is called
---]]
-ffi.cdef[[
-void * pin_loaded_so(const char * libname);
-]]
-local libname = 'libevredis.so';
-local loaded, lib = pcall(ffi.C.pin_loaded_so, libname);
-if (not loaded) then
-	error("Could not load library [libevredis.so] : "..lib);
-end
+local evredis = (require('service_utils.common.utils')).load_library('libevredis');
 
 local ev_redis_connection = { exec = false;};
 local ev_redis_db = {};

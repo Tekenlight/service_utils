@@ -1,18 +1,6 @@
 local ffi = require('ffi');
 
-local libname = 'libevpoolrepos.so';
-local repos_loader = package.loadlib(libname,'luaopen_libevpoolrepos');
-local loaded, repos_lib = pcall(repos_loader);
-if(not loaded) then
-	error("Could not load library");
-end
-ffi.cdef[[
-void * pin_loaded_so(const char * libname);
-]]
-local loaded, lib = pcall(ffi.C.pin_loaded_so, libname);
-if (not loaded) then
-	error("Could not load library ["..libname.."] : "..lib);
-end
+local repos_lib = (require('service_utils.common.utils')).load_library('libevpoolrepos');
 
 local pool_repos = {}
 local pool = {};

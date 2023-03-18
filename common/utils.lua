@@ -4,6 +4,7 @@ local utils = {}
 
 ffi.cdef[[
 int getentropy(void *buf, size_t buflen);
+void * pin_loaded_so(const char * libname);
 ]]
 
 function utils.get_rand_int()
@@ -28,5 +29,36 @@ function utils.get_rand_bytes(size)
 	return bin_inp;
 end
 
+function utils.os_name()
+	local uname_s = ffi.new("struct utsname", {});
+	ffi.C.uname(uname_s);
+
+	return (ffi.string(uname_s.sysname));
+end
+
+function utils.pin_loaded_so(libname)
+	assert(libname ~= nil and type(libname) == 'string');
+	local loaded, lib = pcall(ffi.C.pin_loaded_so, libname);
+	if (not loaded) then
+		error("Could not load library ["..libname"] : "..lib);
+	end
+end
+
+function utils.load_library(libname)
+	assert(libname ~= nil and type(libname) == 'string');
+	local libname_full;
+	if ('Darwin' == (require('lua_schema.core_utils')).os_name()) then
+		libname_full = libname..'.dylib';
+	else
+		libname_full = libname..'.so';
+	end
+	local libhandle = package.loadlib(libname_full,'luaopen_'..libname);
+	local loaded, lib = pcall(libhandle);
+	if(not loaded) then
+		error("Could not load library");
+	end
+	utils.pin_loaded_so(libname_full);
+	return lib;
+end
 
 return utils;

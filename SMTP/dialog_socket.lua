@@ -1,29 +1,9 @@
 local ffi = require('ffi');
 local platform = require('platform');
-local netssl = require('libevlnetssl');
-local evclient = require('libevclient');
+local netssl = (require('service_utils.common.utils')).load_library('libevlnetssl');
+local evclient = (require('service_utils.common.utils')).load_library('libevclient');
 local error_handler = require("lua_schema.error_handler");
 local constants = require('service_utils.common.constants');
---[[
---The below is done to ensure that libevpostgres.so remains loaded even when dlclose is called
---]]
-ffi.cdef[[
-void * pin_loaded_so(const char * libname);
-]]
-do
-	local libname = 'libevlnetssl.so';
-	local loaded, lib = pcall(ffi.C.pin_loaded_so, libname);
-	if (not loaded) then
-		error("Could not load library [libevlnetssl.so] : "..lib);
-	end
-end
-do
-	local libname = 'libevclient.so';
-	local loaded, lib = pcall(ffi.C.pin_loaded_so, libname);
-	if (not loaded) then
-		error("Could not load library [libevclient.so] : "..lib);
-	end
-end
 
 
 ffi.cdef[[

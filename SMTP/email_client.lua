@@ -3,21 +3,11 @@ local schema_processor = require("schema_processor");
 local error_handler = require("lua_schema.error_handler");
 local smtp_c_f = require('service_utils.SMTP.smtp_client');
 local platform = require('platform');
-local evclient = require('libevclient');
+local evclient = (require('service_utils.common.utils')).load_library('libevclient');
 local properties_funcs = platform.properties_funcs();
 local enablesmtpclientpool = properties_funcs.get_bool_property("service_utils.SMTP.email_client.enablesmtpclientpool");
 if (enablesmtpclientpool == nil) then
 	enablesmtpclientpool = false;
-end
-ffi.cdef[[
-void * pin_loaded_so(const char * libname);
-]]
-do
-	local libname = 'libevclient.so';
-	local loaded, lib = pcall(ffi.C.pin_loaded_so, libname);
-	if (not loaded) then
-		error("Could not load library [libevclient.so] : "..lib);
-	end
 end
 
 

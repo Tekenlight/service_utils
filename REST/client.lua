@@ -1,5 +1,5 @@
 local URI_CLASS = require("uri");
-local netssl = require('libevlnetssl');
+local netssl = (require('service_utils.common.utils')).load_library('libevlnetssl');
 
 local client = {}
 
