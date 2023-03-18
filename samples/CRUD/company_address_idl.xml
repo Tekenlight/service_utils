@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns:interface xmlns:ns="http://evpoco.tekenlight.org/idl_spec"
+				name="company_address" db_schema_name="'REGISTRAR'" package="biop.registrar">
+	<documentation>
+		Interface to carryout the CRUD (maintenance) operations of a company_address object
+		For all the update methods, it is expected that the client calls the "fetch"
+		method first and submit the modified company_address record appropriately.
+	</documentation>
+	<method name="fetch" transactional="false" http_method="GET">
+		<documentation>
+			fetch:
+
+			Inputs:
+				address_id of the company (mandatory)
+
+			Outputs:
+				company_address object of the given address of the company
+
+			Description:
+				Retrieves a company_address object for the given address_id
+
+			Errors:
+				Throws errors in case of invalid or missing inputs
+				Throws errors in case the company_address record does not exist
+		</documentation>
+		<query_param namespace="http://primitives.biop.com" name="address_id" mandatory="true"/>
+		<output namespace="http://composites.biop.com" name="company_address"/>
+	</method>
+	<method name="add" transactional="true" http_method="POST">
+		<documentation>
+			add:
+
+			Inputs:
+				company_address object of the given user
+
+			Outputs:
+				None
+
+			Description:
+				Adds a new company_address object to Registrar database
+
+			Errors:
+				Throws errors in case of invalid or missing inputs
+				Throws errors in case the company record already exists
+		</documentation>
+		<input namespace="http://composites.biop.com" name="company_address"/>
+	</method>
+	<method name="modify" transactional="true" http_method="PUT">
+		<documentation>
+			modify:
+
+			Inputs:
+				company_address object of the given address_id
+
+			Outputs:
+				None
+
+			Description:
+				Update a company_address object in the Registrar database
+
+			Errors:
+				Throws errors in case of invalid or missing inputs
+				Throws errors in case the company_address record does not exist
+				Throws error in case of concurrent writes on the same object
+		</documentation>
+		<input namespace="http://composites.biop.com" name="company_address"/>
+	</method>
+	<method name="delete" transactional="true" http_method="PUT">
+		<documentation>
+			delete:
+
+			Inputs:
+				company_address object of the given address_id
+
+			Outputs:
+				None
+
+			Description:
+				Marks a company_address object in the Registrar database as deleted
+
+			Errors:
+				Throws errors in case of invalid or missing inputs
+				Throws errors in case the company_address record does not exist
+				Throws error in case of concurrent writes on the same object
+		</documentation>
+		<input namespace="http://composites.biop.com" name="company_address"/>
+	</method>
+	<method name="undelete" transactional="true" http_method="PUT">
+		<documentation>
+			undelete:
+
+			Inputs:
+				company_address object of the given address_id
+
+			Outputs:
+				None
+
+			Description:
+				Marks a company_address object in the Registrar database as not deleted
+
+			Errors:
+				Throws errors in case of invalid or missing inputs
+				Throws errors in case the company_address record does not exist
+				Throws error in case of concurrent writes on the same object
+		</documentation>
+		<input namespace="http://composites.biop.com" name="company_address"/>
+	</method>
+	<method name="list" transactional="true" http_method="GET">
+		<documentation>
+			list:
+
+			Inputs:
+				query_params with one or all of
+				org_id, address_id
+
+			Outputs:
+				List of comapny_address objects matching the given input criteria
+
+			Description:
+				Queries the database and retrives a list of matching company_address records
+
+			Errors:
+				Throws errors in case of invalid or missing inputs
+		</documentation>
+		<query_param namespace="http://primitives.biop.com" name="offset"/>
+		<query_param namespace="http://primitives.biop.com" name="num_recs"/>
+		<query_param namespace="http://primitives.biop.com" name="org_id"/>
+		<query_param namespace="http://primitives.biop.com" name="deleted"/>
+		<query_param namespace="http://primitives.biop.com" name="address_id"/>
+		<query_param namespace="http://primitives.biop.com" name="org_id"/>
+		<output namespace="http://composites.biop.com" name="company_addresses"/>
+	</method>
+</ns:interface>

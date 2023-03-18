@@ -1,0 +1,665 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+targetNamespace="http://primitives.biop.com" xmlns:ns="http://primitives.biop.com">
+
+	<xsd:simpleType name="pw_state_type">
+        <xsd:annotation>
+            <xsd:documentation>
+                <description>
+                    N -- Not set
+                    F -- Force password change
+                    S -- Set
+                </description>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:token">
+            <xsd:maxLength value="1"/>
+            <xsd:enumeration value="N"/>
+            <xsd:enumeration value="F"/>
+            <xsd:enumeration value="S"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:element name="pw_state" type="ns:pw_state_type"/>
+
+	<xsd:element name="is_subscriber" type="xsd:boolean"/>
+
+    <xsd:simpleType name="pw_type">
+        <xsd:restriction base="xsd:token">
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:element name="pw" type="ns:pw_type"/>
+
+    <xsd:simpleType name="otp_type">
+        <xsd:restriction base="xsd:token">
+			<xsd:maxLength value="6"/>
+			<xsd:minLength value="6"/>
+			<xsd:pattern value="[\d]{6}"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:element name="otp" type="ns:otp_type"/>
+
+	<xsd:element name="deleted" type="xsd:boolean"/>
+
+	<xsd:simpleType name="session_id_type">
+		<xsd:restriction base="xsd:long">
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="session_id" type="ns:session_id_type"/>
+
+	<xsd:simpleType name="id_type">
+		<xsd:restriction base="xsd:long">
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="id" type="ns:id_type"/>
+
+	<xsd:simpleType name="version_num_type">
+		<xsd:restriction base="xsd:long">
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="version_num" type="ns:version_num_type"/>
+
+	<xsd:simpleType name="service_provider_id_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="10"/>
+			<xsd:pattern value="[\d]+"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="service_provider_id" type="ns:service_provider_id_type"/>
+
+	<xsd:simpleType name="zip_code_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="6"/>
+			<xsd:pattern value="[\d]+"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="zip_code" type="ns:zip_code_type"/>
+
+	<xsd:simpleType name="ref_type_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:minLength value="5"/>
+			<xsd:maxLength value="5"/>
+			<xsd:pattern value="[\d]+"/>
+			<xsd:enumeration value="00001">
+				<xsd:annotation>
+					<xsd:documentation>
+						<description> Country code </description>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="00002">
+				<xsd:annotation>
+					<xsd:documentation>
+						<description> State code </description>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="00003">
+				<xsd:annotation>
+					<xsd:documentation>
+						<description> City code </description>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="00004">
+				<xsd:annotation>
+					<xsd:documentation>
+						<description> User role </description>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="00005">
+				<xsd:annotation>
+					<xsd:documentation>
+						<description> Currency Code </description>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="00006">
+				<xsd:annotation>
+					<xsd:documentation>
+						<description> Unit Of Measure</description>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="00007">
+				<xsd:annotation>
+					<xsd:documentation>
+						<description>Bank Identifier Type</description>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="00008">
+				<xsd:annotation>
+					<xsd:documentation>
+						<description> IFSC Code</description>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="00009">
+				<xsd:annotation>
+					<xsd:documentation>
+						<description> Sort Code</description>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="00010">
+				<xsd:annotation>
+					<xsd:documentation>
+						<description> Invoice Type</description>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="00011">
+				<xsd:annotation>
+					<xsd:documentation>
+						<description> HSN Code</description>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="00012">
+				<xsd:annotation>
+					<xsd:documentation>
+						<description> Location code</description>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="00013">
+				<xsd:annotation>
+					<xsd:documentation>
+						<description> Tax Type</description>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="ref_type" type="ns:ref_type_type"/>
+
+	<xsd:simpleType name="ref_code_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="20" />
+			<xsd:pattern value="[A-Za-z0-9]+" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="ref_code" type="ns:ref_code_type"/>
+
+	<xsd:simpleType name="ref_desc_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="100"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="ref_desc" type="ns:ref_desc_type"/>
+	<xsd:element name="city_name" type="ns:ref_desc_type"/>
+
+	<xsd:simpleType name="user_name_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="256"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="user_name" type="ns:user_name_type"/>
+
+	<xsd:simpleType name="address_line_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="256"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="address_line" type="ns:address_line_type"/>
+
+	<xsd:simpleType name="email_id_type">
+		<xsd:annotation>
+			<xsd:documentation>
+				<description>RFC 3696
+				</description>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="320"/>
+			<xsd:pattern value="([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="email_id" type="ns:email_id_type"/>
+	<xsd:element name="contact_email_id" type="ns:email_id_type"/>
+
+	<xsd:simpleType name="aadhar_number_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="12"/>
+			<xsd:pattern value="[\d]{12}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="aadhar_number" type="ns:aadhar_number_type"/>
+
+	<xsd:simpleType name="pan_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="10"/>
+			<xsd:pattern value="[A-Z]{5}[\d]{4}[A-Z]"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="pan" type="ns:pan_type"/>
+
+	<xsd:simpleType name="voter_id_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="10"/>
+			<xsd:pattern value="[A-Z]{3}[\d]{7}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="voter_id" type="ns:voter_id_type"/>
+
+	<xsd:simpleType name="org_id_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="10"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="org_id" type="ns:org_id_type"/>
+	<xsd:element name="subscriber_org_id" type="ns:org_id_type"/>
+	<xsd:element name="parent_org_id" type="ns:org_id_type"/>
+	<xsd:element name="buyer_org_id" type="ns:org_id_type"/>
+	<xsd:element name="seller_org_id" type="ns:org_id_type"/>
+	<xsd:element name="default_company_id" type="ns:org_id_type"/>
+	<xsd:element name="default_parent_company_id" type="ns:org_id_type"/>
+
+	<xsd:simpleType name="offset_type">
+		<xsd:restriction base="xsd:int">
+			<xsd:minInclusive value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="offset" type="ns:offset_type"/>
+
+	<xsd:simpleType name="num_recs_type">
+		<xsd:restriction base="xsd:int">
+			<xsd:minInclusive value="0"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="num_recs" type="ns:num_recs_type"/>
+
+	<xsd:simpleType name="org_name_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="100"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="org_name" type="ns:org_name_type"/>
+	<xsd:element name="parent_org_name" type="ns:org_name_type"/>
+
+	<xsd:simpleType name="cell_number_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="20"/>
+			<xsd:pattern value="[\d\-+]+"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="cell_number" type="ns:cell_number_type"/>
+
+	<xsd:simpleType name="partner_relationship_type_type">
+		<xsd:annotation>
+			<xsd:documentation>
+				<description>
+					S -- Supplier
+					D -- Distributor
+					B -- Both
+				</description>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="1"/>
+			<xsd:enumeration value="S"/>
+			<xsd:enumeration value="D"/>
+			<xsd:enumeration value="B"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="partner_relationship_type" type="ns:partner_relationship_type_type"/>
+
+	<xsd:simpleType name="identity_type_type">
+		<xsd:annotation>
+			<xsd:documentation>
+				<description>
+					A - Aadhar
+					P - PAN
+					V - Voter ID
+				</description>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="1"/>
+			<xsd:enumeration value="A"/>
+			<xsd:enumeration value="P"/>
+			<xsd:enumeration value="V"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="identity_type" type="ns:identity_type_type"/>
+
+	<xsd:simpleType name="identifier_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="20"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="identifier" type="ns:identifier_type"/>
+
+	<xsd:element name="to_org_id" type="ns:org_id_type"/>
+
+    <xsd:element name="from_org_id" type="ns:org_id_type"/>
+
+	<xsd:simpleType name="msg_type_name_type">
+
+        <xsd:restriction base="xsd:token">
+            <xsd:maxLength value="30"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+	<xsd:element name="msg_type_name" type="ns:msg_type_name_type"/>
+
+    <xsd:simpleType name="msg_id_type">
+        <xsd:restriction base="xsd:token">
+            <xsd:maxLength value="10"/>
+            <xsd:minLength value="10"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+
+    <xsd:element name="msg_id" type="ns:msg_id_type"/>
+
+    <xsd:element name="message_content_id" type="ns:id_type"/>
+
+    <xsd:element name="time" type="xsd:dateTime"/>
+    <xsd:element name="date" type="xsd:date"/>
+
+
+    <xsd:element name="send_attempts" type="xsd:int"/>
+
+	<xsd:simpleType name="msg_status_type">
+        <xsd:annotation>
+            <xsd:documentation>
+                <description>
+                    1 -- RECEIVED
+                    2 -- SEND_ATTEMPTED
+                    3 -- SENT
+                    4 -- SEND_FAILED
+                </description>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:token">
+            <xsd:maxLength value="1"/>
+            <xsd:enumeration value="1"/>
+            <xsd:enumeration value="2"/>
+            <xsd:enumeration value="3"/>
+            <xsd:enumeration value="4"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:element name="msg_status" type="ns:msg_status_type"/>
+
+    <xsd:element name="content" type="xsd:hexBinary"/>
+
+    <xsd:element name="content_length" type="xsd:unsignedLong"/>
+
+    <xsd:element name="srl_num" type="xsd:unsignedLong"/>
+
+    <xsd:element name="attachment" type="xsd:hexBinary"/>
+
+    <xsd:simpleType name="attachment_name_type">
+        <xsd:restriction base="xsd:token">
+            <xsd:maxLength value="20"/>
+            <xsd:minLength value="20"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:element name="attachment_name" type="ns:attachment_name_type"/>
+
+    <xsd:element name="attachment_length" type="xsd:unsignedLong"/>
+
+	<xsd:simpleType name="tan_id_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="10"/>
+			<xsd:pattern value="[A-Z]{4}[\d]{5}[A-Z]"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="tan_id" type="ns:tan_id_type"/>
+
+	<xsd:simpleType name="user_principal_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="30"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="user_principal" type="ns:user_principal_type"/>
+
+	<xsd:simpleType name="user_type_type">
+        <xsd:annotation>
+            <xsd:documentation>
+                <description>
+					S -- System user
+					I -- Individual user
+                </description>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:token">
+            <xsd:maxLength value="1"/>
+            <xsd:enumeration value="I"/>
+            <xsd:enumeration value="S"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:element name="user_type" type="ns:user_type_type"/>
+
+	<xsd:simpleType name="system_user_type_type">
+        <xsd:annotation>
+            <xsd:documentation>
+                <description>
+					O -- Organization / Company
+					D -- Daemon program
+                </description>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:token">
+            <xsd:maxLength value="1"/>
+            <xsd:enumeration value="O"/>
+            <xsd:enumeration value="D"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:element name="system_user_type" type="ns:system_user_type_type"/>
+
+	<xsd:simpleType name="license_id_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="30"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="license_id" type="ns:license_id_type"/>
+
+	<xsd:simpleType name="status_message_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="100"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="xchange_meta_cmd_type">
+        <xsd:annotation>
+            <xsd:documentation>
+                <description>
+					A = Acknowledge
+					C = Close
+					E = Error
+					O = Pong
+					P = Ping
+					S = Subscribe
+               </description>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:token">
+            <xsd:maxLength value="1"/>
+            <xsd:enumeration value="A"/>
+            <xsd:enumeration value="C"/>
+            <xsd:enumeration value="E"/>
+            <xsd:enumeration value="P"/>
+            <xsd:enumeration value="O"/>
+            <xsd:enumeration value="S"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:element name="xchange_meta_cmd" type="ns:xchange_meta_cmd_type"/>
+
+	<xsd:simpleType name="address_id_type">
+        <xsd:restriction base="xsd:token">
+            <xsd:maxLength value="10"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:element name="address_id" type="ns:address_id_type"/>
+	
+
+	<xsd:simpleType name="tax_identity_type_type">
+        <xsd:annotation>
+            <xsd:documentation>
+                <description>
+                    IT - Indian TAN
+                    IP - Indian PAN
+                 </description>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:token">
+            <xsd:maxLength value="2"/>
+            <xsd:enumeration value="IT"/>
+            <xsd:enumeration value="IP"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:element name="tax_identity_type" type="ns:tax_identity_type_type"/>
+
+    <xsd:simpleType name="tax_identifier_type">
+        <xsd:restriction base="xsd:token">
+            <xsd:maxLength value="20"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:element name="tax_identifier" type="ns:tax_identifier_type"/>
+    
+    	<xsd:simpleType name="order_num_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="20"/>
+			<xsd:pattern value="[A-Za-z0-9_-]+"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="order_number" type="ns:order_num_type"/>
+	
+	<xsd:simpleType name="item_id_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="20"/>
+			<xsd:pattern value="[A-Za-z0-9_-]+"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="item_id" type="ns:item_id_type"/>
+
+
+	<xsd:simpleType name="description_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="256"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="item_description" type="ns:description_type"/>
+
+	
+	<xsd:simpleType name="quantity_type">
+		<xsd:restriction base="xsd:decimal">
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="quantity" type="ns:quantity_type"/>
+	
+	<xsd:simpleType name="amount_type">
+		<xsd:restriction base="xsd:decimal">
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="rate_per_unit" type="ns:amount_type"/>
+
+	<xsd:simpleType name="total_amount_type">
+		<xsd:restriction base="xsd:decimal"></xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="percentage_type">
+		<xsd:restriction base="xsd:decimal"></xsd:restriction>
+	</xsd:simpleType>
+
+
+	<xsd:simpleType name="notes_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="256"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="notes" type="ns:notes_type"/>
+
+	
+	<xsd:element name="seller_address_id" type="ns:address_id_type"/>
+	<xsd:element name="order_issue_date" type="xsd:date"/>
+	<xsd:element name="order_valid_to_date" type="xsd:date"/>	
+	<xsd:element name="order_valid_from_date" type="xsd:date"/>
+	<xsd:element name="order_contact_user_name" type="ns:user_name_type"/>
+
+	 <xsd:simpleType name="order_id_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="10"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="order_id" type="ns:order_id_type"/>
+
+	<xsd:simpleType name="public_key_type">
+	        <xsd:restriction base="xsd:token">
+			<xsd:whiteSpace value="collapse"/>
+	        </xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:element name="override" type="xsd:boolean"/>
+
+	<xsd:simpleType name="invoice_id_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="10" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="invoice_id" type="ns:invoice_id_type" />
+
+	<xsd:simpleType name="invoice_num_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="20" />
+			<xsd:pattern value="[A-Za-z0-9_-]+" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="invoice_number" type="ns:invoice_num_type" />
+
+	<xsd:simpleType name="acct_identifier_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="20" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:element name="invoice_date" type="xsd:date" />
+	<xsd:element name="invoice_type" type="ns:ref_code_type" />
+	<xsd:element name="acct_identifier" type="ns:acct_identifier_type"/>
+
+	<xsd:simpleType name="acct_name_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="100"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="acct_name" type="ns:acct_name_type"/>
+
+	<xsd:simpleType name="acct_number_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="34"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="acct_number" type="ns:acct_number_type"/>
+	<xsd:element name="bank_identifier_type" type="ns:ref_code_type"/>
+	<xsd:element name="bank_identifier" type="ns:ref_code_type"/>
+
+	<xsd:element name="location" type="ns:ref_code_type"/>
+	<xsd:element name="tin_type" type="ns:ref_code_type"/>
+	<xsd:simpleType name="tin_number_type">
+		<xsd:restriction base="xsd:token">
+			<xsd:maxLength value="15"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="tin_number" type="ns:tin_number_type"/>
+	
+	<xsd:simpleType name="access_type_type">
+        <xsd:annotation>
+            <xsd:documentation>
+                <description>
+                    A - Admin
+                    B - Business User
+                 </description>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:token">
+            <xsd:maxLength value="2"/>
+            <xsd:enumeration value="A"/>
+            <xsd:enumeration value="B"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:element name="access_type" type="ns:access_type_type"/>
+
+</xsd:schema>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns:app_info xmlns:ns="http://evpoco.tekenlight.org/message_rules">
+	<rule_set package="biop.registrar.val.company_address_validations" rule_set_name="validate_company_address_elements_for_add">
+		<rule type="independent" ref_element="address_id">
+			<assertion>(obj.address_id == nil)</assertion>
+			<error_def>
+				<error_code>ELEMENT_NOT_REQUIRED</error_code>
+			</error_def>
+		</rule>
+		<rule type = "independent">
+			<validation package="biop.registrar.val.address_validations"
+			method="validate_address_elements" argument_type="scalar" argument="obj"/>
+		</rule>
+	</rule_set>
+
+	<rule_set package="biop.registrar.val.company_address_validations" rule_set_name="validate_company_address_elements">
+        <rule type = "independent">
+            <validation package="biop.registrar.val.address_validations"
+            method="validate_address_elements" argument_type="scalar" argument="obj"/>
+        </rule> 
+        <rule type="independent" ref_element="address_id">
+            <assertion>(obj.address_id ~= nil)</assertion>
+            <error_def>
+                <error_code>ELEMENT_MANDATORY</error_code>
+            </error_def>
+        </rule>
+    </rule_set>
+	<mappings/>
+</ns:app_info>
+

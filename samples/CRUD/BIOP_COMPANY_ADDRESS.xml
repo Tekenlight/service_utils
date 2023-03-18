@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns:tbldef xmlns:ns="http://evpoco.tekenlight.org/tbl_spec"
+				name="BIOP_COMPANY_ADDRESS" database_schema="BIOP_ADMIN" tablespace="master" package="biop.registrar.tbl">
+	<columns soft_del="true" creation_fields="true" update_fields="true" internal_id="true">
+		<column name="org_id" type="org_id_type">
+			<doc/>
+		</column>
+		<column name="address_id" type="address_id_type" key_column="true">
+			<doc/>
+		</column>
+		<column name="address_line_1" type="address_line_type">
+			<doc/>
+		</column>
+		<column name="address_line_2" type="address_line_type">
+			<doc/>
+		</column>
+		<column name="city" type="ref_code_type">
+			<doc/>
+		</column>
+		<column name="state" type="ref_code_type">
+			<doc/>
+		</column>
+		<column name="cntry" type="ref_code_type">
+			<doc/>
+		</column>
+		<column name="zip_code" type="zip_code_type">
+			<doc/>
+		</column>
+	</columns>
+	<indexes>
+		<index name="IDX_COMPANY_ADDRESS" unique="false" tablespace="master">
+			<index_column name="org_id"/>
+		</index>
+	</indexes>
+</ns:tbldef>
+
