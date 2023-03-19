@@ -414,6 +414,15 @@ crypto_utils.rsa_decrypt_b64_enc_symmetric_key = function(b64_e_symm_key, rsa_pr
 	return o_symm_key;
 end
 
+crypto_utils.s_sha_hash = function(input, salt, length)
+	assert(type(input) == 'string');
+	assert(type(salt) == 'string');
+	assert(math.type(length) == 'integer');
+	assert(length == 1 or length == 256 or length == 384 or length == 512);
+
+	return evl_crypto['s_sha'..length..'_hash'](input, salt);
+end
+
 
 return crypto_utils;
 
