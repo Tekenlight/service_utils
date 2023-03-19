@@ -44,14 +44,22 @@ function utils.pin_loaded_so(libname)
 	end
 end
 
-function utils.load_library(libname)
+function utils.load_library(libname, extension)
 	assert(libname ~= nil and type(libname) == 'string');
+	assert(extension == nil or type(extension) == 'string');
+
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline, libname);
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline, extension);
 	local libname_full;
-	if ('Darwin' == (require('lua_schema.core_utils')).os_name()) then
-		libname_full = libname..'.dylib';
-	else
-		libname_full = libname..'.so';
+	if (extension == nil) then
+		if ('Darwin' == (require('lua_schema.core_utils')).os_name()) then
+			extension = 'dylib';
+		else
+			extension = 'so';
+		end
 	end
+	libname_full = libname..'.'..extension;
+
 	local libhandle = package.loadlib(libname_full,'luaopen_'..libname);
 	local loaded, lib = pcall(libhandle);
 	if(not loaded) then
