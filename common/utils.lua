@@ -48,8 +48,6 @@ function utils.load_library(libname, extension)
 	assert(libname ~= nil and type(libname) == 'string');
 	assert(extension == nil or type(extension) == 'string');
 
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline, libname);
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline, extension);
 	local libname_full;
 	if (extension == nil) then
 		if ('Darwin' == (require('lua_schema.core_utils')).os_name()) then
