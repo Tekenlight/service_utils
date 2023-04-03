@@ -94,7 +94,6 @@ build = {
 		['org.tekenlight.evpoco.tbl_spec.columns_type'] = 'org/tekenlight/evpoco/tbl_spec/columns_type.lua',
 		['org.tekenlight.evpoco.tbl_spec.column_type'] = 'org/tekenlight/evpoco/tbl_spec/column_type.lua',
 
-		["service_utils.common.file_interface"] = 'common/file_interface.lua',
 		["service_utils.common.msg_literal"] = 'common/msg_literal.lua',
 		["service_utils.common.password_generator"] = 'common/password_generator.lua',
 		["service_utils.common.user_context"] = 'common/user_context.lua',
@@ -102,6 +101,7 @@ build = {
 		["service_utils.common.pool_repos"] = 'common/pool_repos.lua',
 		["service_utils.common.constants"] = 'common/constants.lua',
 		["service_utils.common.primitive_serde"] = 'common/primitive_serde.lua',
+		["service_utils.common.compression"] = 'common/compression.lua',
 
 		["service_utils.db.client_params"] = 'db/client_params.lua',
 		["service_utils.db.ev_database"] = 'db/ev_database.lua',
