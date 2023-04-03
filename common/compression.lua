@@ -16,8 +16,9 @@ compression.compress_data = function(data)
 	end
 
 	out.size = out_len;
-	out.value = buf;
-	out.buf_mem_managed = 1;
+	out.value = cu.alloc(out.size);
+	ffi.C.memcpy(out.value, buf, out.size);
+	out.buf_mem_managed = 0;
 
 	return out;
 end
@@ -39,8 +40,9 @@ compression.uncompress_binary_data = function(buffer)
 
 	local out = cu.new_hex_data_s_type();
 	out.size = sz;
-	out.value = o_data;
-	out.buf_mem_managed = 1;
+	out.value = cu.alloc(out.size);
+	ffi.C.memcpy(out.value, o_data, out.size);
+	out.buf_mem_managed = 0;
 
 	return out;
 end
