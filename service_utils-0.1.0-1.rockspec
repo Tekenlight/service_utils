@@ -118,6 +118,7 @@ build = {
 		["tblgen"] = 'orm/tblgen.lua',
 		["genmake"] = 'package/genmake.lua',
 		["generator"] = 'package/generator.lua',
+		["service_utils.orm.transaction"] = 'orm/transaction.lua',
 		["service_utils.orm.tao_factory"] = 'orm/tao_factory.lua',
 		["service_utils.orm.mapping_util"] = 'orm/mapping_util.lua',
 		["service_utils.orm.single_crud_factory"] = 'orm/single_crud_factory.lua',
