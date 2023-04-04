@@ -38,64 +38,64 @@ do
     element_handler.properties.attr = {};
     element_handler.properties.attr._attr_properties = {};
     do
-        element_handler.properties.attr._attr_properties['{}database_schema'] = {};
+        element_handler.properties.attr._attr_properties['{}enable_audit'] = {};
 
-        element_handler.properties.attr._attr_properties['{}database_schema'].base = {};
-        element_handler.properties.attr._attr_properties['{}database_schema'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}database_schema'].base.name = 'token';
-        element_handler.properties.attr._attr_properties['{}database_schema'].bi_type = {};
-        element_handler.properties.attr._attr_properties['{}database_schema'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}database_schema'].bi_type.name = 'token';
-        element_handler.properties.attr._attr_properties['{}database_schema'].bi_type.id = '16';
-        element_handler.properties.attr._attr_properties['{}database_schema'].properties = {};
-        element_handler.properties.attr._attr_properties['{}database_schema'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}token';
-        element_handler.properties.attr._attr_properties['{}database_schema'].properties.default = '';
-        element_handler.properties.attr._attr_properties['{}database_schema'].properties.fixed = false;
-        element_handler.properties.attr._attr_properties['{}database_schema'].properties.use = 'R';
-        element_handler.properties.attr._attr_properties['{}database_schema'].properties.form = 'U';
+        element_handler.properties.attr._attr_properties['{}enable_audit'].base = {};
+        element_handler.properties.attr._attr_properties['{}enable_audit'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}enable_audit'].base.name = 'boolean';
+        element_handler.properties.attr._attr_properties['{}enable_audit'].bi_type = {};
+        element_handler.properties.attr._attr_properties['{}enable_audit'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}enable_audit'].bi_type.name = 'boolean';
+        element_handler.properties.attr._attr_properties['{}enable_audit'].bi_type.id = '15';
+        element_handler.properties.attr._attr_properties['{}enable_audit'].properties = {};
+        element_handler.properties.attr._attr_properties['{}enable_audit'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}boolean';
+        element_handler.properties.attr._attr_properties['{}enable_audit'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}enable_audit'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}enable_audit'].properties.use = 'O';
+        element_handler.properties.attr._attr_properties['{}enable_audit'].properties.form = 'U';
 
-        element_handler.properties.attr._attr_properties['{}database_schema'].particle_properties = {};
-        element_handler.properties.attr._attr_properties['{}database_schema'].particle_properties.q_name = {};
-        element_handler.properties.attr._attr_properties['{}database_schema'].particle_properties.q_name.ns = '';
-        element_handler.properties.attr._attr_properties['{}database_schema'].particle_properties.q_name.local_name = 'database_schema';
-        element_handler.properties.attr._attr_properties['{}database_schema'].particle_properties.generated_name = 'database_schema';
+        element_handler.properties.attr._attr_properties['{}enable_audit'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}enable_audit'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}enable_audit'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}enable_audit'].particle_properties.q_name.local_name = 'enable_audit';
+        element_handler.properties.attr._attr_properties['{}enable_audit'].particle_properties.generated_name = 'enable_audit';
 
-        element_handler.properties.attr._attr_properties['{}database_schema'].type_handler = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}enable_audit'].type_handler = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
 
-        element_handler.properties.attr._attr_properties['{}database_schema'].super_element_content_type = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
-        element_handler.properties.attr._attr_properties['{}database_schema'].type_of_simple = 'A';
-        element_handler.properties.attr._attr_properties['{}database_schema'].local_facets = {}
-        element_handler.properties.attr._attr_properties['{}database_schema'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}database_schema']);
+        element_handler.properties.attr._attr_properties['{}enable_audit'].super_element_content_type = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}enable_audit'].type_of_simple = 'A';
+        element_handler.properties.attr._attr_properties['{}enable_audit'].local_facets = {}
+        element_handler.properties.attr._attr_properties['{}enable_audit'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}enable_audit']);
     end
     do
-        element_handler.properties.attr._attr_properties['{}tablespace'] = {};
+        element_handler.properties.attr._attr_properties['{}name'] = {};
 
-        element_handler.properties.attr._attr_properties['{}tablespace'].base = {};
-        element_handler.properties.attr._attr_properties['{}tablespace'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}tablespace'].base.name = 'token';
-        element_handler.properties.attr._attr_properties['{}tablespace'].bi_type = {};
-        element_handler.properties.attr._attr_properties['{}tablespace'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}tablespace'].bi_type.name = 'token';
-        element_handler.properties.attr._attr_properties['{}tablespace'].bi_type.id = '16';
-        element_handler.properties.attr._attr_properties['{}tablespace'].properties = {};
-        element_handler.properties.attr._attr_properties['{}tablespace'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}token';
-        element_handler.properties.attr._attr_properties['{}tablespace'].properties.default = '';
-        element_handler.properties.attr._attr_properties['{}tablespace'].properties.fixed = false;
-        element_handler.properties.attr._attr_properties['{}tablespace'].properties.use = 'R';
-        element_handler.properties.attr._attr_properties['{}tablespace'].properties.form = 'U';
+        element_handler.properties.attr._attr_properties['{}name'].base = {};
+        element_handler.properties.attr._attr_properties['{}name'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}name'].base.name = 'token';
+        element_handler.properties.attr._attr_properties['{}name'].bi_type = {};
+        element_handler.properties.attr._attr_properties['{}name'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}name'].bi_type.name = 'token';
+        element_handler.properties.attr._attr_properties['{}name'].bi_type.id = '16';
+        element_handler.properties.attr._attr_properties['{}name'].properties = {};
+        element_handler.properties.attr._attr_properties['{}name'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}token';
+        element_handler.properties.attr._attr_properties['{}name'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}name'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}name'].properties.use = 'R';
+        element_handler.properties.attr._attr_properties['{}name'].properties.form = 'U';
 
-        element_handler.properties.attr._attr_properties['{}tablespace'].particle_properties = {};
-        element_handler.properties.attr._attr_properties['{}tablespace'].particle_properties.q_name = {};
-        element_handler.properties.attr._attr_properties['{}tablespace'].particle_properties.q_name.ns = '';
-        element_handler.properties.attr._attr_properties['{}tablespace'].particle_properties.q_name.local_name = 'tablespace';
-        element_handler.properties.attr._attr_properties['{}tablespace'].particle_properties.generated_name = 'tablespace';
+        element_handler.properties.attr._attr_properties['{}name'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}name'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}name'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}name'].particle_properties.q_name.local_name = 'name';
+        element_handler.properties.attr._attr_properties['{}name'].particle_properties.generated_name = 'name';
 
-        element_handler.properties.attr._attr_properties['{}tablespace'].type_handler = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}name'].type_handler = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
 
-        element_handler.properties.attr._attr_properties['{}tablespace'].super_element_content_type = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
-        element_handler.properties.attr._attr_properties['{}tablespace'].type_of_simple = 'A';
-        element_handler.properties.attr._attr_properties['{}tablespace'].local_facets = {}
-        element_handler.properties.attr._attr_properties['{}tablespace'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}tablespace']);
+        element_handler.properties.attr._attr_properties['{}name'].super_element_content_type = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}name'].type_of_simple = 'A';
+        element_handler.properties.attr._attr_properties['{}name'].local_facets = {}
+        element_handler.properties.attr._attr_properties['{}name'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}name']);
     end
     do
         element_handler.properties.attr._attr_properties['{}package'] = {};
@@ -128,50 +128,81 @@ do
         element_handler.properties.attr._attr_properties['{}package'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}package']);
     end
     do
-        element_handler.properties.attr._attr_properties['{}name'] = {};
+        element_handler.properties.attr._attr_properties['{}tablespace'] = {};
 
-        element_handler.properties.attr._attr_properties['{}name'].base = {};
-        element_handler.properties.attr._attr_properties['{}name'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}name'].base.name = 'token';
-        element_handler.properties.attr._attr_properties['{}name'].bi_type = {};
-        element_handler.properties.attr._attr_properties['{}name'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}name'].bi_type.name = 'token';
-        element_handler.properties.attr._attr_properties['{}name'].bi_type.id = '16';
-        element_handler.properties.attr._attr_properties['{}name'].properties = {};
-        element_handler.properties.attr._attr_properties['{}name'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}token';
-        element_handler.properties.attr._attr_properties['{}name'].properties.default = '';
-        element_handler.properties.attr._attr_properties['{}name'].properties.fixed = false;
-        element_handler.properties.attr._attr_properties['{}name'].properties.use = 'R';
-        element_handler.properties.attr._attr_properties['{}name'].properties.form = 'U';
+        element_handler.properties.attr._attr_properties['{}tablespace'].base = {};
+        element_handler.properties.attr._attr_properties['{}tablespace'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}tablespace'].base.name = 'token';
+        element_handler.properties.attr._attr_properties['{}tablespace'].bi_type = {};
+        element_handler.properties.attr._attr_properties['{}tablespace'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}tablespace'].bi_type.name = 'token';
+        element_handler.properties.attr._attr_properties['{}tablespace'].bi_type.id = '16';
+        element_handler.properties.attr._attr_properties['{}tablespace'].properties = {};
+        element_handler.properties.attr._attr_properties['{}tablespace'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}token';
+        element_handler.properties.attr._attr_properties['{}tablespace'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}tablespace'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}tablespace'].properties.use = 'R';
+        element_handler.properties.attr._attr_properties['{}tablespace'].properties.form = 'U';
 
-        element_handler.properties.attr._attr_properties['{}name'].particle_properties = {};
-        element_handler.properties.attr._attr_properties['{}name'].particle_properties.q_name = {};
-        element_handler.properties.attr._attr_properties['{}name'].particle_properties.q_name.ns = '';
-        element_handler.properties.attr._attr_properties['{}name'].particle_properties.q_name.local_name = 'name';
-        element_handler.properties.attr._attr_properties['{}name'].particle_properties.generated_name = 'name';
+        element_handler.properties.attr._attr_properties['{}tablespace'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}tablespace'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}tablespace'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}tablespace'].particle_properties.q_name.local_name = 'tablespace';
+        element_handler.properties.attr._attr_properties['{}tablespace'].particle_properties.generated_name = 'tablespace';
 
-        element_handler.properties.attr._attr_properties['{}name'].type_handler = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}tablespace'].type_handler = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
 
-        element_handler.properties.attr._attr_properties['{}name'].super_element_content_type = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
-        element_handler.properties.attr._attr_properties['{}name'].type_of_simple = 'A';
-        element_handler.properties.attr._attr_properties['{}name'].local_facets = {}
-        element_handler.properties.attr._attr_properties['{}name'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}name']);
+        element_handler.properties.attr._attr_properties['{}tablespace'].super_element_content_type = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}tablespace'].type_of_simple = 'A';
+        element_handler.properties.attr._attr_properties['{}tablespace'].local_facets = {}
+        element_handler.properties.attr._attr_properties['{}tablespace'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}tablespace']);
+    end
+    do
+        element_handler.properties.attr._attr_properties['{}database_schema'] = {};
+
+        element_handler.properties.attr._attr_properties['{}database_schema'].base = {};
+        element_handler.properties.attr._attr_properties['{}database_schema'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}database_schema'].base.name = 'token';
+        element_handler.properties.attr._attr_properties['{}database_schema'].bi_type = {};
+        element_handler.properties.attr._attr_properties['{}database_schema'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}database_schema'].bi_type.name = 'token';
+        element_handler.properties.attr._attr_properties['{}database_schema'].bi_type.id = '16';
+        element_handler.properties.attr._attr_properties['{}database_schema'].properties = {};
+        element_handler.properties.attr._attr_properties['{}database_schema'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}token';
+        element_handler.properties.attr._attr_properties['{}database_schema'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}database_schema'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}database_schema'].properties.use = 'R';
+        element_handler.properties.attr._attr_properties['{}database_schema'].properties.form = 'U';
+
+        element_handler.properties.attr._attr_properties['{}database_schema'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}database_schema'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}database_schema'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}database_schema'].particle_properties.q_name.local_name = 'database_schema';
+        element_handler.properties.attr._attr_properties['{}database_schema'].particle_properties.generated_name = 'database_schema';
+
+        element_handler.properties.attr._attr_properties['{}database_schema'].type_handler = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
+
+        element_handler.properties.attr._attr_properties['{}database_schema'].super_element_content_type = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}database_schema'].type_of_simple = 'A';
+        element_handler.properties.attr._attr_properties['{}database_schema'].local_facets = {}
+        element_handler.properties.attr._attr_properties['{}database_schema'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}database_schema']);
     end
     element_handler.properties.attr._generated_attr = {};
-    element_handler.properties.attr._generated_attr['tablespace'] = '{}tablespace';
-    element_handler.properties.attr._generated_attr['database_schema'] = '{}database_schema';
     element_handler.properties.attr._generated_attr['name'] = '{}name';
+    element_handler.properties.attr._generated_attr['tablespace'] = '{}tablespace';
     element_handler.properties.attr._generated_attr['package'] = '{}package';
+    element_handler.properties.attr._generated_attr['enable_audit'] = '{}enable_audit';
+    element_handler.properties.attr._generated_attr['database_schema'] = '{}database_schema';
 end
 
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
+        generated_subelement_name = '_sequence_group',
         max_occurs = 1,
-        group_type = 'S',
         min_occurs = 1,
         top_level_group = true,
-        generated_subelement_name = '_sequence_group',
+        group_type = 'S',
         'columns',
         'indexes',
     };
