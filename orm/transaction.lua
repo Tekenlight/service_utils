@@ -143,7 +143,20 @@ transaction.begin_transaction = function(context, name)
 end
 
 transaction.commit_transaction = function(context, name, conn)
+    print("==================================================================================");
+    print(debug.getinfo(1).source, debug.getinfo(1).currentline, "Comitting transaction for "..name);
+    require 'pl.pretty'.dump(context.dml_ops);
+    if (name == nil) then
+        name = "REGISTRAR";
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, "name found to be nil, defaulting it to "..name);
+    end
+    print("==================================================================================");
+    
     if (context.dml_ops[name] ~= nil and context.dml_ops[name].enable_audit) then
+        print("==================================================================================");
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, "Creating audit entries for "..name);
+        require 'pl.pretty'.dump(context.dml_ops[name]);
+        print("==================================================================================");
         for i=1, #context.dml_ops[name].changes, 1
         do
             local count = 1;
