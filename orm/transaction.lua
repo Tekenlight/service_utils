@@ -144,7 +144,8 @@ end
 
 transaction.commit_transaction = function(context, name, conn)
     print("==================================================================================");
-    print(debug.getinfo(1).source, debug.getinfo(1).currentline, "Comitting transaction for "..name);
+    print(debug.getinfo(1).source, debug.getinfo(1).currentline, "Comitting transaction for ");
+    require 'pl.pretty'.dump(name);
     require 'pl.pretty'.dump(context.dml_ops);
     if (name == nil) then
         name = "REGISTRAR";
