@@ -276,7 +276,7 @@ tao.insert = function(self, context, obj, col_map)
 	end
 
 	-- insert data into the dml ops map
-	transaction.append_to_ops_list(context, self.tbl_def.tbl_props.name, 0, data, key_columns);
+	transaction.append_to_ops_list(context, self.tbl_def.tbl_props.name, 0, data, key_columns, self.db_name);
 
 	return true, nil, ret;
 end
@@ -451,7 +451,7 @@ tao.raw_update = function(self, context, obj, col_map)
 	end
 
 	-- insert data into the dml ops map
-	transaction.append_to_ops_list(context, tbl_def.tbl_props.name, 1, data, key_columns);
+	transaction.append_to_ops_list(context, tbl_def.tbl_props.name, 1, data, key_columns, self.db_name);
 
 	
 	return true, nil, ret;
@@ -512,12 +512,12 @@ tao.delete = function(self, context, obj)
 	end
 
 	-- insert data into the dml ops map
-	transaction.append_to_ops_list(context, tbl_def.tbl_props.name, 2, data, data);
+	transaction.append_to_ops_list(context, tbl_def.tbl_props.name, 2, data, data, self.db_name);
 
 	return true, nil, ret;
 end
 
-local function logical_del_or_undel(context, conn, action, tbl_def, obj)
+local function logical_del_or_undel(context, conn, action, tbl_def, obj, name)
 	assert(context ~= nil and type(context) == 'table');
 	assert(conn ~= nil);
 	assert(obj ~= nil and type(obj) == 'table');
@@ -599,7 +599,7 @@ local function logical_del_or_undel(context, conn, action, tbl_def, obj)
 	end
 
 	-- insert data into the dml ops map
-	transaction.append_to_ops_list(context, tbl_def.tbl_props.name, operation, data, data);
+	transaction.append_to_ops_list(context, tbl_def.tbl_props.name, operation, data, data, name);
 
 	return true, nil, ret;
 end
@@ -617,7 +617,7 @@ tao.logdel = function(self, context, obj)
 	local conn = context:get_connection(self.db_name);
 	assert(conn ~= nil);
 
-	return logical_del_or_undel(context, conn, 'D', tbl_def, obj);
+	return logical_del_or_undel(context, conn, 'D', tbl_def, obj, self.db_name);
 end
 
 tao.undelete = function(self, context, obj)
@@ -633,7 +633,7 @@ tao.undelete = function(self, context, obj)
 	local conn = context:get_connection(self.db_name);
 	assert(conn ~= nil);
 
-	return logical_del_or_undel(context, conn, 'U', tbl_def, obj);
+	return logical_del_or_undel(context, conn, 'U', tbl_def, obj, self.db_name);
 end
 
 tao.get_list = function(self, context, query_params)

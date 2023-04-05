@@ -25,7 +25,7 @@ local function prepare_audit_data(context, i, index)
     local tables_to_be_ignored = { "BIOP_AUDIT", "BIOP_REFRESH", "BIOP_SUBSCRIBER_REFRESH" };
     local audit_entry_required = true;
 
-    local table_name = context.dml_ops[i].table_name;
+    local table_name = context.dml_ops['REGISTRAR'][i].table_name;
 
     for n,tn in pairs(tables_to_be_ignored) do
         if table_name == tn then
@@ -37,24 +37,30 @@ local function prepare_audit_data(context, i, index)
         local biop_audit = {}
         biop_audit["transaction_number"] = current_timestamp().."."..index;
         biop_audit["serial_no"] = ffi.cast("int32_t", i);
-        biop_audit["table_name"] = context.dml_ops[i].table_name;
-        biop_audit["action"] = tostring(context.dml_ops[i].table_ops);
+        biop_audit["table_name"] = context.dml_ops['REGISTRAR'][i].table_name;
+        biop_audit["action"] = tostring(context.dml_ops['REGISTRAR'][i].table_ops);
 
         local data = {};
-        for n,v in pairs(context.dml_ops[i].data) do
+        for n,v in pairs(context.dml_ops['REGISTRAR'][i].data) do
             local ser = serde.serialize(v);
             data[n] = ser;
         end
         biop_audit["data"] = cjson.encode(data);
 
         local keys = {};
-        if context.dml_ops[i].keys ~= nil then
-            for n,v in pairs(context.dml_ops[i].keys) do
+        if context.dml_ops['REGISTRAR'][i].keys ~= nil then
+            for n,v in pairs(context.dml_ops['REGISTRAR'][i].keys) do
                 local ser = serde.serialize(v);
                 keys[n] = ser;
             end
         end
         biop_audit["table_key"] = cjson.encode(keys);
+
+        print("==================================================================================");
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+        require 'pl.pretty'.dump(biop_audit);
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+        print("==================================================================================");
 
         return biop_audit;
     end
@@ -127,7 +133,7 @@ transaction.begin_transaction = function(context, name)
 end
 
 transaction.commit_transaction = function(context, name, conn)
-    for i=1, #context.dml_ops, 1
+    for i=1, #context.dml_ops['REGISTRAR'], 1
     do
         local count = 1;
         local biop_audit = prepare_audit_data(context, i, add_zeros(count, 10));
@@ -156,6 +162,7 @@ transaction.commit_transaction = function(context, name, conn)
     else
         pcall(conn.commit, conn);
     end
+    context.dml_ops = {}
 end
 
 transaction.rollback_transaction = function(context, name, conn)
@@ -167,7 +174,7 @@ transaction.rollback_transaction = function(context, name, conn)
     context.dml_ops = {};
 end
 
-transaction.append_to_ops_list = function(context, table_name, operation, data, key_columns)
+transaction.append_to_ops_list = function(context, table_name, operation, data, key_columns, name)
     -- table_ops = {
 	--	0: Insert
 	--	1: Update
@@ -178,14 +185,19 @@ transaction.append_to_ops_list = function(context, table_name, operation, data, 
 	assert(table_name ~= nil and type(table_name) == 'string');
 	assert(operation ~= nil and type(operation) == 'number');
 	assert(data ~= nil and type(data) == 'table');
+    assert(type(name) == 'string')
 
-	local new_index = #(context.dml_ops) + 1;
+    if (context.dml_ops[name] == nil) then
+        context.dml_ops[name] = {}
+    end
+	local new_index = #(context.dml_ops[name]) + 1;
 
-	context.dml_ops[new_index] = {};
-	context.dml_ops[new_index].table_name = table_name;
-	context.dml_ops[new_index].table_ops = operation;
-	context.dml_ops[new_index].data = data;
-    context.dml_ops[new_index].keys = key_columns;
+	context.dml_ops[name][new_index] = {};
+	context.dml_ops[name][new_index].table_name = table_name;
+	context.dml_ops[name][new_index].table_ops = operation;
+	context.dml_ops[name][new_index].data = data;
+    context.dml_ops[name][new_index].keys = key_columns;
+
 end
 
 return transaction
