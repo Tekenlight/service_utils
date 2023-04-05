@@ -209,11 +209,11 @@ local function end_transaction(req_processor_interface, func, uc, status)
 			if (req_processor_interface.methods[func].transactional == true) then
 				if (status) then
 					-- pcall(conn.commit, conn);
-					transaction.commit_transaction(uc, nil, conn);
+					transaction.commit_transaction(uc, name, conn);
 					flg = true;
 				else
 					-- pcall(conn.rollback, conn);
-					transaction.rollback_transaction(uc, nil, conn);
+					transaction.rollback_transaction(uc, name, conn);
 					flg = true;
 				end
 			end

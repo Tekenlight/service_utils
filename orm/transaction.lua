@@ -18,14 +18,15 @@ local function add_zeros(id, length)
     return id
 end
 
-local function prepare_audit_data(context, i, index)
+local function prepare_audit_data(context, i, index, name)
     -- assert(context.dml_ops ~= nil);
     -- assert(context.dml_ops[i].table_name ~= nil and type(context.dml_ops[i].table_name) == "string");
 
     local tables_to_be_ignored = { "BIOP_AUDIT", "BIOP_REFRESH", "BIOP_SUBSCRIBER_REFRESH" };
     local audit_entry_required = true;
 
-    local table_name = context.dml_ops['REGISTRAR'][i].table_name;
+    local raw_data = context.dml_ops[name].changes[i];
+    local table_name = raw_data.table_name;
 
     for n,tn in pairs(tables_to_be_ignored) do
         if table_name == tn then
@@ -37,19 +38,19 @@ local function prepare_audit_data(context, i, index)
         local biop_audit = {}
         biop_audit["transaction_number"] = current_timestamp().."."..index;
         biop_audit["serial_no"] = ffi.cast("int32_t", i);
-        biop_audit["table_name"] = context.dml_ops['REGISTRAR'][i].table_name;
-        biop_audit["action"] = tostring(context.dml_ops['REGISTRAR'][i].table_ops);
+        biop_audit["table_name"] = table_name;
+        biop_audit["action"] = tostring(raw_data.table_ops);
 
         local data = {};
-        for n,v in pairs(context.dml_ops['REGISTRAR'][i].data) do
+        for n,v in pairs(raw_data.data) do
             local ser = serde.serialize(v);
             data[n] = ser;
         end
         biop_audit["data"] = cjson.encode(data);
 
         local keys = {};
-        if context.dml_ops['REGISTRAR'][i].keys ~= nil then
-            for n,v in pairs(context.dml_ops['REGISTRAR'][i].keys) do
+        if raw_data.keys ~= nil then
+            for n,v in pairs(raw_data.keys) do
                 local ser = serde.serialize(v);
                 keys[n] = ser;
             end
@@ -72,11 +73,11 @@ end
 -- self will contain the db name and tbl def
 -- context will contain the data
 -- data will contain the actual data to be stored
-local function audit_insert (context, data, table_name)
+local function audit_insert (context, data, name, table_name)
 	assert(context ~= nil and type(context) == 'table');
 	assert(data ~= nil and type(data) == 'table');
 
-	local conn = context:get_connection('REGISTRAR');
+	local conn = context:get_connection(name);
 	assert(conn ~= nil);
 
 	local tbl_def_class_name = context.module_path..".tbl."..table_name;
@@ -128,34 +129,45 @@ local function audit_insert (context, data, table_name)
 end
 
 transaction.begin_transaction = function(context, name)
-    context.dml_ops = {}
+    context.dml_ops = {};
+    context.dml_ops[name] = {};
+    -- TODO remove this piece after testing and set the default flag to false.
+    if (name == "REGISTRAR") then
+        context.dml_ops[name].enable_audit = true;
+    else
+        context.dml_ops[name].enable_audit = false;
+    end
+    -- context.dml_ops[name].enable_audit = false;
+    context.dml_ops[name].changes = {};
     context.db_connections[name].conn:begin();
 end
 
 transaction.commit_transaction = function(context, name, conn)
-    for i=1, #context.dml_ops['REGISTRAR'], 1
-    do
-        local count = 1;
-        local biop_audit = prepare_audit_data(context, i, add_zeros(count, 10));
-        local ret, flg, msg=0, false, "";
-        if biop_audit ~= nil then
-            repeat
-                flg, msg, ret = audit_insert(context, biop_audit, "BIOP_AUDIT");
-                
-                if (flg == false and nil ~= string.match(msg, 'duplicate key value violates unique constraint')) then
-                    ret = -1
-                end
-                if (ret ~= 1 and ret ~= -1) then
-                    return false, "SOMETHING TERRIBLE HAS HAPPENED", ret;
-                end
-                count = count + 1;
-            until (ret == 1);
+    if (context.dml_ops[name] ~= nil and context.dml_ops[name].enable_audit) then
+        for i=1, #context.dml_ops[name].changes, 1
+        do
+            local count = 1;
+            local biop_audit = prepare_audit_data(context, i, add_zeros(count, 10), name);
+            local ret, flg, msg=0, false, "";
+            if biop_audit ~= nil then
+                repeat
+                    flg, msg, ret = audit_insert(context, biop_audit, name, "BIOP_AUDIT");
+                    
+                    if (flg == false and nil ~= string.match(msg, 'duplicate key value violates unique constraint')) then
+                        ret = -1
+                    end
+                    if (ret ~= 1 and ret ~= -1) then
+                        return false, "SOMETHING TERRIBLE HAS HAPPENED", ret;
+                    end
+                    count = count + 1;
+                until (ret == 1);
+            end
+            -- create a table which is equivalent of audit table in ROC
+            -- create instance of single crud
+            -- invoke single crud add
+            -- once data is inserted if the table is subscriber specific, fetch the sub ids that needs to be updated and create entry in subscriber_refresh
+            -- if generic add data to generic table
         end
-        -- create a table which is equivalent of audit table in ROC
-        -- create instance of single crud
-        -- invoke single crud add
-        -- once data is inserted if the table is subscriber specific, fetch the sub ids that needs to be updated and create entry in subscriber_refresh
-        -- if generic add data to generic table
     end
     if nil == conn then
         context.db_connections[name].conn:commit();
@@ -187,16 +199,13 @@ transaction.append_to_ops_list = function(context, table_name, operation, data, 
 	assert(data ~= nil and type(data) == 'table');
     assert(type(name) == 'string')
 
-    if (context.dml_ops[name] == nil) then
-        context.dml_ops[name] = {}
-    end
-	local new_index = #(context.dml_ops[name]) + 1;
+    local new_index = #(context.dml_ops[name].changes) + 1;
 
-	context.dml_ops[name][new_index] = {};
-	context.dml_ops[name][new_index].table_name = table_name;
-	context.dml_ops[name][new_index].table_ops = operation;
-	context.dml_ops[name][new_index].data = data;
-    context.dml_ops[name][new_index].keys = key_columns;
+	context.dml_ops[name].changes[new_index] = {};
+	context.dml_ops[name].changes[new_index].table_name = table_name;
+	context.dml_ops[name].changes[new_index].table_ops = operation;
+	context.dml_ops[name].changes[new_index].data = data;
+    context.dml_ops[name].changes[new_index].keys = key_columns;
 
 end
 
