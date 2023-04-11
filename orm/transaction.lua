@@ -222,7 +222,19 @@ transaction.begin_transaction = function(context, name)
         --     context.dml_ops[name].enable_audit = false;
         -- end
     -- TODO remove the code within the upper limit
+    
+    if context.dml_ops == nil then 
+        context.dml_ops = {};
+    end
 
+    if context.dml_ops[name] == nil then
+        context.dml_ops[name] = {};
+        context.dml_ops[name].enable_audit = false;
+        context.dml_ops[name].org_refresh = false;
+        context.dml_ops[name].generic_refresh = false;
+        context.dml_ops[name].refresh_org_id = "";
+        context.dml_ops[name].org_id_is_subscriber = false;
+    end
 
     assert(context.dml_ops[name] ~= nil and type(context.dml_ops[name]) == 'table');
     assert(context.dml_ops[name].enable_audit ~= nil and type(context.dml_ops[name].enable_audit) == 'boolean');
