@@ -30,7 +30,6 @@ transaction.enable_audit = function (context, name, callback_function)
     context.dml_ops[name].org_refresh = false;
     context.dml_ops[name].generic_refresh = false;
     context.dml_ops[name].refresh_org_id = nil;
-    context.dml_ops[name].callback_function = callback_function;
 end
 
 transaction.begin_transaction = function(context, name)
@@ -44,7 +43,6 @@ transaction.begin_transaction = function(context, name)
         context.dml_ops[name].org_refresh = false;
         context.dml_ops[name].generic_refresh = false;
         context.dml_ops[name].refresh_org_id = nil;
-        context.dml_ops[name].callback_function = nil;
     end
 
     assert(context.dml_ops[name] ~= nil and type(context.dml_ops[name]) == 'table');
@@ -59,14 +57,6 @@ transaction.begin_transaction = function(context, name)
 end
 
 transaction.commit_transaction = function(context, name, conn)
-    local db_name = name;
-    if db_name == nil then
-        db_name = "REGISTRAR";
-    end
-    if context.dml_ops[db_name] ~= nil and context.dml_ops[db_name].enable_audit then
-        local write_audit = context.dml_ops[db_name].callback_function;
-        write_audit(context, db_name)
-    end
     if nil == conn then
         context.db_connections[name].conn:commit();
     else

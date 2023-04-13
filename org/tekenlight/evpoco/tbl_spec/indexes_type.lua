@@ -45,9 +45,9 @@ do
     element_handler.properties.content_model = {
         generated_subelement_name = '_sequence_group',
         max_occurs = 1,
+        group_type = 'S',
         min_occurs = 1,
         top_level_group = true,
-        group_type = 'S',
         'index',
     };
 end
