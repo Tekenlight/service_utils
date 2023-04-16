@@ -1,6 +1,6 @@
 local ffi = require('ffi');
 local platform = require('platform');
-local netssl = (require('service_utils.common.utils')).load_library('libevlnetssl');
+local netssl = (require('service_utils.common.utils')).load_evlnetssl();
 local evclient = (require('service_utils.common.utils')).load_library('libevclient');
 local error_handler = require("lua_schema.error_handler");
 local constants = require('service_utils.common.constants');

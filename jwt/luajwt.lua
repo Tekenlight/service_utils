@@ -1,6 +1,6 @@
 local cjson  = require 'cjson'
 local core_utils = require("lua_schema.core_utils");
-local evl_crypto = (require('service_utils.common.utils')).load_library('libevlcrypto');
+local evl_crypto = (require('service_utils.common.utils')).load_evlcrypto();
 
 local alg_sign = {
 	['HS256'] = function(data, key) return evl_crypto.hmac_digest('sha256', data, key, true) end,
