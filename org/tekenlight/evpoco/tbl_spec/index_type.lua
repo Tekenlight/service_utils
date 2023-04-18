@@ -128,18 +128,18 @@ do
         element_handler.properties.attr._attr_properties['{}name'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}name']);
     end
     element_handler.properties.attr._generated_attr = {};
-    element_handler.properties.attr._generated_attr['tablespace'] = '{}tablespace';
     element_handler.properties.attr._generated_attr['unique'] = '{}unique';
     element_handler.properties.attr._generated_attr['name'] = '{}name';
+    element_handler.properties.attr._generated_attr['tablespace'] = '{}tablespace';
 end
 
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
         generated_subelement_name = '_sequence_group',
-        max_occurs = 1,
-        min_occurs = 1,
         top_level_group = true,
+        min_occurs = 1,
+        max_occurs = 1,
         group_type = 'S',
         'index_column',
     };
