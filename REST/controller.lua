@@ -5,6 +5,7 @@ local schema_processor = require("schema_processor");
 local error_handler = require("lua_schema.error_handler");
 local properties_funcs = platform.properties_funcs();
 local tao_factory = require('service_utils.orm.tao_factory');
+local transaction = require('service_utils.orm.transaction');
 local jwt = require('service_utils.jwt.luajwt')
 local stringx = require("pl.stringx");
 local ffi = require('ffi');
@@ -156,14 +157,16 @@ local function begin_transaction(req_processor_interface, func, uc)
 			end
 		end
 		if (i == 1) then
-			uc.db_connections[name].conn:begin();
+			-- uc.db_connections[name].conn:begin();
+			transaction.begin_transaction(uc, name);
 			flg = true;
 		elseif (i>1) then
 			if (req_processor_interface.methods[func].db_schema_name == nil) then
 				error("CONNECTION NAME MUST BE SPECIFIED FOR "..func.." IF TRANSACTION CONTROL IS REQUIRED");
 				return false;
 			else
-				uc.db_connections[req_processor_interface.methods[func].db_schema_name].conn:begin();
+				-- uc.db_connections[req_processor_interface.methods[func].db_schema_name].conn:begin();
+				transaction.begin_transaction(uc, req_processor_interface.methods[func].db_schema_name);
 				flg = true;
 			end
 		end
@@ -188,9 +191,11 @@ local function end_transaction(req_processor_interface, func, uc, status)
 		pcall(uc.db_connections[name].conn.close_open_cursors,uc.db_connections[name].conn);
 		if (req_processor_interface.methods[func].transactional == true) then
 			if (status) then
-				uc.db_connections[name].conn:commit();
+				-- uc.db_connections[name].conn:commit();
+				transaction.commit_transaction(uc, name, nil);
 			else
-				uc.db_connections[name].conn:rollback();
+				-- uc.db_connections[name].conn:rollback();
+				transaction.rollback_transaction(uc, name, nil);
 			end
 		end
 		flg = true;
@@ -203,10 +208,12 @@ local function end_transaction(req_processor_interface, func, uc, status)
 			pcall(conn.close_open_cursors, conn);
 			if (req_processor_interface.methods[func].transactional == true) then
 				if (status) then
-					pcall(conn.commit, conn);
+					-- pcall(conn.commit, conn);
+					transaction.commit_transaction(uc, nil, conn);
 					flg = true;
 				else
-					pcall(conn.rollback, conn);
+					-- pcall(conn.rollback, conn);
+					transaction.rollback_transaction(uc, nil, conn);
 					flg = true;
 				end
 			end
@@ -253,6 +260,7 @@ local invoke_func = function(request, req_processor_interface, req_processor, fu
 		return false, out_obj, 400;
 	end
 	tao_factory.init(uc);
+	-- uc.transaction = transaction:new(uc);
 	local db_init_done = false;
 	if (nil ~= req_processor_interface.get_db_connection_params) then
 		local db_params = req_processor_interface:get_db_connection_params();

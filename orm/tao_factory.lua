@@ -1,5 +1,6 @@
 local ffi = require('ffi');
 local schema_processor = require("schema_processor");
+local transaction = require("service_utils.orm.transaction");
 local tao = {}
 
 local issue_savepoint_sql = [[SAVEPOINT ORM_TAO_FACTORY_SAVEPOINT]]
@@ -207,6 +208,8 @@ tao.insert = function(self, context, obj, col_map)
 	local stmt = conn:prepare(tbl_def.insert_stmt);
 	local inputs = {};
 	local auto_columns = {};
+	local data = {};
+	local key_columns = {};
 	local count = 0;
 	local now = conn:get_systimestamp();
 	if (tbl_def.col_props.soft_del == true) then
@@ -223,11 +226,20 @@ tao.insert = function(self, context, obj, col_map)
 		auto_columns.version = version;
 	end
 
+	for i, col in ipairs(tbl_def.key_col_names) do
+		if (obj[col] ~= nil) then
+			local elemet_val = get_element_val_from_obj(obj, col, col_map)
+			key_columns[col] = elemet_val;
+		end
+	end
+
 	for i, col in ipairs(tbl_def.declared_col_names) do
 		count = count + 1;
 		if (obj[col] ~= nil) then
 			--inputs[count] = obj[col];
-			inputs[count] = get_element_val_from_obj(obj, col, col_map)
+			local elemet_val = get_element_val_from_obj(obj, col, col_map)
+			inputs[count] = elemet_val
+			data[col] = elemet_val;
 		else
 			inputs[count] = nil;
 		end
@@ -236,10 +248,12 @@ tao.insert = function(self, context, obj, col_map)
 		count = count + 1;
 		if (auto_columns[col] ~= nil) then
 			inputs[count] = auto_columns[col];
+			data[col] = auto_columns[col];
 		else
 			inputs[count] = nil;
 		end
 	end
+
 	if (conn:get_in_transaction()) then conn:prepare(issue_savepoint_sql):execute(); end
 	local flg, msg = stmt:vexecute(count, inputs, true)
 	if (not flg) then
@@ -260,6 +274,10 @@ tao.insert = function(self, context, obj, col_map)
 	if (0 == ret) then
 		return false, msg, ret;
 	end
+
+	-- insert data into the dml ops map
+	transaction.append_to_ops_list(context, self.tbl_def.tbl_props.name, 0, data, key_columns, self.db_name);
+
 	return true, nil, ret;
 end
 
@@ -298,17 +316,28 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 		assert(type(col_map) == 'table');
 	end
 	local inputs = {};
+	local data = {};
+	local key_columns = {};
 	local stmt = nil;
 	stmt = "UPDATE " .. tbl_def.tbl_props.database_schema .. "." .. tbl_def.tbl_props.name .. "\n";
 	stmt = stmt.."SET ";
 	local count = 0;
 	local j = 0;
+
+	for i, col in ipairs(tbl_def.key_col_names) do
+		if (obj[col] ~= nil) then
+			local elemet_val = get_element_val_from_obj(obj, col, col_map)
+			key_columns[col] = elemet_val;
+		end
+	end
+
 	if (col_map == nil) then
 		-- Update all non-key columns
 		for i, col in ipairs(tbl_def.non_key_col_names) do
 			j = j + 1;
 			count = count + 1;
 			inputs[count] = obj[col];
+			data[col] = obj[col];
 			if (j ~= 1) then
 				stmt = stmt..", "..col .. "=?";
 			else
@@ -324,6 +353,7 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 				j = j + 1;
 				count = count + 1;
 				inputs[count] = val;
+				data[obj_col_name] = val;
 				if (j ~= 1) then
 					stmt = stmt..", "..col .. "=?";
 				else
@@ -359,6 +389,7 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 		count = count + 1;
 		inputs[count] = new_version;
 		stmt = stmt..", version=?";
+		key_columns["version"] = obj.version;
 
 	end
 	stmt = stmt .. "\n";
@@ -382,7 +413,7 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 		stmt = stmt.." AND version" .. "=?";
 	end
 
-	return stmt, inputs, count;
+	return stmt, inputs, count, data, key_columns;
 end
 
 tao.raw_update = function(self, context, obj, col_map)
@@ -400,7 +431,7 @@ tao.raw_update = function(self, context, obj, col_map)
 	local conn = context:get_connection(self.db_name);
 	assert(conn ~= nil);
 
-	local query_stmt, inputs, count = prepare_update_stmt(context, conn, tbl_def, obj, col_map);
+	local query_stmt, inputs, count, data, key_columns = prepare_update_stmt(context, conn, tbl_def, obj, col_map);
 
 	if (conn:get_in_transaction()) then conn:prepare(issue_savepoint_sql):execute(); end
 	local stmt = conn:prepare(query_stmt);
@@ -418,12 +449,16 @@ tao.raw_update = function(self, context, obj, col_map)
 		msg = msg.."Error : Trying to update a non-exsitent version of the record";
 		return false, msg, ret;
 	end
+
+	-- insert data into the dml ops map
+	transaction.append_to_ops_list(context, tbl_def.tbl_props.name, 1, data, key_columns, self.db_name);
+
+	
 	return true, nil, ret;
 end
 
 tao.update = function(self, context, obj, col_map)
 	assert(col_map ~= nil and type(col_map) == 'table');
-
 	return self:raw_update(context, obj, col_map);
 end
 
@@ -443,14 +478,17 @@ tao.delete = function(self, context, obj)
 	end
 
 	local inputs = {};
+	local data = {};
 	local count = 0;
 	for i, col in ipairs(tbl_def.key_col_names) do
 		count = count + 1;
 		inputs[count] = obj[col];
+		data[col] = obj[col];
 	end
 	if (tbl_def.col_props.update_fields) then
 		count = count + 1;
-		inputs[count] = obj.version;;
+		inputs[count] = obj.version;
+		data["version"] = obj.version;
 	end
 
 	local conn = context:get_connection(self.db_name);
@@ -472,10 +510,14 @@ tao.delete = function(self, context, obj)
 		msg = msg.."Error : Trying to delete a non existent or an older version of the record";
 		return false, msg, ret;
 	end
+
+	-- insert data into the dml ops map
+	transaction.append_to_ops_list(context, tbl_def.tbl_props.name, 2, data, data, self.db_name);
+
 	return true, nil, ret;
 end
 
-local function logical_del_or_undel(context, conn, action, tbl_def, obj)
+local function logical_del_or_undel(context, conn, action, tbl_def, obj, name)
 	assert(context ~= nil and type(context) == 'table');
 	assert(conn ~= nil);
 	assert(obj ~= nil and type(obj) == 'table');
@@ -490,13 +532,17 @@ local function logical_del_or_undel(context, conn, action, tbl_def, obj)
 	assert(conn ~= nil);
 
 	local inputs = {};
+	local data = {};
 	local count = 0;
+	local operation = 0;
 
 	count = count + 1;
 	if (action == 'D') then
 		inputs[count] = true;
+		operation = 3;
 	else
 		inputs[count] = false;
+		operation = 4;
 	end
 
 	if (tbl_def.col_props.update_fields == true) then
@@ -516,6 +562,7 @@ local function logical_del_or_undel(context, conn, action, tbl_def, obj)
 	for i, col in ipairs(tbl_def.key_col_names) do
 		count = count + 1;
 		inputs[count] = obj[col];
+		data[col] = obj[col];
 	end
 	count = count + 1;
 	if (action == 'D') then
@@ -526,7 +573,8 @@ local function logical_del_or_undel(context, conn, action, tbl_def, obj)
 
 	if (tbl_def.col_props.update_fields) then
 		count = count + 1;
-		inputs[count] = obj.version;;
+		inputs[count] = obj.version;
+		data["version"] = obj.version;
 	end
 
 	local stmt = conn:prepare(tbl_def.logdel_stmt);
@@ -549,6 +597,10 @@ local function logical_del_or_undel(context, conn, action, tbl_def, obj)
 		end
 		return false, msg, ret;
 	end
+
+	-- insert data into the dml ops map
+	transaction.append_to_ops_list(context, tbl_def.tbl_props.name, operation, data, data, name);
+
 	return true, nil, ret;
 end
 
@@ -565,7 +617,7 @@ tao.logdel = function(self, context, obj)
 	local conn = context:get_connection(self.db_name);
 	assert(conn ~= nil);
 
-	return logical_del_or_undel(context, conn, 'D', tbl_def, obj);
+	return logical_del_or_undel(context, conn, 'D', tbl_def, obj, self.db_name);
 end
 
 tao.undelete = function(self, context, obj)
@@ -581,7 +633,7 @@ tao.undelete = function(self, context, obj)
 	local conn = context:get_connection(self.db_name);
 	assert(conn ~= nil);
 
-	return logical_del_or_undel(context, conn, 'U', tbl_def, obj);
+	return logical_del_or_undel(context, conn, 'U', tbl_def, obj, self.db_name);
 end
 
 tao.get_list = function(self, context, query_params)
