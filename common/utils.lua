@@ -67,33 +67,4 @@ function utils.load_library(libname, extension)
 	return lib;
 end
 
-function utils.load_evlnetssl()
-	local libname = 'libevlnetssl';
-	local extension = nil;
-	assert(libname ~= nil and type(libname) == 'string');
-	assert(extension == nil or type(extension) == 'string');
-
-	local libname_full;
-	if (extension == nil) then
-		if ('Darwin' == (require('lua_schema.core_utils')).os_name()) then
-			extension = 'dylib';
-		else
-			extension = 'so';
-		end
-	end
-	libname_full = libname..'.'..extension;
-
-	local libhandle = package.loadlib(libname_full,'luaopen_'..libname);
-	local loaded, lib = pcall(libhandle);
-	if(not loaded) then
-		error("Could not load library");
-	end
-
-	return lib;
-end
-
-function utils.load_evlcrypto()
-	return utils.load_library('libevlcrypto');
-end
-
 return utils;

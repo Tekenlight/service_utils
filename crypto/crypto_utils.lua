@@ -186,7 +186,7 @@ local cipher_algorithms = {
 	["rc2"] = 1
 }
 
-local evl_crypto = (require('service_utils.common.utils')).load_evlcrypto();
+local evl_crypto = (require('service_utils.common.utils')).load_library('libevlcrypto');
 
 local crypto_utils = {};
 
