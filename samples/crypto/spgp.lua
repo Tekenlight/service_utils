@@ -1,5 +1,13 @@
 local crypto_utils = require('service_utils.crypto.crypto_utils');
 
+local ffi = require('ffi')
+ffi.cdef[[
+struct cipher_text_s {
+     unsigned char * buffer;
+     size_t len;
+ };
+]]
+
 
 
 local rsa_key_pair = crypto_utils.form_rsa_key_pair(1024);
