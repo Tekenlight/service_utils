@@ -38,34 +38,34 @@ do
     element_handler.properties.attr = {};
     element_handler.properties.attr._attr_properties = {};
     do
-        element_handler.properties.attr._attr_properties['{}soft_del'] = {};
+        element_handler.properties.attr._attr_properties['{}creation_fields'] = {};
 
-        element_handler.properties.attr._attr_properties['{}soft_del'].base = {};
-        element_handler.properties.attr._attr_properties['{}soft_del'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}soft_del'].base.name = 'boolean';
-        element_handler.properties.attr._attr_properties['{}soft_del'].bi_type = {};
-        element_handler.properties.attr._attr_properties['{}soft_del'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}soft_del'].bi_type.name = 'boolean';
-        element_handler.properties.attr._attr_properties['{}soft_del'].bi_type.id = '15';
-        element_handler.properties.attr._attr_properties['{}soft_del'].properties = {};
-        element_handler.properties.attr._attr_properties['{}soft_del'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}boolean';
-        element_handler.properties.attr._attr_properties['{}soft_del'].properties.default = '';
-        element_handler.properties.attr._attr_properties['{}soft_del'].properties.fixed = false;
-        element_handler.properties.attr._attr_properties['{}soft_del'].properties.use = 'R';
-        element_handler.properties.attr._attr_properties['{}soft_del'].properties.form = 'U';
+        element_handler.properties.attr._attr_properties['{}creation_fields'].base = {};
+        element_handler.properties.attr._attr_properties['{}creation_fields'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}creation_fields'].base.name = 'boolean';
+        element_handler.properties.attr._attr_properties['{}creation_fields'].bi_type = {};
+        element_handler.properties.attr._attr_properties['{}creation_fields'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}creation_fields'].bi_type.name = 'boolean';
+        element_handler.properties.attr._attr_properties['{}creation_fields'].bi_type.id = '15';
+        element_handler.properties.attr._attr_properties['{}creation_fields'].properties = {};
+        element_handler.properties.attr._attr_properties['{}creation_fields'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}boolean';
+        element_handler.properties.attr._attr_properties['{}creation_fields'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}creation_fields'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}creation_fields'].properties.use = 'R';
+        element_handler.properties.attr._attr_properties['{}creation_fields'].properties.form = 'U';
 
-        element_handler.properties.attr._attr_properties['{}soft_del'].particle_properties = {};
-        element_handler.properties.attr._attr_properties['{}soft_del'].particle_properties.q_name = {};
-        element_handler.properties.attr._attr_properties['{}soft_del'].particle_properties.q_name.ns = '';
-        element_handler.properties.attr._attr_properties['{}soft_del'].particle_properties.q_name.local_name = 'soft_del';
-        element_handler.properties.attr._attr_properties['{}soft_del'].particle_properties.generated_name = 'soft_del';
+        element_handler.properties.attr._attr_properties['{}creation_fields'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}creation_fields'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}creation_fields'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}creation_fields'].particle_properties.q_name.local_name = 'creation_fields';
+        element_handler.properties.attr._attr_properties['{}creation_fields'].particle_properties.generated_name = 'creation_fields';
 
-        element_handler.properties.attr._attr_properties['{}soft_del'].type_handler = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}creation_fields'].type_handler = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
 
-        element_handler.properties.attr._attr_properties['{}soft_del'].super_element_content_type = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
-        element_handler.properties.attr._attr_properties['{}soft_del'].type_of_simple = 'A';
-        element_handler.properties.attr._attr_properties['{}soft_del'].local_facets = {}
-        element_handler.properties.attr._attr_properties['{}soft_del'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}soft_del']);
+        element_handler.properties.attr._attr_properties['{}creation_fields'].super_element_content_type = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}creation_fields'].type_of_simple = 'A';
+        element_handler.properties.attr._attr_properties['{}creation_fields'].local_facets = {}
+        element_handler.properties.attr._attr_properties['{}creation_fields'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}creation_fields']);
     end
     do
         element_handler.properties.attr._attr_properties['{}update_fields'] = {};
@@ -98,36 +98,6 @@ do
         element_handler.properties.attr._attr_properties['{}update_fields'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}update_fields']);
     end
     do
-        element_handler.properties.attr._attr_properties['{}creation_fields'] = {};
-
-        element_handler.properties.attr._attr_properties['{}creation_fields'].base = {};
-        element_handler.properties.attr._attr_properties['{}creation_fields'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}creation_fields'].base.name = 'boolean';
-        element_handler.properties.attr._attr_properties['{}creation_fields'].bi_type = {};
-        element_handler.properties.attr._attr_properties['{}creation_fields'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}creation_fields'].bi_type.name = 'boolean';
-        element_handler.properties.attr._attr_properties['{}creation_fields'].bi_type.id = '15';
-        element_handler.properties.attr._attr_properties['{}creation_fields'].properties = {};
-        element_handler.properties.attr._attr_properties['{}creation_fields'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}boolean';
-        element_handler.properties.attr._attr_properties['{}creation_fields'].properties.default = '';
-        element_handler.properties.attr._attr_properties['{}creation_fields'].properties.fixed = false;
-        element_handler.properties.attr._attr_properties['{}creation_fields'].properties.use = 'R';
-        element_handler.properties.attr._attr_properties['{}creation_fields'].properties.form = 'U';
-
-        element_handler.properties.attr._attr_properties['{}creation_fields'].particle_properties = {};
-        element_handler.properties.attr._attr_properties['{}creation_fields'].particle_properties.q_name = {};
-        element_handler.properties.attr._attr_properties['{}creation_fields'].particle_properties.q_name.ns = '';
-        element_handler.properties.attr._attr_properties['{}creation_fields'].particle_properties.q_name.local_name = 'creation_fields';
-        element_handler.properties.attr._attr_properties['{}creation_fields'].particle_properties.generated_name = 'creation_fields';
-
-        element_handler.properties.attr._attr_properties['{}creation_fields'].type_handler = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
-
-        element_handler.properties.attr._attr_properties['{}creation_fields'].super_element_content_type = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
-        element_handler.properties.attr._attr_properties['{}creation_fields'].type_of_simple = 'A';
-        element_handler.properties.attr._attr_properties['{}creation_fields'].local_facets = {}
-        element_handler.properties.attr._attr_properties['{}creation_fields'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}creation_fields']);
-    end
-    do
         element_handler.properties.attr._attr_properties['{}internal_id'] = {};
 
         element_handler.properties.attr._attr_properties['{}internal_id'].base = {};
@@ -157,21 +127,51 @@ do
         element_handler.properties.attr._attr_properties['{}internal_id'].local_facets = {}
         element_handler.properties.attr._attr_properties['{}internal_id'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}internal_id']);
     end
+    do
+        element_handler.properties.attr._attr_properties['{}soft_del'] = {};
+
+        element_handler.properties.attr._attr_properties['{}soft_del'].base = {};
+        element_handler.properties.attr._attr_properties['{}soft_del'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}soft_del'].base.name = 'boolean';
+        element_handler.properties.attr._attr_properties['{}soft_del'].bi_type = {};
+        element_handler.properties.attr._attr_properties['{}soft_del'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}soft_del'].bi_type.name = 'boolean';
+        element_handler.properties.attr._attr_properties['{}soft_del'].bi_type.id = '15';
+        element_handler.properties.attr._attr_properties['{}soft_del'].properties = {};
+        element_handler.properties.attr._attr_properties['{}soft_del'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}boolean';
+        element_handler.properties.attr._attr_properties['{}soft_del'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}soft_del'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}soft_del'].properties.use = 'R';
+        element_handler.properties.attr._attr_properties['{}soft_del'].properties.form = 'U';
+
+        element_handler.properties.attr._attr_properties['{}soft_del'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}soft_del'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}soft_del'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}soft_del'].particle_properties.q_name.local_name = 'soft_del';
+        element_handler.properties.attr._attr_properties['{}soft_del'].particle_properties.generated_name = 'soft_del';
+
+        element_handler.properties.attr._attr_properties['{}soft_del'].type_handler = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
+
+        element_handler.properties.attr._attr_properties['{}soft_del'].super_element_content_type = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}soft_del'].type_of_simple = 'A';
+        element_handler.properties.attr._attr_properties['{}soft_del'].local_facets = {}
+        element_handler.properties.attr._attr_properties['{}soft_del'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}soft_del']);
+    end
     element_handler.properties.attr._generated_attr = {};
-    element_handler.properties.attr._generated_attr['update_fields'] = '{}update_fields';
-    element_handler.properties.attr._generated_attr['internal_id'] = '{}internal_id';
     element_handler.properties.attr._generated_attr['soft_del'] = '{}soft_del';
+    element_handler.properties.attr._generated_attr['update_fields'] = '{}update_fields';
     element_handler.properties.attr._generated_attr['creation_fields'] = '{}creation_fields';
+    element_handler.properties.attr._generated_attr['internal_id'] = '{}internal_id';
 end
 
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
+        top_level_group = true,
         generated_subelement_name = '_sequence_group',
         max_occurs = 1,
-        min_occurs = 1,
-        top_level_group = true,
         group_type = 'S',
+        min_occurs = 1,
         'column',
     };
 end

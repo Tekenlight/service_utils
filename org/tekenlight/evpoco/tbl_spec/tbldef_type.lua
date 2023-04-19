@@ -38,36 +38,6 @@ do
     element_handler.properties.attr = {};
     element_handler.properties.attr._attr_properties = {};
     do
-        element_handler.properties.attr._attr_properties['{}enable_audit'] = {};
-
-        element_handler.properties.attr._attr_properties['{}enable_audit'].base = {};
-        element_handler.properties.attr._attr_properties['{}enable_audit'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}enable_audit'].base.name = 'boolean';
-        element_handler.properties.attr._attr_properties['{}enable_audit'].bi_type = {};
-        element_handler.properties.attr._attr_properties['{}enable_audit'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}enable_audit'].bi_type.name = 'boolean';
-        element_handler.properties.attr._attr_properties['{}enable_audit'].bi_type.id = '15';
-        element_handler.properties.attr._attr_properties['{}enable_audit'].properties = {};
-        element_handler.properties.attr._attr_properties['{}enable_audit'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}boolean';
-        element_handler.properties.attr._attr_properties['{}enable_audit'].properties.default = '';
-        element_handler.properties.attr._attr_properties['{}enable_audit'].properties.fixed = false;
-        element_handler.properties.attr._attr_properties['{}enable_audit'].properties.use = 'O';
-        element_handler.properties.attr._attr_properties['{}enable_audit'].properties.form = 'U';
-
-        element_handler.properties.attr._attr_properties['{}enable_audit'].particle_properties = {};
-        element_handler.properties.attr._attr_properties['{}enable_audit'].particle_properties.q_name = {};
-        element_handler.properties.attr._attr_properties['{}enable_audit'].particle_properties.q_name.ns = '';
-        element_handler.properties.attr._attr_properties['{}enable_audit'].particle_properties.q_name.local_name = 'enable_audit';
-        element_handler.properties.attr._attr_properties['{}enable_audit'].particle_properties.generated_name = 'enable_audit';
-
-        element_handler.properties.attr._attr_properties['{}enable_audit'].type_handler = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
-
-        element_handler.properties.attr._attr_properties['{}enable_audit'].super_element_content_type = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
-        element_handler.properties.attr._attr_properties['{}enable_audit'].type_of_simple = 'A';
-        element_handler.properties.attr._attr_properties['{}enable_audit'].local_facets = {}
-        element_handler.properties.attr._attr_properties['{}enable_audit'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}enable_audit']);
-    end
-    do
         element_handler.properties.attr._attr_properties['{}name'] = {};
 
         element_handler.properties.attr._attr_properties['{}name'].base = {};
@@ -187,22 +157,52 @@ do
         element_handler.properties.attr._attr_properties['{}database_schema'].local_facets = {}
         element_handler.properties.attr._attr_properties['{}database_schema'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}database_schema']);
     end
+    do
+        element_handler.properties.attr._attr_properties['{}sync'] = {};
+
+        element_handler.properties.attr._attr_properties['{}sync'].base = {};
+        element_handler.properties.attr._attr_properties['{}sync'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}sync'].base.name = 'boolean';
+        element_handler.properties.attr._attr_properties['{}sync'].bi_type = {};
+        element_handler.properties.attr._attr_properties['{}sync'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}sync'].bi_type.name = 'boolean';
+        element_handler.properties.attr._attr_properties['{}sync'].bi_type.id = '15';
+        element_handler.properties.attr._attr_properties['{}sync'].properties = {};
+        element_handler.properties.attr._attr_properties['{}sync'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}boolean';
+        element_handler.properties.attr._attr_properties['{}sync'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}sync'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}sync'].properties.use = 'R';
+        element_handler.properties.attr._attr_properties['{}sync'].properties.form = 'U';
+
+        element_handler.properties.attr._attr_properties['{}sync'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}sync'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}sync'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}sync'].particle_properties.q_name.local_name = 'sync';
+        element_handler.properties.attr._attr_properties['{}sync'].particle_properties.generated_name = 'sync';
+
+        element_handler.properties.attr._attr_properties['{}sync'].type_handler = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
+
+        element_handler.properties.attr._attr_properties['{}sync'].super_element_content_type = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}sync'].type_of_simple = 'A';
+        element_handler.properties.attr._attr_properties['{}sync'].local_facets = {}
+        element_handler.properties.attr._attr_properties['{}sync'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}sync']);
+    end
     element_handler.properties.attr._generated_attr = {};
-    element_handler.properties.attr._generated_attr['name'] = '{}name';
     element_handler.properties.attr._generated_attr['tablespace'] = '{}tablespace';
+    element_handler.properties.attr._generated_attr['name'] = '{}name';
+    element_handler.properties.attr._generated_attr['sync'] = '{}sync';
     element_handler.properties.attr._generated_attr['package'] = '{}package';
-    element_handler.properties.attr._generated_attr['enable_audit'] = '{}enable_audit';
     element_handler.properties.attr._generated_attr['database_schema'] = '{}database_schema';
 end
 
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
+        top_level_group = true,
         generated_subelement_name = '_sequence_group',
         max_occurs = 1,
-        min_occurs = 1,
-        top_level_group = true,
         group_type = 'S',
+        min_occurs = 1,
         'columns',
         'indexes',
     };
