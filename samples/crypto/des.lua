@@ -1,13 +1,5 @@
 local crypto_utils = require('service_utils.crypto.crypto_utils');
 
-local ffi = require('ffi')
-ffi.cdef[[
-struct cipher_text_s {
-     unsigned char * buffer;
-     size_t len;
- };
-]]
-
 local plain_text = [[<?xml version="1.0" encoding="UTF-8"?>
  <ns1:test_message xmlns:ns1="http://xchange_messages.biop.com">
    <greeting>Hello World</greeting>
