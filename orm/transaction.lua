@@ -82,6 +82,10 @@ transaction.append_to_ops_list = function(context, table_name, operation, data, 
 	--  3: logdel
 	--  4: undelete
 	-- }
+	if (context.dml_ops == nil) then
+		return ;
+	end
+
 	assert(table_name ~= nil and type(table_name) == 'string');
 	assert(operation ~= nil and type(operation) == 'number');
 	assert(data ~= nil and type(data) == 'table');

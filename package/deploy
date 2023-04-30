@@ -1,12 +1,18 @@
 #/usr/bin/sh
 
-if [ $# -ne 1 ]
+if [ $# -gt 2 ]
 then
-   echo "Usage: deploy <local/system>"
-   exit 1
+	echo "Usage: deploy <local/system>"
+	exit 1
 fi
 
-option=$1
+option="system"
+if [ $# -eq 1 ]
+then
+	option=$1
+fi
+#option=$1
+
 if [ $option = "local" ]
 then
 	cd build 

@@ -292,7 +292,9 @@ local invoke_func = function(request, req_processor_interface, req_processor, fu
 			print (debug.traceback(msg, 3));
 			return msg;
 		end
-		assert((func ~= nil) and (type(req_processor) == 'table') and (req_processor[func] ~= nil));
+		assert((func ~= nil));
+		assert((type(req_processor) == 'table'));
+		assert((req_processor[func] ~= nil));
 		if (obj == nil) then
 			proc_stat, status, out_obj = xpcall(req_processor[func], error_msg_handler, req_processor, uc, qp);
 		else
