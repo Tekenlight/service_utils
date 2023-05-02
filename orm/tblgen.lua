@@ -9,6 +9,7 @@ local reserved_column_names = {
 	["update_uid"] = 1,
 	["update_time"] = 1,
 	["version"] = 1,
+	["entity_state"] = 1,
 }
 
 
@@ -81,6 +82,15 @@ if (tbl_def.col_props.update_fields) then
 	tbl_def.auto_columns.update_time = { ['datatype'] = 'timestamp'};
 	tbl_def.auto_columns.version = { ['datatype'] = 'version_num_type'};
 end
+
+if (tbl_def.col_props.entity_state_field) then
+    tbl_def.auto_col_names[#tbl_def.auto_col_names+1] = 'entity_state';
+    tbl_def.auto_columns.entity_state = {
+        ['datatype'] = 'boolean',
+        ['default_value'] = '0'
+    };
+end
+
 
 tbl_def.indexes = {};
 if (tbl_def.col_props.internal_id) then
@@ -501,6 +511,10 @@ if (tbl_def.col_props.update_fields) then
     update_uid record_id_type,
     update_time timestamp,
     version version_num_type]=]
+end
+if (tbl_def.col_props.entity_state_field) then
+	code = code ..[=[,
+    entity_state boolean]=]
 end
 
 code = code ..[=[
