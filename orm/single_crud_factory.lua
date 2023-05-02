@@ -179,5 +179,48 @@ single_crud.undelete = function (self, context, obj)
 	return true, nil, ret;
 end
 
+single_crud.approve = function (self, context, obj)
+	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
+
+	assert(obj.entity_state ~= nil)
+	obj.entity_state = '1';
+	local flg, msg, ret = tao:update_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+	if (not flg) then
+		if (ret == 0) then
+			local key_params_str = get_key_params_str(tao, obj);
+			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
+			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			return false, msg, ret;
+		else
+			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			return false, msg, ret;
+		end
+	end
+
+	return true, nil, ret;
+end
+
+single_crud.cancel = function (self, context, obj)
+	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
+	assert(obj.entity_state ~= nil)
+
+	obj.entity_state = '2';
+	local flg, msg, ret = tao:update_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+	if (not flg) then
+		if (ret == 0) then
+			local key_params_str = get_key_params_str(tao, obj);
+			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
+			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			return false, msg, ret;
+		else
+			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			return false, msg, ret;
+		end
+	end
+
+	return true, nil, ret;
+end
+
+
 return crud_factory;
 
