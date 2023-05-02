@@ -38,6 +38,96 @@ do
     element_handler.properties.attr = {};
     element_handler.properties.attr._attr_properties = {};
     do
+        element_handler.properties.attr._attr_properties['{}entity_state_field'] = {};
+
+        element_handler.properties.attr._attr_properties['{}entity_state_field'].base = {};
+        element_handler.properties.attr._attr_properties['{}entity_state_field'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}entity_state_field'].base.name = 'boolean';
+        element_handler.properties.attr._attr_properties['{}entity_state_field'].bi_type = {};
+        element_handler.properties.attr._attr_properties['{}entity_state_field'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}entity_state_field'].bi_type.name = 'boolean';
+        element_handler.properties.attr._attr_properties['{}entity_state_field'].bi_type.id = '15';
+        element_handler.properties.attr._attr_properties['{}entity_state_field'].properties = {};
+        element_handler.properties.attr._attr_properties['{}entity_state_field'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}boolean';
+        element_handler.properties.attr._attr_properties['{}entity_state_field'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}entity_state_field'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}entity_state_field'].properties.use = 'O';
+        element_handler.properties.attr._attr_properties['{}entity_state_field'].properties.form = 'U';
+
+        element_handler.properties.attr._attr_properties['{}entity_state_field'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}entity_state_field'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}entity_state_field'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}entity_state_field'].particle_properties.q_name.local_name = 'entity_state_field';
+        element_handler.properties.attr._attr_properties['{}entity_state_field'].particle_properties.generated_name = 'entity_state_field';
+
+        element_handler.properties.attr._attr_properties['{}entity_state_field'].type_handler = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
+
+        element_handler.properties.attr._attr_properties['{}entity_state_field'].super_element_content_type = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}entity_state_field'].type_of_simple = 'A';
+        element_handler.properties.attr._attr_properties['{}entity_state_field'].local_facets = {}
+        element_handler.properties.attr._attr_properties['{}entity_state_field'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}entity_state_field']);
+    end
+    do
+        element_handler.properties.attr._attr_properties['{}internal_id'] = {};
+
+        element_handler.properties.attr._attr_properties['{}internal_id'].base = {};
+        element_handler.properties.attr._attr_properties['{}internal_id'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}internal_id'].base.name = 'boolean';
+        element_handler.properties.attr._attr_properties['{}internal_id'].bi_type = {};
+        element_handler.properties.attr._attr_properties['{}internal_id'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}internal_id'].bi_type.name = 'boolean';
+        element_handler.properties.attr._attr_properties['{}internal_id'].bi_type.id = '15';
+        element_handler.properties.attr._attr_properties['{}internal_id'].properties = {};
+        element_handler.properties.attr._attr_properties['{}internal_id'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}boolean';
+        element_handler.properties.attr._attr_properties['{}internal_id'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}internal_id'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}internal_id'].properties.use = 'R';
+        element_handler.properties.attr._attr_properties['{}internal_id'].properties.form = 'U';
+
+        element_handler.properties.attr._attr_properties['{}internal_id'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}internal_id'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}internal_id'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}internal_id'].particle_properties.q_name.local_name = 'internal_id';
+        element_handler.properties.attr._attr_properties['{}internal_id'].particle_properties.generated_name = 'internal_id';
+
+        element_handler.properties.attr._attr_properties['{}internal_id'].type_handler = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
+
+        element_handler.properties.attr._attr_properties['{}internal_id'].super_element_content_type = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}internal_id'].type_of_simple = 'A';
+        element_handler.properties.attr._attr_properties['{}internal_id'].local_facets = {}
+        element_handler.properties.attr._attr_properties['{}internal_id'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}internal_id']);
+    end
+    do
+        element_handler.properties.attr._attr_properties['{}creation_fields'] = {};
+
+        element_handler.properties.attr._attr_properties['{}creation_fields'].base = {};
+        element_handler.properties.attr._attr_properties['{}creation_fields'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}creation_fields'].base.name = 'boolean';
+        element_handler.properties.attr._attr_properties['{}creation_fields'].bi_type = {};
+        element_handler.properties.attr._attr_properties['{}creation_fields'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}creation_fields'].bi_type.name = 'boolean';
+        element_handler.properties.attr._attr_properties['{}creation_fields'].bi_type.id = '15';
+        element_handler.properties.attr._attr_properties['{}creation_fields'].properties = {};
+        element_handler.properties.attr._attr_properties['{}creation_fields'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}boolean';
+        element_handler.properties.attr._attr_properties['{}creation_fields'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}creation_fields'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}creation_fields'].properties.use = 'R';
+        element_handler.properties.attr._attr_properties['{}creation_fields'].properties.form = 'U';
+
+        element_handler.properties.attr._attr_properties['{}creation_fields'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}creation_fields'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}creation_fields'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}creation_fields'].particle_properties.q_name.local_name = 'creation_fields';
+        element_handler.properties.attr._attr_properties['{}creation_fields'].particle_properties.generated_name = 'creation_fields';
+
+        element_handler.properties.attr._attr_properties['{}creation_fields'].type_handler = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
+
+        element_handler.properties.attr._attr_properties['{}creation_fields'].super_element_content_type = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}creation_fields'].type_of_simple = 'A';
+        element_handler.properties.attr._attr_properties['{}creation_fields'].local_facets = {}
+        element_handler.properties.attr._attr_properties['{}creation_fields'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}creation_fields']);
+    end
+    do
         element_handler.properties.attr._attr_properties['{}soft_del'] = {};
 
         element_handler.properties.attr._attr_properties['{}soft_del'].base = {};
@@ -97,100 +187,10 @@ do
         element_handler.properties.attr._attr_properties['{}update_fields'].local_facets = {}
         element_handler.properties.attr._attr_properties['{}update_fields'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}update_fields']);
     end
-    do
-        element_handler.properties.attr._attr_properties['{}creation_fields'] = {};
-
-        element_handler.properties.attr._attr_properties['{}creation_fields'].base = {};
-        element_handler.properties.attr._attr_properties['{}creation_fields'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}creation_fields'].base.name = 'boolean';
-        element_handler.properties.attr._attr_properties['{}creation_fields'].bi_type = {};
-        element_handler.properties.attr._attr_properties['{}creation_fields'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}creation_fields'].bi_type.name = 'boolean';
-        element_handler.properties.attr._attr_properties['{}creation_fields'].bi_type.id = '15';
-        element_handler.properties.attr._attr_properties['{}creation_fields'].properties = {};
-        element_handler.properties.attr._attr_properties['{}creation_fields'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}boolean';
-        element_handler.properties.attr._attr_properties['{}creation_fields'].properties.default = '';
-        element_handler.properties.attr._attr_properties['{}creation_fields'].properties.fixed = false;
-        element_handler.properties.attr._attr_properties['{}creation_fields'].properties.use = 'R';
-        element_handler.properties.attr._attr_properties['{}creation_fields'].properties.form = 'U';
-
-        element_handler.properties.attr._attr_properties['{}creation_fields'].particle_properties = {};
-        element_handler.properties.attr._attr_properties['{}creation_fields'].particle_properties.q_name = {};
-        element_handler.properties.attr._attr_properties['{}creation_fields'].particle_properties.q_name.ns = '';
-        element_handler.properties.attr._attr_properties['{}creation_fields'].particle_properties.q_name.local_name = 'creation_fields';
-        element_handler.properties.attr._attr_properties['{}creation_fields'].particle_properties.generated_name = 'creation_fields';
-
-        element_handler.properties.attr._attr_properties['{}creation_fields'].type_handler = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
-
-        element_handler.properties.attr._attr_properties['{}creation_fields'].super_element_content_type = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
-        element_handler.properties.attr._attr_properties['{}creation_fields'].type_of_simple = 'A';
-        element_handler.properties.attr._attr_properties['{}creation_fields'].local_facets = {}
-        element_handler.properties.attr._attr_properties['{}creation_fields'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}creation_fields']);
-    end
-    do
-        element_handler.properties.attr._attr_properties['{}entity_state_required'] = {};
-
-        element_handler.properties.attr._attr_properties['{}entity_state_required'].base = {};
-        element_handler.properties.attr._attr_properties['{}entity_state_required'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}entity_state_required'].base.name = 'boolean';
-        element_handler.properties.attr._attr_properties['{}entity_state_required'].bi_type = {};
-        element_handler.properties.attr._attr_properties['{}entity_state_required'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}entity_state_required'].bi_type.name = 'boolean';
-        element_handler.properties.attr._attr_properties['{}entity_state_required'].bi_type.id = '15';
-        element_handler.properties.attr._attr_properties['{}entity_state_required'].properties = {};
-        element_handler.properties.attr._attr_properties['{}entity_state_required'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}boolean';
-        element_handler.properties.attr._attr_properties['{}entity_state_required'].properties.default = '';
-        element_handler.properties.attr._attr_properties['{}entity_state_required'].properties.fixed = false;
-        element_handler.properties.attr._attr_properties['{}entity_state_required'].properties.use = 'O';
-        element_handler.properties.attr._attr_properties['{}entity_state_required'].properties.form = 'U';
-
-        element_handler.properties.attr._attr_properties['{}entity_state_required'].particle_properties = {};
-        element_handler.properties.attr._attr_properties['{}entity_state_required'].particle_properties.q_name = {};
-        element_handler.properties.attr._attr_properties['{}entity_state_required'].particle_properties.q_name.ns = '';
-        element_handler.properties.attr._attr_properties['{}entity_state_required'].particle_properties.q_name.local_name = 'entity_state_required';
-        element_handler.properties.attr._attr_properties['{}entity_state_required'].particle_properties.generated_name = 'entity_state_required';
-
-        element_handler.properties.attr._attr_properties['{}entity_state_required'].type_handler = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
-
-        element_handler.properties.attr._attr_properties['{}entity_state_required'].super_element_content_type = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
-        element_handler.properties.attr._attr_properties['{}entity_state_required'].type_of_simple = 'A';
-        element_handler.properties.attr._attr_properties['{}entity_state_required'].local_facets = {}
-        element_handler.properties.attr._attr_properties['{}entity_state_required'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}entity_state_required']);
-    end
-    do
-        element_handler.properties.attr._attr_properties['{}internal_id'] = {};
-
-        element_handler.properties.attr._attr_properties['{}internal_id'].base = {};
-        element_handler.properties.attr._attr_properties['{}internal_id'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}internal_id'].base.name = 'boolean';
-        element_handler.properties.attr._attr_properties['{}internal_id'].bi_type = {};
-        element_handler.properties.attr._attr_properties['{}internal_id'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}internal_id'].bi_type.name = 'boolean';
-        element_handler.properties.attr._attr_properties['{}internal_id'].bi_type.id = '15';
-        element_handler.properties.attr._attr_properties['{}internal_id'].properties = {};
-        element_handler.properties.attr._attr_properties['{}internal_id'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}boolean';
-        element_handler.properties.attr._attr_properties['{}internal_id'].properties.default = '';
-        element_handler.properties.attr._attr_properties['{}internal_id'].properties.fixed = false;
-        element_handler.properties.attr._attr_properties['{}internal_id'].properties.use = 'R';
-        element_handler.properties.attr._attr_properties['{}internal_id'].properties.form = 'U';
-
-        element_handler.properties.attr._attr_properties['{}internal_id'].particle_properties = {};
-        element_handler.properties.attr._attr_properties['{}internal_id'].particle_properties.q_name = {};
-        element_handler.properties.attr._attr_properties['{}internal_id'].particle_properties.q_name.ns = '';
-        element_handler.properties.attr._attr_properties['{}internal_id'].particle_properties.q_name.local_name = 'internal_id';
-        element_handler.properties.attr._attr_properties['{}internal_id'].particle_properties.generated_name = 'internal_id';
-
-        element_handler.properties.attr._attr_properties['{}internal_id'].type_handler = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
-
-        element_handler.properties.attr._attr_properties['{}internal_id'].super_element_content_type = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
-        element_handler.properties.attr._attr_properties['{}internal_id'].type_of_simple = 'A';
-        element_handler.properties.attr._attr_properties['{}internal_id'].local_facets = {}
-        element_handler.properties.attr._attr_properties['{}internal_id'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}internal_id']);
-    end
     element_handler.properties.attr._generated_attr = {};
+    element_handler.properties.attr._generated_attr['entity_state_field'] = '{}entity_state_field';
     element_handler.properties.attr._generated_attr['update_fields'] = '{}update_fields';
     element_handler.properties.attr._generated_attr['creation_fields'] = '{}creation_fields';
-    element_handler.properties.attr._generated_attr['entity_state_required'] = '{}entity_state_required';
     element_handler.properties.attr._generated_attr['internal_id'] = '{}internal_id';
     element_handler.properties.attr._generated_attr['soft_del'] = '{}soft_del';
 end
@@ -198,11 +198,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        group_type = 'S',
         min_occurs = 1,
-        max_occurs = 1,
-        top_level_group = true,
         generated_subelement_name = '_sequence_group',
+        group_type = 'S',
+        top_level_group = true,
+        max_occurs = 1,
         'column',
     };
 end

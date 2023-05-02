@@ -83,7 +83,7 @@ if (tbl_def.col_props.update_fields) then
 	tbl_def.auto_columns.version = { ['datatype'] = 'version_num_type'};
 end
 
-if (tbl_def.col_props.entity_state_required) then
+if (tbl_def.col_props.entity_state_field) then
     tbl_def.auto_col_names[#tbl_def.auto_col_names+1] = 'entity_state';
     tbl_def.auto_columns.entity_state = {
         ['datatype'] = 'boolean',
@@ -512,7 +512,7 @@ if (tbl_def.col_props.update_fields) then
     update_time timestamp,
     version version_num_type]=]
 end
-if (tbl_def.col_props.entity_state_required) then
+if (tbl_def.col_props.entity_state_field) then
 	code = code ..[=[,
     entity_state boolean]=]
 end

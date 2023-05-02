@@ -19,7 +19,7 @@ targetNamespace="http://evpoco.tekenlight.org/tbl_spec" xmlns:ns="http://evpoco.
 		<xsd:attribute name="soft_del" type="xsd:boolean" use="required"/>
 		<xsd:attribute name="creation_fields" type="xsd:boolean" use="required"/>
 		<xsd:attribute name="update_fields" type="xsd:boolean" use="required"/>
-		<xsd:attribute name="entity_state_required" type="xsd:boolean" use="optional"/>
+		<xsd:attribute name="entity_state_field" type="xsd:boolean" use="optional"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="index_column_type">
