@@ -514,7 +514,7 @@ if (tbl_def.col_props.update_fields) then
 end
 if (tbl_def.col_props.entity_state_field) then
 	code = code ..[=[,
-    entity_state boolean]=]
+    entity_state boolean DEFAULT '0']=]
 end
 
 code = code ..[=[
