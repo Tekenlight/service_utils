@@ -392,6 +392,15 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 		key_columns["version"] = obj.version;
 
 	end
+	if (tbl_def.col_props.entity_state_field == true) then
+		count = count + 1;
+		inputs[count] = obj["entity_state"];
+		if (count == 1) then
+			stmt = stmt.." entity_state=?";
+		else
+			stmt = stmt..", entity_state=?";
+		end
+	end
 	stmt = stmt .. "\n";
 	stmt = stmt .. "WHERE";
 

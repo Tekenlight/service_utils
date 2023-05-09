@@ -188,7 +188,7 @@ single_crud.approve = function (self, context, obj)
 		local key_params_str = get_key_params_str(tao, obj);
 		local msg = messages:format('INVALID_OPERATION', key_params_str);
 		error_handler.raise_error(-1, msg, debug.getinfo(1));
-		return false, msg, ret;
+		return false, msg;
 	end
 
 	obj.entity_state = '1';
@@ -216,7 +216,7 @@ single_crud.cancel = function (self, context, obj)
 		local key_params_str = get_key_params_str(tao, obj);
 		local msg = messages:format('INVALID_OPERATION', key_params_str);
 		error_handler.raise_error(-1, msg, debug.getinfo(1));
-		return false, msg, ret;
+		return false, msg;
 	end
 
 	obj.entity_state = '2';
