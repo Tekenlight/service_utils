@@ -244,8 +244,10 @@ tao.insert = function(self, context, obj, col_map)
 			local default_value = tbl_def.declared_columns[col].default_value; 
 			if(default_value ~= nil) then
 				inputs[count] = default_value;
+				data[col] = default_value;
 			else
 				inputs[count] = nil;
+				data[col] = nil;
 			end
 		end
 	end
@@ -258,8 +260,10 @@ tao.insert = function(self, context, obj, col_map)
 			local default_value = tbl_def.auto_columns[col].default_value; 
 			if(default_value ~= nil) then
 				inputs[count] = default_value;
+				data[col] = default_value;
 			else
 				inputs[count] = nil;
+				data[col] = nil;
 			end
 		end
 	end
