@@ -86,7 +86,7 @@ end
 if (tbl_def.col_props.entity_state_field) then
     tbl_def.auto_col_names[#tbl_def.auto_col_names+1] = 'entity_state';
     tbl_def.auto_columns.entity_state = {
-        ['datatype'] = 'boolean',
+        ['datatype'] = 'string',
         ['default_value'] = '0'
     };
 end
@@ -514,7 +514,7 @@ if (tbl_def.col_props.update_fields) then
 end
 if (tbl_def.col_props.entity_state_field) then
 	code = code ..[=[,
-    entity_state boolean]=]
+    entity_state char(1) DEFAULT '0']=]
 end
 
 code = code ..[=[

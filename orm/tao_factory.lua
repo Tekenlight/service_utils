@@ -241,7 +241,14 @@ tao.insert = function(self, context, obj, col_map)
 			inputs[count] = elemet_val
 			data[col] = elemet_val;
 		else
-			inputs[count] = nil;
+			local default_value = tbl_def.declared_columns[col].default_value; 
+			if(default_value ~= nil) then
+				inputs[count] = default_value;
+				data[col] = default_value;
+			else
+				inputs[count] = nil;
+				data[col] = nil;
+			end
 		end
 	end
 	for i, col in ipairs(tbl_def.auto_col_names) do
@@ -250,7 +257,14 @@ tao.insert = function(self, context, obj, col_map)
 			inputs[count] = auto_columns[col];
 			data[col] = auto_columns[col];
 		else
-			inputs[count] = nil;
+			local default_value = tbl_def.auto_columns[col].default_value; 
+			if(default_value ~= nil) then
+				inputs[count] = default_value;
+				data[col] = default_value;
+			else
+				inputs[count] = nil;
+				data[col] = nil;
+			end
 		end
 	end
 
@@ -391,6 +405,15 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 		stmt = stmt..", version=?";
 		key_columns["version"] = obj.version;
 
+	end
+	if (tbl_def.col_props.entity_state_field == true) then
+		count = count + 1;
+		inputs[count] = obj["entity_state"];
+		if (count == 1) then
+			stmt = stmt.." entity_state=?";
+		else
+			stmt = stmt..", entity_state=?";
+		end
 	end
 	stmt = stmt .. "\n";
 	stmt = stmt .. "WHERE";
