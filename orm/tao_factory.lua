@@ -241,7 +241,12 @@ tao.insert = function(self, context, obj, col_map)
 			inputs[count] = elemet_val
 			data[col] = elemet_val;
 		else
-			inputs[count] = nil;
+			local default_value = tbl_def.declared_columns[col].default_value; 
+			if(default_value ~= nil) then
+				inputs[count] = default_value;
+			else
+				inputs[count] = nil;
+			end
 		end
 	end
 	for i, col in ipairs(tbl_def.auto_col_names) do
@@ -250,7 +255,12 @@ tao.insert = function(self, context, obj, col_map)
 			inputs[count] = auto_columns[col];
 			data[col] = auto_columns[col];
 		else
-			inputs[count] = nil;
+			local default_value = tbl_def.auto_columns[col].default_value; 
+			if(default_value ~= nil) then
+				inputs[count] = default_value;
+			else
+				inputs[count] = nil;
+			end
 		end
 	end
 
