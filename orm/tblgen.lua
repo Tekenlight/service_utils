@@ -86,7 +86,7 @@ end
 if (tbl_def.col_props.entity_state_field) then
     tbl_def.auto_col_names[#tbl_def.auto_col_names+1] = 'entity_state';
     tbl_def.auto_columns.entity_state = {
-        ['datatype'] = 'entity_state_type',
+        ['datatype'] = 'string',
         ['default_value'] = '0'
     };
 end
