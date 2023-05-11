@@ -377,13 +377,7 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 		end
 	end
 	j = nil;
-	--[[if (count == 0) then
-		error("None of the columns for table ["
-			..tbl_def.tbl_props.database_schema .. "."
-			.. tbl_def.tbl_props.name
-			.."] present in the input object");
-	end
-	]]
+
 	if (tbl_def.col_props.update_fields == true) then
 		local now = conn:get_systimestamp();
 		local new_version = obj.version + 1;
@@ -404,17 +398,20 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 		inputs[count] = new_version;
 		stmt = stmt..", version=?";
 		key_columns["version"] = obj.version;
-
 	end
+
 	if (tbl_def.col_props.entity_state_field == true) then
-		count = count + 1;
-		inputs[count] = obj["entity_state"];
-		if (count == 1) then
-			stmt = stmt.." entity_state=?";
-		else
-			stmt = stmt..", entity_state=?";
+		if (obj["entity_state"] ~= nil) then
+			count = count + 1;
+			inputs[count] = obj["entity_state"];
+			if (count == 1) then
+				stmt = stmt.." entity_state=?";
+			else
+				stmt = stmt..", entity_state=?";
+			end
 		end
 	end
+
 	stmt = stmt .. "\n";
 	stmt = stmt .. "WHERE";
 
