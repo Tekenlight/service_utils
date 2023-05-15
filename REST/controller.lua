@@ -306,7 +306,8 @@ local invoke_func = function(request, req_processor_interface, req_processor, fu
 		-- since there is a fatal error, it is a panic and thus
 		-- this error will override any other error that was previously generated.
 		message_validation_context.status.success = false;
-		message_validation_context.status.error_no = -1;
+		--message_validation_context.status.error_no = -1;
+		message_validation_context.status.error_no = 500; -- This has come due to some exception thrown within
 		message_validation_context.status.error_message = status; -- pcall returns the message as second return value
 		status = false;
 	end
@@ -318,14 +319,22 @@ local invoke_func = function(request, req_processor_interface, req_processor, fu
 		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		require 'pl.pretty'.dump(message_validation_context);
 		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+		if (message_validation_context.status.error_message == nil or
+			message_validation_context.status.error_message == '') then
+			message_validation_context.status.error_message = "Unknown error occured";
+			message_validation_context.status.error_no = 500;
+		end
 		out_obj = {};
 		out_obj.error_message = message_validation_context.status.error_message;
 		if (message_validation_context.status.field_path ~= nil and
 			message_validation_context.status.field_path ~= '') then
 			out_obj.field_path = message_validation_context.status.field_path;
 		end
+		ret = message_validation_context.status.error_no;
 	end
-	if ((not proc_stat) or (not status)) then ret = 500; end
+	if ((not proc_stat) or (not status)) then
+		if (ret == -1) then ret = 500; end
+	end
 	return status, out_obj, ret;
 end
 
@@ -383,7 +392,8 @@ rest_controller.handle_service_request = function (request, response)
 	local flg, json_input = pcall(request.get_message_body_str, request);
 	local uri = URI_CLASS:new(request:get_uri());
 	if (uri == nil) then
-		error('Badly formed URL');
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline, request:get_uri());
+		error('Badly formed URL ['..request:get_uri()..']');
 	end
 	local url_parts = split_path(uri);
 	local qp = get_query_params(uri:query());
