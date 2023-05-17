@@ -90,7 +90,7 @@ function context_harness.prepare_uc(databases, module_path, jwt_token)
 				error(msg);
 			end
 		else 
-			local token_valid, msg = jwt.verify(header, sig, key, token_parts);
+			local token_valid, msg = jwt.verify_signature(header, sig, key, token_parts);
 			if (not token_valid) then
 				error(msg);
 			end

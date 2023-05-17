@@ -185,7 +185,7 @@ function M.valid(header, body, sig, key, token)
 	return true;
 end
 
-function M.verify(header, sig, key, token)
+function M.verify_signature(header, sig, key, token)
 	local headerb64, bodyb64 = token[1], token[2]
 	if not alg_verify[header.alg] then
 		return false, "Algorithm not supported"
