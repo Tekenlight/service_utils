@@ -330,7 +330,9 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 		assert(type(col_map) == 'table');
 	end
 	local inputs = {};
+	-- data will hold the data to be updated
 	local data = {};
+	-- it will hold the where clause parameter of the query
 	local key_columns = {};
 	local stmt = nil;
 	stmt = "UPDATE " .. tbl_def.tbl_props.database_schema .. "." .. tbl_def.tbl_props.name .. "\n";
@@ -341,7 +343,6 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 	for i, col in ipairs(tbl_def.key_col_names) do
 		if (obj[col] ~= nil) then
 			local elemet_val = get_element_val_from_obj(obj, col, col_map)
-			key_columns[col] = elemet_val;
 		end
 	end
 
@@ -384,20 +385,22 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 
 		count = count + 1;
 		inputs[count] = context.uid;
+		data["update_uid"] = context.uid
 		if (count == 1) then
 			stmt = stmt.." update_uid=?";
 		else
 			stmt = stmt..", update_uid=?";
 		end
 
+		data["update_time"] = now
 		count = count + 1;
 		inputs[count] = now;
 		stmt = stmt..", update_time=?";
 
+		data["version"] = new_version
 		count = count + 1;
 		inputs[count] = new_version;
 		stmt = stmt..", version=?";
-		key_columns["version"] = obj.version;
 	end
 
 	if (tbl_def.col_props.entity_state_field == true) then
@@ -419,8 +422,10 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 		count = count + 1;
 		local obj_col_name = col_map[col];
 		assert(obj_col_name ~= nil);
-		inputs[count] = val_of_elem_in_obj(obj, obj_col_name);
+		local val = val_of_elem_in_obj(obj, obj_col_name);
+		inputs[count] = val
 		assert(inputs[count] ~= nil);
+		key_columns[col] = val
 		if (i ~= 1) then
 			stmt = stmt.." AND "..col.."=?";
 		else
@@ -429,7 +434,9 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 	end
 	if (tbl_def.col_props.update_fields) then
 		count = count + 1;
-		inputs[count] = get_element_val_from_obj(obj, 'version', col_map);
+		local val = get_element_val_from_obj(obj, 'version', col_map);
+		inputs[count] = val
+		key_columns["version"] = val
 		stmt = stmt.." AND version" .. "=?";
 	end
 
