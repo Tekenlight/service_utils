@@ -17,7 +17,7 @@ dialog_socket.send_bytes = function(self)
 	local status, ret = pcall(platform.send_data_on_socket, self.ss,
 			ffi.getptr(buffer_element.buf), buffer_element.size, constants.SEND_TIMEOUT_SMTP_SOCKETS);
 	if (not status) then
-		error_handler.raise_error(-1, ret, debug.getinfo(1));
+		error_handler.raise_error(500, ret);
 		self.socket_in_error = true;
 		error(ret);
 	end
@@ -29,10 +29,10 @@ dialog_socket.receive_data = function(self)
 	local status, ret = pcall(platform.recv_data_from_socket, self.ss,
 						ffi.getptr(buffer_element.buf), 1024, constants.RECV_TIMEOUT_SMTP_SOCKETS);
 	if (not status) then
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+		print(debug.getinfo(1).source.currentline);
 		platform.debug_ss_ptr(self.ss);
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-		error_handler.raise_error(-1, ret, debug.getinfo(1));
+		print(debug.getinfo(1).source.currentline);
+		error_handler.raise_error(500, ret);
 		self.socket_in_error = true;
 		error(ret);
 	end
@@ -145,7 +145,7 @@ end
 dialog_socket.send_string = function(self, string_data)
 	local size = string.len(string_data);
 	if (size > 1024) then
-		error_handler.raise_error(-1, "Cannot send messages > 1024 bytes", debug.getinfo(1));
+		error_handler.raise_error(500, "Cannot send messages > 1024 bytes");
 		return nil;
 	end
 	local buffer_element = self.output_buffer;
@@ -157,15 +157,15 @@ end
 
 dialog_socket.send_message = function(self, str, arg1, arg2)
 	if (str == nil or type(str) ~= 'string') then
-		error_handler.raise_error(-1, "Invalid inputs", debug.getinfo(1));
+		error_handler.raise_error(400, "Invalid inputs");
 		error("Invalid inputs");
 	end
 	if ((arg1 ~= nil) and (type(arg1) ~= 'string')) then
-		error_handler.raise_error(-1, "Invalid inputs", debug.getinfo(1));
+		error_handler.raise_error(400, "Invalid inputs");
 		error("Invalid inputs");
 	end
 	if ((arg2 ~= nil) and (type(arg2) ~= 'string')) then
-		error_handler.raise_error(-1, "Invalid inputs", debug.getinfo(1));
+		error_handler.raise_error(400, "Invalid inputs");
 		error("Invalid inputs");
 	end
 	local string_data = str
@@ -200,7 +200,7 @@ end
 
 dialog_socket.set_socket_to_be_cached = function(self, flag)
 	if (flag == nil or type(flag) ~= 'boolean') then
-		error_handler.raise_error(-1, "dialog_socket.set_socket_to_be_cached : invalid inputs", debug.getinfo(1));
+		error_handler.raise_error(500, "dialog_socket.set_socket_to_be_cached : invalid inputs");
 		error("dialog_socket.set_socket_to_be_cached : invalid inputs");
 	end
 	self.to_be_cached = flag;

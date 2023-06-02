@@ -22,13 +22,13 @@ local email_services = {
 local make_connection = function(self, email_service, user_id, password, name)
 	local status, smtp_c = pcall(smtp_c_f.new, conn_type, email_services[email_service].uri, email_services[email_service].port, name);
 	if (not status) then
-		error_handler.raise_error(-1, smtp_c, debug.getinfo(1));
+		error_handler.raise_error(500, smtp_c);
 		error(smtp_c);
 	end
 
 	local status, msg = pcall(smtp_c.login, smtp_c, 'AUTH_LOGIN', user_id, password);
 	if (not status) then
-		error_handler.raise_error(-1, 'login failed:'..msg, debug.getinfo(1));
+		error_handler.raise_error(500, 'login failed:'..msg);
 		return false, nil;
 	end
 
@@ -46,7 +46,7 @@ local init = function(self, email_service, user_id, password, name)
 	local host = email_services[email_service].uri ..':'.. email_services[email_service].port;
 	local status, ss_ptr = pcall(evclient.get_from_pool, conn_type, host, user_id);
 	if (not status) then
-		error_handler.raise_error(-1, ss_ptr, debug.getinfo(1));
+		error_handler.raise_error(500, ss_ptr);
 		return false, nil;
 	end
 	
@@ -57,12 +57,12 @@ local init = function(self, email_service, user_id, password, name)
 		ss = ss_ptr;
 		--status, ss = pcall(platform.use_pooled_connection, ss_ptr);
 		--if (not status) then
-			--error_handler.raise_error(-1, ss, debug.getinfo(1));
+			--error_handler.raise_error(-1, ss);
 			--return false, nil;
 		--end
 		status, smtp_c = pcall(smtp_c_f.new_from_cached_ss, ss, conn_type, email_services[email_service].uri, email_services[email_service].port, user_id, name);
 		if (not status) then
-			error_handler.raise_error(-1, smtp_c, debug.getinfo(1));
+			error_handler.raise_error(500, smtp_c);
 			return false, nil;
 		end
 		from_pool = true;
@@ -89,13 +89,13 @@ end
 email_client.sendmail = function(self, email_service, email_message)
 	local msg_handler = schema_processor:get_message_handler('email_message', 'http://evpoco.tekenlight.org');
 	if (msg_handler == nil) then
-		error_handler.raise_error(-1, "Could not locate message schema handler", debug.getinfo(1));
+		error_handler.raise_error(500, "Could not locate message schema handler");
 		return false;
 	end
 
 	local stat, status = pcall(msg_handler.is_valid, msg_handler, email_message);
 	if (not stat) then
-		error_handler.raise_error(-1, status, debug.getinfo(1));
+		error_handler.raise_error(500, status);
 		return false;
 	end
 	if (not status) then
