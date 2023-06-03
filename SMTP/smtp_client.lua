@@ -71,13 +71,13 @@ local function init(session)
 	end
 	if (not is_positive_completion(ret)) then
 		msg = 'Login failed:'..ret..':'..msg;;
-		error_handler.raise_error(-1, msg, debug.getinfo(1));
+		error_handler.raise_error(500, msg);
 		return false, msg;
 	end
 	ret, msg = session:send_command('STARTTLS');
 	if (not is_positive_completion(ret)) then
 		msg = 'TLS could not be initiated';
-		error_handler.raise_error(-1, msg, debug.getinfo(1));
+		error_handler.raise_error(500, msg);
 		return false, msg;
 	end
 	session.ds:start_tls();
@@ -88,7 +88,7 @@ end
 local function login_using_login(session, user_name, password)
 	local ret, response = session:send_command('AUTH LOGIN');
 	if (not is_positive_intermediate(ret)) then
-		error_handler.raise_error(-1, response, debug.getinfo(1));
+		error_handler.raise_error(500, response);
 		return false, response;
 	end
 	local resp_msg = string.sub(response, 5);
@@ -102,25 +102,25 @@ local function login_using_login(session, user_name, password)
 	if (field == 'Username:') then
 		local ret, response = session:send_command(b64_user_name);
 		if (not is_positive_intermediate(ret)) then
-			error_handler.raise_error(-1, response, debug.getinfo(1));
+			error_handler.raise_error(500, response);
 			return false, response;
 		end
 
 		ret, response = session:send_command(b64_password);
 		if (not is_positive_completion(ret)) then
-			error_handler.raise_error(-1, response, debug.getinfo(1));
+			error_handler.raise_error(500, response);
 			return false, response;
 		end
 	else
 		local ret, response = session:send_command(b64_password);
 		if (not is_positive_completion(ret)) then
-			error_handler.raise_error(-1, response, debug.getinfo(1));
+			error_handler.raise_error(500, response);
 			return false, response;
 		end
 
 		local ret, response = session:send_command(b64_user_name);
 		if (not is_positive_intermediate(ret)) then
-			error_handler.raise_error(-1, response, debug.getinfo(1));
+			error_handler.raise_error(500, response);
 			return false, response;
 		end
 	end
@@ -130,23 +130,23 @@ end
 
 smtp_client_session.login = function(self, method, user_name, password)
 	if (smtp_client_session.login_methods[method] == nil) then
-		error_handler.raise_error(-1, 'Invalid method', debug.getinfo(1));
+		error_handler.raise_error(500, 'Invalid method');
 		error('Invalid method');
 	end
 	--[[ TO BEGIN WITH LET US SUPPORT ONE METHOD ]]
 	if (smtp_client_session.login_methods[method] ~= smtp_client_session.login_methods.AUTH_LOGIN) then
 		local msg = 'Invalid method';
-		error_handler.raise_error(-1, msg, debug.getinfo(1));
+		error_handler.raise_error(500, msg);
 		return false, msg;
 	end
 	if (user_name == nil or type(user_name) ~= 'string') then
 		local msg = 'Invalid user_name';
-		error_handler.raise_error(-1, msg, debug.getinfo(1));
+		error_handler.raise_error(500, msg);
 		return false, msg;
 	end
 	if (password == nil or type(password) ~= 'string') then
 		local msg = 'Invalid user_name';
-		error_handler.raise_error(-1, msg, debug.getinfo(1));
+		error_handler.raise_error(500, msg);
 		return false, msg;
 	end
 	if (smtp_client_session.login_methods[method] == smtp_client_session.login_methods.AUTH_LOGIN) then
@@ -194,7 +194,7 @@ smtp_client_session.send_commands = function(self, mail_message)
 	local sender = mmf.get_sender(mail_message);
 	if (sender == nil) then
 		msg = "sender cannot be nil";
-		error_handler.raise_error(-1, msg, debug.getinfo(1));
+		error_handler.raise_error(500, msg);
 		return false, msg;
 	end
 	local i, j = string.find(sender, "<.*>");
@@ -206,26 +206,26 @@ smtp_client_session.send_commands = function(self, mail_message)
 	end
 	ret, msg = self:send_command('MAIL FROM:', f_sender);
 	if (not is_positive_completion(ret)) then
-		error_handler.raise_error(-1, msg, debug.getinfo(1));
+		error_handler.raise_error(500, msg);
 		return false, msg;
 	end
 	local recipients = mmf.get_recipients(mail_message);
 	if (recipients == nil or type(recipients) ~= 'table' or #recipients == 0) then
 		msg = "Atlease one recipient should be there";
-		error_handler.raise_error(-1, msg, debug.getinfo(1));
+		error_handler.raise_error(500, msg);
 		return false, msg;
 	end
 	for i,v in ipairs(recipients) do
 		local command = 'RCPT TO:'..'<'..v.address..'>';
 		ret, msg = self:send_command(command);
 		if (not is_positive_completion(ret)) then
-			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			error_handler.raise_error(500, msg);
 			return false, msg;
 		end
 	end
 	ret, msg = self:send_command('DATA');
 	if (not is_positive_intermediate(ret)) then
-		error_handler.raise_error(-1, msg, debug.getinfo(1));
+		error_handler.raise_error(500, msg);
 		return false, msg;
 	end
 
@@ -239,13 +239,13 @@ smtp_client_session.send_message = function(self, mail_message)
 
 	local cms = mmf.serialize_message(mail_message);
 	if (not self.ds:transport_cms(cms)) then
-		error_handler.raise_error(-1, 'Could not send mail message', debug.getinfo(1));
+		error_handler.raise_error(500, 'Could not send mail message');
 		return false, 'Could not send mail message';
 	end
 
 	ret, msg = self.ds:receive_status_message();
 	if (not is_positive_completion(ret)) then
-		error_handler.raise_error(-1, msg, debug.getinfo(1));
+		error_handler.raise_error(500, msg);
 		return false, msg;
 	end
 
@@ -258,7 +258,7 @@ smtp_client_session.pipeline_send_commands = function(self, mail_message)
 	local sender = mmf.get_sender(mail_message);
 	if (sender == nil) then
 		msg = "sender cannot be nil";
-		error_handler.raise_error(-1, msg, debug.getinfo(1));
+		error_handler.raise_error(500, msg);
 		return false, msg;
 	end
 	local i, j = string.find(sender, "<.*>");
@@ -272,7 +272,7 @@ smtp_client_session.pipeline_send_commands = function(self, mail_message)
 	local recipients = mmf.get_recipients(mail_message);
 	if (recipients == nil or type(recipients) ~= 'table' or #recipients == 0) then
 		msg = "Atlease one recipient should be there";
-		error_handler.raise_error(-1, msg, debug.getinfo(1));
+		error_handler.raise_error(500, msg);
 		return false, msg;
 	end
 	for i,v in ipairs(recipients) do
@@ -321,7 +321,7 @@ smtp_client_session.pipeline_receive_status_messages = function(self, mail_messa
 		data_status = false;
 		local ret, msg = self:send_command('RSET');
 		if (not is_positive_completion(ret)) then
-			error_handler.raise_error(-1, msg, debug.getinfo(1));
+			error_handler.raise_error(500, msg);
 			error(msg);
 		end
 	end
@@ -332,7 +332,7 @@ smtp_client_session.pipeline_receive_status_messages = function(self, mail_messa
 		if (data_status) then
 			session:send_command(".");
 		end
-		error_handler.raise_error(-1, msg, debug.getinfo(1));
+		error_handler.raise_error(500, msg);
 		return false, msg;
 	end
 end
@@ -353,14 +353,14 @@ smtp_client_session.pipeline_send_message = function(self, mail_message)
 	-- TRANSMISSION
 	local cms = mmf.serialize_message(mail_message);
 	if (not self.ds:transport_cms(cms)) then
-		error_handler.raise_error(-1, 'Could not transfer mail message', debug.getinfo(1));
+		error_handler.raise_error(500, 'Could not transfer mail message');
 		return false, 'Could not send mail message';
 	end
 
 	-- FOR TRANSMISSION
 	ret, msg = self:only_receive_status();
 	if (not is_positive_completion(ret)) then
-		error_handler.raise_error(-1, msg, debug.getinfo(1));
+		error_handler.raise_error(500, msg);
 		return false, msg;
 	end
 
