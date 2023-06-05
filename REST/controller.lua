@@ -318,6 +318,9 @@ local invoke_func = function(request, req_processor_interface, req_processor, fu
 	if (not status) then
 		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		require 'pl.pretty'.dump(message_validation_context);
+		require 'pl.pretty'.dump(req_processor);
+		require 'pl.pretty'.dump(req_processor_interface);
+		require 'pl.pretty'.dump(url_parts);
 		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		if (message_validation_context.status.error_message == nil or
 			message_validation_context.status.error_message == '') then

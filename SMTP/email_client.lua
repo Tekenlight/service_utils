@@ -57,7 +57,7 @@ local init = function(self, email_service, user_id, password, name)
 		ss = ss_ptr;
 		--status, ss = pcall(platform.use_pooled_connection, ss_ptr);
 		--if (not status) then
-			--error_handler.raise_error(-1, ss);
+			--error_handler.raise_error(500, ss);
 			--return false, nil;
 		--end
 		status, smtp_c = pcall(smtp_c_f.new_from_cached_ss, ss, conn_type, email_services[email_service].uri, email_services[email_service].port, user_id, name);

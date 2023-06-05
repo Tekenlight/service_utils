@@ -29,9 +29,9 @@ dialog_socket.receive_data = function(self)
 	local status, ret = pcall(platform.recv_data_from_socket, self.ss,
 						ffi.getptr(buffer_element.buf), 1024, constants.RECV_TIMEOUT_SMTP_SOCKETS);
 	if (not status) then
-		print(debug.getinfo(1).source.currentline);
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		platform.debug_ss_ptr(self.ss);
-		print(debug.getinfo(1).source.currentline);
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		error_handler.raise_error(500, ret);
 		self.socket_in_error = true;
 		error(ret);
@@ -157,15 +157,15 @@ end
 
 dialog_socket.send_message = function(self, str, arg1, arg2)
 	if (str == nil or type(str) ~= 'string') then
-		error_handler.raise_error(400, "Invalid inputs");
+		error_handler.raise_error(500, "Invalid inputs");
 		error("Invalid inputs");
 	end
 	if ((arg1 ~= nil) and (type(arg1) ~= 'string')) then
-		error_handler.raise_error(400, "Invalid inputs");
+		error_handler.raise_error(500, "Invalid inputs");
 		error("Invalid inputs");
 	end
 	if ((arg2 ~= nil) and (type(arg2) ~= 'string')) then
-		error_handler.raise_error(400, "Invalid inputs");
+		error_handler.raise_error(500, "Invalid inputs");
 		error("Invalid inputs");
 	end
 	local string_data = str

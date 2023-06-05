@@ -89,6 +89,11 @@ function context_harness.prepare_uc(databases, module_path, jwt_token)
 			if (not token_valid) then
 				error(msg);
 			end
+		else 
+			local token_valid, msg = jwt.verify_signature(header, sig, key, token_parts);
+			if (not token_valid) then
+				error(msg);
+			end
 		end
 
 		token.exp_time = os.date('%Y-%m-%d %T', token.exp);

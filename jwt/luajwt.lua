@@ -3,9 +3,21 @@ local core_utils = require("lua_schema.core_utils");
 local evl_crypto = (require('service_utils.common.utils')).load_library('libevlcrypto');
 
 local alg_sign = {
-	['HS256'] = function(data, key) return evl_crypto.hmac_digest('sha256', data, key, true) end,
-	['HS384'] = function(data, key) return evl_crypto.hmac_digest('sha384', data, key, true) end,
-	['HS512'] = function(data, key) return evl_crypto.hmac_digest('sha512', data, key, true) end,
+	['HS256'] = function(data, key) 
+		-- for HS256 the minimum required key size is 256bits i.e 256/8 = 32 characters
+		assert(key ~= nil and type(key) == 'string' and string.len(key) >= 32)
+		return evl_crypto.hmac_digest('sha256', data, key, true) 
+	end,
+	['HS384'] = function(data, key) 
+		-- for HS384 the minimum required key size is 384bits i.e 384/8 = 48 characters
+		assert(key ~= nil and type(key) == 'string' and string.len(key) >= 48)
+		return evl_crypto.hmac_digest('sha384', data, key, true) 
+	end,
+	['HS512'] = function(data, key) 
+		-- for HS512 the minimum required key size is 512bits i.e 512/8 = 64 characters
+		assert(key ~= nil and type(key) == 'string' and string.len(key) >= 64)
+		return evl_crypto.hmac_digest('sha512', data, key, true) 
+	end,
 }
 
 local alg_verify = {
@@ -168,6 +180,19 @@ function M.valid(header, body, sig, key, token)
 
 	if body.nbf and os.time() < body.nbf then
 		return false, "Not acceptable by nbf"
+	end
+
+	return true;
+end
+
+function M.verify_signature(header, sig, key, token)
+	local headerb64, bodyb64 = token[1], token[2]
+	if not alg_verify[header.alg] then
+		return false, "Algorithm not supported"
+	end
+
+	if not alg_verify[header.alg](headerb64 .. "." .. bodyb64, sig, key) then
+		return false, "Invalid signature"
 	end
 
 	return true;
