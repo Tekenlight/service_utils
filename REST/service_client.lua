@@ -37,9 +37,10 @@ local function get_output_obj(schema_def, response)
 	assert(msg_handler ~= nil);
 	local obj, msg = msg_handler:from_json(response);
 	if (obj == nil) then
-		obj = { error_message = response_json };
+		obj = { error_message = msg };
+		return false, obj;
 	end
-	return obj;
+	return true, obj;
 end
 
 service_client.get_interface_method_properties = function(context, inp)
@@ -191,16 +192,10 @@ service_client.prepare_response_obj = function(context, method_properties, respo
 
 	if (method_properties.message.in_out[2] ~= nil) then
 		assert(response_json ~= nil and type(response_json) == 'string');
-		local obj, msg = get_output_obj(method_properties.message.in_out[2], response_json);
-		if (obj == nil) then
-			obj = { error_message = response_json };
-		end
-		return obj;
+		return get_output_obj(method_properties.message.in_out[2], response_json);
 	else
-		return nil;
+		return false, nil;
 	end
-
-	return obj;
 end
 
 service_client.transceive_using_client = function(context, inp, client)
@@ -219,7 +214,7 @@ service_client.transceive_using_client = function(context, inp, client)
 	end
 
 	local response_json = response;
-	local obj = service_client.prepare_response_obj(context, method_properties, response_json);
+	local status, obj = service_client.prepare_response_obj(context, method_properties, response_json);
 
 	return status, obj, http_status, hdrs, client;
 end

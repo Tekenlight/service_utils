@@ -28,7 +28,7 @@ end
 function msg_literal:format(id, ...)
 	local str = self.list[id];
 	if (str == nil) then
-		error("LITERAL ID NOT FOUND");
+		error("LITERAL ID NOT FOUND [".. id .. "]");
 		return nil;
 	end
 	return self:format_with_string(str, ...);

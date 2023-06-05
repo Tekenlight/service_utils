@@ -44,7 +44,7 @@ external_service_client.transceive = function(client, headers, inp)
 	end
 
 	local response_json = response;
-	local obj = service_client.prepare_response_obj({}, method_properties, response_json);
+	local status, obj = service_client.prepare_response_obj({}, method_properties, response_json);
 
 	return status, obj, http_status, hdrs, client;
 end
