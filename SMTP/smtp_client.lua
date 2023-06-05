@@ -130,39 +130,23 @@ end
 
 smtp_client_session.login = function(self, method, user_name, password)
 	if (smtp_client_session.login_methods[method] == nil) then
-<<<<<<< HEAD
 		error_handler.raise_error(500, 'Invalid method');
-=======
-		error_handler.raise_error(405, 'Invalid method');
->>>>>>> fb63b673cbc01ce71c8939dbafe1713956360b06
 		error('Invalid method');
 	end
 	--[[ TO BEGIN WITH LET US SUPPORT ONE METHOD ]]
 	if (smtp_client_session.login_methods[method] ~= smtp_client_session.login_methods.AUTH_LOGIN) then
 		local msg = 'Invalid method';
-<<<<<<< HEAD
 		error_handler.raise_error(500, msg);
-=======
-		error_handler.raise_error(405, msg);
->>>>>>> fb63b673cbc01ce71c8939dbafe1713956360b06
 		return false, msg;
 	end
 	if (user_name == nil or type(user_name) ~= 'string') then
 		local msg = 'Invalid user_name';
-<<<<<<< HEAD
 		error_handler.raise_error(500, msg);
-=======
-		error_handler.raise_error(401, msg);
->>>>>>> fb63b673cbc01ce71c8939dbafe1713956360b06
 		return false, msg;
 	end
 	if (password == nil or type(password) ~= 'string') then
 		local msg = 'Invalid user_name';
-<<<<<<< HEAD
 		error_handler.raise_error(500, msg);
-=======
-		error_handler.raise_error(401, msg);
->>>>>>> fb63b673cbc01ce71c8939dbafe1713956360b06
 		return false, msg;
 	end
 	if (smtp_client_session.login_methods[method] == smtp_client_session.login_methods.AUTH_LOGIN) then
@@ -210,11 +194,7 @@ smtp_client_session.send_commands = function(self, mail_message)
 	local sender = mmf.get_sender(mail_message);
 	if (sender == nil) then
 		msg = "sender cannot be nil";
-<<<<<<< HEAD
 		error_handler.raise_error(500, msg);
-=======
-		error_handler.raise_error(400, msg);
->>>>>>> fb63b673cbc01ce71c8939dbafe1713956360b06
 		return false, msg;
 	end
 	local i, j = string.find(sender, "<.*>");
@@ -232,11 +212,7 @@ smtp_client_session.send_commands = function(self, mail_message)
 	local recipients = mmf.get_recipients(mail_message);
 	if (recipients == nil or type(recipients) ~= 'table' or #recipients == 0) then
 		msg = "Atlease one recipient should be there";
-<<<<<<< HEAD
 		error_handler.raise_error(500, msg);
-=======
-		error_handler.raise_error(400, msg);
->>>>>>> fb63b673cbc01ce71c8939dbafe1713956360b06
 		return false, msg;
 	end
 	for i,v in ipairs(recipients) do
