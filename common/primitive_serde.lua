@@ -74,6 +74,10 @@ primitive_serde.serialize = function(v)
 			tn = "uint64_t"
 			sv = string.format("%d", tonumber(v));
 			sz = 8;
+		elseif (v == ffi.NULL) then
+			tn = "NULLPTR";
+			sv = "";
+			sz = 8;
 		else
 			error("Datatype not supported");
 		end
@@ -152,6 +156,8 @@ primitive_serde.deserialize = function(sv, tn, sz)
 		value = sv;
 	elseif (tn == 'number') then
 		value = sv;
+	elseif (tn == 'NULLPTR') then
+		value = ffi.NULL;
 	else
 		error("Datatype not supported");
 	end
