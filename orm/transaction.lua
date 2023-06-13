@@ -1,12 +1,14 @@
 local transaction = {}
 
-transaction.enable_org_refresh = function (context, name, org_id)
+transaction.enable_org_refresh = function (context, name, org_id, exception_case)
     assert(context.dml_ops[name] ~= nil and type(context.dml_ops[name]) == 'table');
     assert(context.dml_ops[name].enable_audit == true);
     assert(context.dml_ops[name].generic_refresh == false);
     assert(org_id ~= nil);
+    assert(exception_case ~= nil and type(exception_case) == 'boolean');
     context.dml_ops[name].org_refresh = true;
     context.dml_ops[name].refresh_org_id = org_id;
+    context.dml_ops[name].exception_case = exception_case;
 end
 
 transaction.enable_generic_refresh = function (context, name)
