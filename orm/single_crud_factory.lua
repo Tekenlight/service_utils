@@ -62,7 +62,7 @@ single_crud.fetch = function (self, context, query_params)
 	if (out == nil) then
 		local key_param_str = get_key_params_str(tao, query_params);
 		local msg = messages:format('RECORD_NOT_FOUND', key_param_str);
-		error_handler.raise_error(404, msg, debug.getinfo(1));
+		error_handler.raise_error(404, msg);
 		return false, nil;
 	end
 
@@ -79,10 +79,10 @@ single_crud.add = function (self, context, obj)
 		if (ret == -1) then
 			local key_params_str = get_key_params_str(tao, obj);
 			local msg = messages:format('DUPLICATE_RECORD_FOUND', key_params_str);
-			error_handler.raise_error(409, msg, debug.getinfo(1));
+			error_handler.raise_error(409, msg);
 			return false, msg, ret;
 		else
-			error_handler.raise_error(500, msg, debug.getinfo(1));
+			error_handler.raise_error(500, msg);
 			return false, msg, ret;
 		end
 	end
@@ -98,10 +98,10 @@ single_crud.modify = function (self, context, obj)
 		if (ret == 0) then
 			local key_params_str = get_key_params_str(tao, obj);
 			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
-			error_handler.raise_error(404, msg, debug.getinfo(1));
+			error_handler.raise_error(404, msg);
 			return false, msg, ret;
 		else
-			error_handler.raise_error(409, msg, debug.getinfo(1));
+			error_handler.raise_error(500, msg);
 			return false, msg, ret;
 		end
 	end
@@ -117,10 +117,10 @@ single_crud.phydel = function (self, context, obj)
 		if (ret == 0) then
 			local key_params_str = get_key_params_str(tao, obj);
 			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
-			error_handler.raise_error(404, msg, debug.getinfo(1));
+			error_handler.raise_error(404, msg);
 			return false, msg, ret;
 		else
-			error_handler.raise_error(500, msg, debug.getinfo(1));
+			error_handler.raise_error(500, msg);
 			return false, msg, ret;
 		end
 	end
@@ -136,10 +136,10 @@ single_crud.logdel = function (self, context, obj)
 		if (ret == 0) then
 			local key_params_str = get_key_params_str(tao, obj);
 			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
-			error_handler.raise_error(404, msg, debug.getinfo(1));
+			error_handler.raise_error(404, msg);
 			return false, msg, ret;
 		else
-			error_handler.raise_error(500, msg, debug.getinfo(1));
+			error_handler.raise_error(500, msg);
 			return false, msg, ret;
 		end
 	end
@@ -168,10 +168,10 @@ single_crud.undelete = function (self, context, obj)
 		if (ret == 0) then
 			local key_params_str = get_key_params_str(tao, obj);
 			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
-			error_handler.raise_error(404, msg, debug.getinfo(1));
+			error_handler.raise_error(404, msg);
 			return false, msg, ret;
 		else
-			error_handler.raise_error(500, msg, debug.getinfo(1));
+			error_handler.raise_error(500, msg);
 			return false, msg, ret;
 		end
 	end
@@ -187,7 +187,7 @@ single_crud.approve = function (self, context, obj)
 	if (obj.entity_state ~= '0') then
 		local key_params_str = get_key_params_str(tao, obj);
 		local msg = messages:format('INVALID_OPERATION', key_params_str);
-		error_handler.raise_error(400, msg, debug.getinfo(1));
+		error_handler.raise_error(400, msg);
 		return false, msg, -1;
 	end
 
@@ -197,10 +197,10 @@ single_crud.approve = function (self, context, obj)
 		if (ret == 0) then
 			local key_params_str = get_key_params_str(tao, obj);
 			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
-			error_handler.raise_error(404, msg, debug.getinfo(1));
+			error_handler.raise_error(404, msg);
 			return false, msg, ret;
 		else
-			error_handler.raise_error(500, msg, debug.getinfo(1));
+			error_handler.raise_error(500, msg);
 			return false, msg, ret;
 		end
 	end
@@ -215,7 +215,7 @@ single_crud.cancel = function (self, context, obj)
 	if (obj.entity_state ~= '1') then
 		local key_params_str = get_key_params_str(tao, obj);
 		local msg = messages:format('INVALID_OPERATION', key_params_str);
-		error_handler.raise_error(400, msg, debug.getinfo(1));
+		error_handler.raise_error(400, msg);
 		return false, msg, -1;
 	end
 
@@ -225,10 +225,10 @@ single_crud.cancel = function (self, context, obj)
 		if (ret == 0) then
 			local key_params_str = get_key_params_str(tao, obj);
 			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
-			error_handler.raise_error(404, msg, debug.getinfo(1));
+			error_handler.raise_error(404, msg);
 			return false, msg, ret;
 		else
-			error_handler.raise_error(500, msg, debug.getinfo(1));
+			error_handler.raise_error(500, msg);
 			return false, msg, ret;
 		end
 	end
