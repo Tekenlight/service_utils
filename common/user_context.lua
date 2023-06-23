@@ -85,22 +85,13 @@ function user_context:get_sysdate(db_name)
 	return conn:get_sysdate();
 end
 
-local random = math.random
-local function uuid()
-    local template ='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
-    return string.gsub(template, '[xy]', function (c)
-        local v = (c == 'x') and random(0, 0xf) or random(8, 0xb)
-        return string.format('%x', v)
-    end)
-end
-
 local mt = { __index = user_context };
 local factory = {};
 
 function factory.new()
 	local uc = {};
 	uc.db_connections = {};
-	uc.uuid = uuid()
+	uc.uuid = require('service_common.util_functions').uuid()
 	uc = setmetatable(uc, mt);
 	return uc;
 end
