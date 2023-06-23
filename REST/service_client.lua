@@ -54,7 +54,7 @@ service_client.get_interface_method_properties = function(context, inp)
 
 	local method_properties = interface_class.methods[inp.method_name];
 	if (method_properties == nil) then
-		error("Invalid methdod ["..inp.class_name.."] ".."["..inp.method_name.."]");
+		error("Invalid method ["..inp.class_name.."] ".."["..inp.method_name.."]");
 	end
 
 	return method_properties, interface_class;
