@@ -33,6 +33,7 @@ local function make_new_http_client(hostname, port, secure, external, timeout)
 
 	if (secure) then
 		new_client:connect_TLS();
+		platform.make_http_connection_secure(new_client._http_conn, new_client._ss);
 	end
 
 	return new_client;
