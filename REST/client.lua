@@ -42,7 +42,9 @@ end
 client_maker.deduce_details = function(url, port)
 	local uri = URI_CLASS:new(url);
 	if (uri._port == nil) then
-		if (uri._scheme == 'http') then
+		if (port ~= nil and tonumber(port) > 0) then
+			uri._port = tonumber(port);
+		elseif (uri._scheme == 'http') then
 			uri._port = 80;
 		elseif (uri._scheme == 'https') then
 			uri._port = 443;
