@@ -75,8 +75,9 @@ targetNamespace="http://evpoco.tekenlight.org/idl_spec" xmlns:ns="http://evpoco.
 	<xsd:complexType name="host_config_rec_type">
 		<xsd:sequence>
 			<xsd:element name="host" type="ns:host_url_type"/>
-			<xsd:element name="port" type="xsd:int"/>
+			<xsd:element name="port" type="xsd:int" minOccurs="0"/>
 			<xsd:element name="secure" type="xsd:boolean" minOccurs="0"/>
+			<xsd:element name="protocol" type="xsd:string" minOccurs="0"/>
 		</xsd:sequence>
 	</xsd:complexType>
 

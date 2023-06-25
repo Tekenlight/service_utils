@@ -98,8 +98,8 @@ do
         element_handler.properties.attr._attr_properties['{}name'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}name']);
     end
     element_handler.properties.attr._generated_attr = {};
-    element_handler.properties.attr._generated_attr['name'] = '{}name';
     element_handler.properties.attr._generated_attr['namespace'] = '{}namespace';
+    element_handler.properties.attr._generated_attr['name'] = '{}name';
 end
 
 -- element_handler.properties.content_model

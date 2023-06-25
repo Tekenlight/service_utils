@@ -49,6 +49,33 @@ host_utils.resolve = function(property_name)
 	if (host_ent.secure == nil) then
 		host_ent.secure = false;
 	end
+	if (host_ent.port == nil or host_ent.port == 0) then
+		if (host_ent.protocol ~= nil) then
+			if (string.upper(host_ent.protocol) == 'HTTP') then
+				if (type(host_ent.secure) == 'boolean' and host_ent.secure) then
+					host_ent.port = 443;
+				else
+					host_ent.port = 80;
+				end
+			elseif (string.upper(host_ent.protocol) == 'SMTP') then
+				if (type(host_ent.secure) == 'boolean' and host_ent.secure) then
+					host_ent.port = 587;
+				else
+					host_ent.port = 25;
+				end
+			elseif (string.upper(host_ent.protocol) == 'FTP') then
+				if (type(host_ent.secure) == 'boolean' and host_ent.secure) then
+					host_ent.port = 22;
+				else
+					host_ent.port = 21;
+				end
+			elseif (string.upper(host_ent.protocol) == 'SFTP') then
+				host_ent.port = 22;
+			else
+				error("Unable to resolve port number");
+			end
+		end
+	end
 
 	return host_ent;
 end
