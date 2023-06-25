@@ -74,6 +74,8 @@ host_utils.resolve = function(property_name)
 			else
 				error("Unable to resolve port number");
 			end
+		else
+			error("Unable to resolve port number");
 		end
 	end
 
