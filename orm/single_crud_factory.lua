@@ -187,7 +187,7 @@ single_crud.approve = function (self, context, obj)
 		local key_params_str = get_key_params_str(tao, obj);
 		local msg = messages:format('INVALID_OPERATION', key_params_str);
 		error_handler.raise_error(400, msg);
-		return false, msg, -1;
+		return false, msg, -1, tao;
 	end
 
 	obj.entity_state = '1';
@@ -197,20 +197,17 @@ single_crud.approve = function (self, context, obj)
 			local key_params_str = get_key_params_str(tao, obj);
 			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
 			error_handler.raise_error(404, msg);
-			return false, msg, ret;
+			return false, msg, ret, tao;
 		else
 			error_handler.raise_error(500, msg);
-			return false, msg, ret;
+			return false, msg, ret, tao;
 		end
 	end
-	return true;
+	return true, nil, 0, tao;
 end
 
 single_crud.approve_and_select = function (self, context, obj)
-	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
-	assert(obj.entity_state ~= nil)
-
-	local approve_flg, error_msg, ret = single_crud:approve(context, obj);
+	local approve_flg, error_msg, ret, tao = single_crud.approve(self, context, obj);
 	if not approve_flg then
 		return approve_flg, error_msg, ret;
 	end
