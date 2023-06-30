@@ -181,7 +181,6 @@ end
 
 single_crud.approve = function (self, context, obj)
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
-
 	assert(obj.entity_state ~= nil)
 
 	if (obj.entity_state ~= '0') then
@@ -203,6 +202,17 @@ single_crud.approve = function (self, context, obj)
 			error_handler.raise_error(500, msg);
 			return false, msg, ret;
 		end
+	end
+	return true;
+end
+
+single_crud.approve_and_select = function (self, context, obj)
+	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
+	assert(obj.entity_state ~= nil)
+
+	local approve_flg, error_msg, ret = single_crud:approve(context, obj);
+	if not approve_flg then
+		return approve_flg, error_msg, ret;
 	end
 
 	local key_params, key_count = get_key_params(tao, obj);
