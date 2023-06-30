@@ -181,7 +181,6 @@ end
 
 single_crud.approve = function (self, context, obj)
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
-
 	assert(obj.entity_state ~= nil)
 
 	if (obj.entity_state ~= '0') then
@@ -204,8 +203,36 @@ single_crud.approve = function (self, context, obj)
 			return false, msg, ret;
 		end
 	end
+	return true, nil, 0;
+end
 
-	return true, nil, ret;
+single_crud.approve_and_select = function (self, context, obj)
+	local approve_flg, error_msg, ret = single_crud.approve(self, context, obj);
+	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
+
+	if not approve_flg then
+		return approve_flg, error_msg, ret;
+	end
+
+	local key_params, key_count = get_key_params(tao, obj);
+	local out, msg = tao:select(context, table.unpack(key_params));
+
+	if (out == nil) then
+		local key_param_str = get_key_params_str(tao, obj);
+		local msg = messages:format('RECORD_NOT_FOUND', key_param_str);
+		error_handler.raise_error(404, msg);
+		return false, nil;
+	end
+
+	-- remove creation_uid, creation_time, update_uid, update_time from the table
+	if out ~= nil and out.creation_uid ~= nil then out.creation_uid = nil end
+	if out ~= nil and out.creation_time ~= nil then out.creation_time = nil end
+	if out ~= nil and out.update_uid ~= nil then out.update_uid = nil end
+	if out ~= nil and out.update_time ~= nil then out.update_time = nil end
+
+	local obj = mapper.copy_elements(self.msg_ns, self.msg_elem_name, out);
+
+	return true, obj, ret;
 end
 
 single_crud.cancel = function (self, context, obj)
