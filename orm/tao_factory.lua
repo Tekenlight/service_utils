@@ -680,17 +680,17 @@ tao.generic_select_query = function (self, context, where_statement, ...)
 	assert(tbl_def ~= nil);
 
 	local select_query = "";
-	for substring in string.gmatch(tbl_def.select_stmt, "[^%s]+") do --{
-	  local lowerSubstring = string.lower(substring)
-	  if lowerSubstring == "where" then --{
-		break;
-	  else -- } {
-		select_query = select_query .. substring .. " "
-	  end --}
-	end --}
+	for i,v in ipairs(tbl_def.selected_col_names) do -- {
+		if (i ==1) then
+			select_query = select_query .. 'SELECT ' .. v;
+		else
+			select_query = select_query .. ', ' .. v;
+		end
+	end -- }
+	select_query = select_query .. ' FROM '.. tbl_def.tbl_props.database_schema .. "." .. tbl_def.tbl_props.name;
 
 	if where_statement ~= nil then
-		select_query = select_query .. "where " .. where_statement;
+		select_query = select_query .. " WHERE " .. where_statement;
 	end
 
 	local conn = context:get_connection(self.db_name);
