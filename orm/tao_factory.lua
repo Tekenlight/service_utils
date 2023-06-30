@@ -672,5 +672,51 @@ tao.get_list = function(self, context, query_params)
 	assert(1 ~= 1);
 end
 
+tao.generic_select_query = function (self, context, where_statement, ...)
+	assert(where_statement == nil or (type(where_statement) == 'string' and string.len(where_statement) > 0));
+	assert(context ~= nil and type(context) == 'table');
+
+	local tbl_def = self.tbl_def;
+	assert(tbl_def ~= nil);
+
+	local select_query = "";
+	for substring in string.gmatch(tbl_def.select_stmt, "[^%s]+") do --{
+	  local lowerSubstring = string.lower(substring)
+	  if lowerSubstring == "where" then --{
+		break;
+	  else -- } {
+		select_query = select_query .. substring .. " "
+	  end --}
+	end --}
+
+	if where_statement ~= nil then
+		select_query = select_query .. "where " .. where_statement;
+	end
+
+	local conn = context:get_connection(self.db_name);
+	assert(conn ~= nil);
+
+	local stmt = conn:prepare(select_query);
+
+	if where_statement ~= nil then
+		stmt:execute(table.unpack({...}));
+	else
+		stmt:execute();
+	end
+
+	local count = 0;
+	local data = {};
+
+	local rec = stmt:fetch_result();
+	while (rec ~= nil) do -- {
+		local row = stmt.map(rec, tbl_def.selected_col_names);
+		data[count] = row;
+		count = count + 1;
+		rec = stmt:fetch_result();
+	end --}
+
+	return data;
+end
+
 
 return tao_factory;
