@@ -34,6 +34,9 @@ then
 elif [ -f /usr/local/share/lua/5.3/tblgen.lua ]
 then
 	LUA_FILE="/usr/local/share/lua/5.3/tblgen.lua"
+elif [ -f /opt/local/share/luarocks/share/lua/5.3/tblgen.lua ]
+then
+	LUA_FILE="/opt/local/share/luarocks/share/lua/5.3/tblgen.lua"
 else
 	echo "File tblgen.lua not found"
 	exit 1

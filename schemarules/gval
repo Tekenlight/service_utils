@@ -32,6 +32,9 @@ then
 elif [ -f /usr/local/share/lua/5.3/generate_val.lua ]
 then
     LUA_FILE="/usr/local/share/lua/5.3/generate_val.lua"
+elif [ -f /opt/local/share/luarocks/share/lua/5.3/generate_val.lua ]
+then
+	LUA_FILE="/opt/local/share/luarocks/share/lua/5.3/generate_val.lua"
 else
     echo "File generate_val.lua not found"
     exit 1

@@ -19,6 +19,9 @@ then
 elif [ -f /usr/local/share/lua/5.3/genmake.lua ]
 then
 	LUA_FILE="/usr/local/share/lua/5.3/genmake.lua"
+elif [ -f /opt/local/share/luarocks/share/lua/5.3/genmake.lua ]
+then
+	LUA_FILE="/opt/local/share/luarocks/share/lua/5.3/genmake.lua"
 else
 	echo "File genmake.lua not found"
 	exit 1
