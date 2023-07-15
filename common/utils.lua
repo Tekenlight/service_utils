@@ -58,10 +58,13 @@ function utils.load_library(libname, extension)
 	end
 	libname_full = libname..'.'..extension;
 
-	local libhandle = package.loadlib(libname_full,'luaopen_'..libname);
+	local libhandle, msg = package.loadlib(libname_full,'luaopen_'..libname);
+	if (libhandle == nil) then
+		error("Could not load library " .. libname_full ..":".. msg);
+	end
 	local loaded, lib = pcall(libhandle);
 	if(not loaded) then
-		error("Could not load library");
+		error("Could not load library : "..libname_full.. ":"..lib);
 	end
 	utils.pin_loaded_so(libname_full);
 	return lib;

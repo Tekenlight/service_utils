@@ -284,7 +284,7 @@ end
 ws_util.ping = function(conn, payload)
 	do
 		assert(conn ~= nil and type(conn) == 'table');
-		assert(payload == nil or type(payload) == 'string');
+		assert(payload == nil or (type(payload) == 'string' and string.len(payload) <=125));
 	end
 	if (payload == nil) then
 		payload = 'PING';

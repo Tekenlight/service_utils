@@ -166,15 +166,15 @@ ws.connect = function(inp)
 
 	do
 		local connection =  resp_hdrs["Connection"]
-		if (connection == nil or stringx.strip(connection) ~= "Upgrade") then
+		if (connection == nil or string.lower(stringx.strip(connection)) ~= "upgrade") then
 			return nil, "No Connection: Upgrade header in handshake response"
 		end
 		local upgrade = resp_hdrs["Upgrade"];
-		if (upgrade == nil or stringx.strip(upgrade) ~= "websocket") then
+		if (upgrade == nil or string.lower(stringx.strip(upgrade)) ~= "websocket") then
 			return nil, "No Upgrade: websocket header in handshake response";
 		end
 		local accept = resp_hdrs["Sec-WebSocket-Accept"];
-		if (accept == nil or stringx.strip(accept) ~= compute_accept(nonce)) then
+		if (accept == nil or string.lower(stringx.strip(accept)) ~= string.lower(compute_accept(nonce))) then
 			return nil, "Invalid or missing Sec-WebSocket-Accept header in handshake response";
 		end
 	end
@@ -191,6 +191,10 @@ ws.handle_msg = function(request, response)
 	msg._ss = ss;
 
 	if (msg.op_code == ws_const.FRAME_OP_PING) then
+		if (msg.payload_len > 125) then
+			platform.set_acc_sock_to_be_closed();
+			error("Control frames must not have messages longer than 125 bytes");
+		end
 		local handler;
 		local ws_msg_handler = platform.get_ws_recvd_msg_handler();
 		if (ws_msg_handler ~= nil) then handler = require(ws_msg_handler); end
