@@ -187,7 +187,7 @@ end
 
 ws.handle_msg = function(request, response)
 	local ss = platform.get_accepted_stream_socket();
-	local msg = ws_util.__recv_frame(ss);
+	local msg = ws_util.__recv_frame(ss, 1);
 	msg._ss = ss;
 
 	if (msg.op_code == ws_const.FRAME_OP_PING) then

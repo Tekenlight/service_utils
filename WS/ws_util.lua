@@ -37,7 +37,8 @@ end
 
 local ws_util = {};
 
-ws_util.recv_bytes = function(ss, n)
+ws_util.recv_bytes = function(ss, n, mode)
+	assert(type(mode) == 'number');
 	assert(n ~= nil and type(n) == 'number' and n > 0);
 	if (not platform.socket_active(ss)) then
 		error("SOCKET INACTIVE");
@@ -61,11 +62,19 @@ ws_util.recv_bytes = function(ss, n)
 		end
 		status, ret1 = pcall(platform.recv_data_from_socket, ss, ffi.getptr(buf1), n1, constants.RECV_TIMEOUT_EXTERNAL_SOCKETS);
 		if (not status) then
-			platform.shutdown_websocket(ss, 3);
+			if (mode == 0) then
+				platform.shutdown_websocket(ss, 3);
+			else
+				platform.set_acc_sock_to_be_closed();
+			end
 			error(ret1);
 		end
 		if (ret1 <=0) then
-			platform.shutdown_websocket(ss, 3);
+			if (mode == 0) then
+				platform.shutdown_websocket(ss, 3);
+			else
+				platform.set_acc_sock_to_be_closed();
+			end
 			error("Receving data from websocket failed");
 		end
 		ret = ret + ret1;
@@ -93,10 +102,10 @@ ws_util.send_bytes = function(ss, buf, n)
 	return ret;
 end
 
-ws_util.recv_header = function(ss)
+ws_util.recv_header = function(ss, mode)
 	local payload_len, use_mask, buf, mask = 0, false;
 
-	buf = ws_util.recv_bytes(ss, 2);
+	buf = ws_util.recv_bytes(ss, 2, mode);
 
 	local flags = tonumber(buf[0]);
 	local len_byte = tonumber(buf[1]);
@@ -105,12 +114,12 @@ ws_util.recv_header = function(ss)
 	len_byte = len_byte & 0X7F;
 
 	if (len_byte == 127) then
-		buf = ws_util.recv_bytes(ss, 8);
+		buf = ws_util.recv_bytes(ss, 8, mode);
 		local be_len = ffi.new("uint64_t [?]", 1);
 		ffi.C.memcpy(be_len, buf, 8);
 		payload_len = net_to_host_uint64(be_len[0]);
 	elseif (len_byte == 126) then
-		buf = ws_util.recv_bytes(ss, 2);
+		buf = ws_util.recv_bytes(ss, 2, mode);
 		local be_len = ffi.new("uint16_t [?]", 1);
 		ffi.C.memcpy(be_len, buf, 2);
 		payload_len = net_to_host_uint16(be_len[0]);
@@ -119,7 +128,7 @@ ws_util.recv_header = function(ss)
 	end
 
 	if (use_mask) then
-		mask = ws_util.recv_bytes(ss, 4);
+		mask = ws_util.recv_bytes(ss, 4, mode);
 	end
 
 	local op_code = flags & 0X0F
@@ -127,8 +136,8 @@ ws_util.recv_header = function(ss)
 	return { payload_len=payload_len, use_mask=use_mask, mask=mask, flags = flags, op_code = op_code};
 end
 
-ws_util.recv_payload = function(ss, inps)
-	local buf = ws_util.recv_bytes(ss, inps.payload_len);
+ws_util.recv_payload = function(ss, inps, mode)
+	local buf = ws_util.recv_bytes(ss, inps.payload_len, mode);
 	if (inps.use_mask) then
 		for i = 1, inps.payload_len, 1 do
 			local m = tonumber(inps.mask[(i-1)%4]);
@@ -139,14 +148,15 @@ ws_util.recv_payload = function(ss, inps)
 	return buf;
 end
 
-ws_util.__recv_frame = function(ss)
+ws_util.__recv_frame = function(ss, mode)
 	do
+		if (mode == nil) then mode = 0; end
 		assert(ss ~= nil);
 		local s = (require("pl.stringx")).split(tostring(ss), ":");
 		assert(s[1] ~= nil and s[1] == 'streamsocket');
 	end
-	local msg_meta = ws_util.recv_header(ss)
-	msg_meta.buf = ws_util.recv_payload(ss, msg_meta);
+	local msg_meta = ws_util.recv_header(ss, mode)
+	msg_meta.buf = ws_util.recv_payload(ss, msg_meta, mode);
 
 	return msg_meta;
 end
