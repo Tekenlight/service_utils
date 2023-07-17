@@ -218,7 +218,7 @@ function write_makefile()
 			local filename = returnfile(source);
 			filename = filename:gsub(".xml$","") .. "_xml.lua";
             local target = "build/output_files/ddl/" .. filename;
-            file:write(target .. " : " .. source .. "\n\tgtbl " .. source .. " " .. basic_file.ref_common .. " build\n")
+            file:write(target .. " : " .. source .. "\n\tgentbl " .. source .. " " .. basic_file.ref_common .. " build\n")
             file:write("\ttouch build/rockspec.out\n\n");
         end
     end
