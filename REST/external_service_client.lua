@@ -28,10 +28,30 @@ external_service_client.make_connection = function(inp)
 	return client;
 end
 
+external_service_client.generic_transceive = function(client, headers, inp, uri)
+	assert(type(client) == 'table', "Invalid input client");
+	assert(type(headers) == 'table', "Invalid input <headers>");
+	assert(type(inp) == 'table', "Invalid input <inp>");
+	assert(type(uri) == 'string', "Invalid input <uri>");
+
+	local request_json = json_parser.encode(inp.request_obj);
+
+	local status, response, http_status, hdrs, client = service_client.core_transcieve({}, client, uri, headers, request_json);
+	if (not status) then
+		return status, response, http_status, hdrs, client;
+	end
+
+	local response_json = response;
+
+	local obj = json_parser.decode(response_json);
+
+	return status, obj, http_status, hdrs, client;
+end
+
 external_service_client.transceive = function(client, headers, inp)
-	assert(type(client) == 'table');
-	assert(type(headers) == 'table');
-	assert(type(inp) == 'table');
+	assert(type(client) == 'table', "Invalid input client");
+	assert(type(headers) == 'table', "Invalid input <headers>");
+	assert(type(inp) == 'table', "Invalid input <inp>");
 
 	local method_properties, interface_class = service_client.get_interface_method_properties({}, inp);
 
@@ -48,6 +68,7 @@ external_service_client.transceive = function(client, headers, inp)
 
 	return status, obj, http_status, hdrs, client;
 end
+
 
 external_service_client.transceive_using_client = function(context, inp, client)
 	return service_client.transceive_using_client(context, inp, client);
