@@ -12,7 +12,7 @@ if [ ! -z "$INSTALL_DIRECTORY" ]; then
 	LUA_PATH="$INSTALL_DIRECTORY/usr/share/lua/5.3/?.lua;$LUA_PATH"
 	export LUA_PATH
 
-	LD_LIBRARY_PATH="$INSTALL_DIRECTORY/usr/lib:$INSTALL_DIRECTORY/usr/lib/evpoco;$LD_LIBRARY_PATH"
+	LD_LIBRARY_PATH="$INSTALL_DIRECTORY/usr/lib:$INSTALL_DIRECTORY/usr/lib/evpoco:$LD_LIBRARY_PATH"
 	export LD_LIBRARY_PATH
 fi
 
@@ -22,7 +22,7 @@ export LUA_CPATH
 LUA_PATH="./?.lua;$HOME/.luarocks/share/lua/5.3/?.lua;$LUA_PATH"
 export LUA_PATH
 
-LD_LIBRARY_PATH="/usr/lib:/usr/lib/evpoco:/usr/local/lib:/usr/local/lib/evpoco;$LD_LIBRARY_PATH"
+LD_LIBRARY_PATH="/usr/lib:/usr/lib/evpoco:/usr/local/lib:/usr/local/lib/evpoco:$LD_LIBRARY_PATH"
 export LD_LIBRARY_PATH
 
 if [ -f $HOME/.luarocks/share/lua/5.3/genmake.lua ]; then
