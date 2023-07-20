@@ -48,6 +48,9 @@ then
 elif [ -f /opt/local/share/luarocks/share/lua/5.3/idl_gen.lua ]
 then
 	LUA_FILE="/opt/local/share/luarocks/share/lua/5.3/idl_gen.lua"
+elif [ -f $INSTALL_DIRECTORY/usr/share/lua/5.3/idl_gen.lua ] 
+then
+	LUA_FILE="$INSTALL_DIRECTORY/usr/share/lua/5.3/idl_gen.lua"
 else
     echo "File idl_gen not found"
     exit 1

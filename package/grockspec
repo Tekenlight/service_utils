@@ -23,6 +23,9 @@ then
 elif [ -f /opt/local/share/luarocks/share/lua/5.3/generator.lua ]
 then
 	LUA_FILE="/opt/local/share/luarocks/share/lua/5.3/generator.lua $filename"
+elif [ -f $INSTALL_DIRECTORY/usr/share/lua/5.3/generator.lua ] 
+then
+	LUA_FILE="$INSTALL_DIRECTORY/usr/share/lua/5.3/generator.lua $filename"
 else
     echo "File generator.lua not found"
     exit 1

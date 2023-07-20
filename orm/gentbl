@@ -6,7 +6,6 @@ export LUA_CPATH
 LUA_PATH="./?.lua;$HOME/.luarocks/share/lua/5.3/?.lua;$LUA_PATH"
 export LUA_PATH
 
-
 OS=`uname`
 if [ $OS == "Darwin" ]
 then
@@ -37,6 +36,9 @@ then
 elif [ -f /opt/local/share/luarocks/share/lua/5.3/tblgen.lua ]
 then
 	LUA_FILE="/opt/local/share/luarocks/share/lua/5.3/tblgen.lua"
+elif [ -f $INSTALL_DIRECTORY/usr/share/lua/5.3/tblgen.lua ] 
+then
+	LUA_FILE="$INSTALL_DIRECTORY/usr/share/lua/5.3/tblgen.lua"
 else
 	echo "File tblgen.lua not found"
 	exit 1
