@@ -7,7 +7,7 @@ LUA_PATH="./?.lua;$HOME/.luarocks/share/lua/5.3/?.lua;$LUA_PATH"
 export LUA_PATH
 
 OS=`uname`
-if [ $OS == "Darwin" ]
+if [ $OS = "Darwin" ]
 then
 	DYLD_FALLBACK_LIBRARY_PATH=$HOME/usr/local/lib:$HOME/usr/lib:$HOME/.luarocks/lib/lua/5.3:$HOME/usr/local/tmp/cling-obj/lib:$HOME/lib:$HOME/bin_poco/lib:/usr/local/lib:/lib:/usr/lib:/opt/local/lib:/opt/local/lib/postgresql13
 	export DYLD_FALLBACK_LIBRARY_PATH
