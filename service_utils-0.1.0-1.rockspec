@@ -119,7 +119,7 @@ build = {
 		["genmake"] = 'package/genmake.lua',
 		["generator"] = 'package/generator.lua',
 
-		["service_utils.common.logger"] = 'logging/logger.lua',
+		["service_utils.logging.logger"] = 'logging/logger.lua',
 
 		["service_utils.orm.transaction"] = 'orm/transaction.lua',
 		["service_utils.orm.tao_factory"] = 'orm/tao_factory.lua',
