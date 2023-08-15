@@ -13,7 +13,7 @@ then
 fi
 
 OS=`uname`
-if [ $OS == "Darwin" ]
+if [ "$OS" = "Darwin" ]
 then
 	DYLD_FALLBACK_LIBRARY_PATH=$HOME/usr/local/lib:$HOME/usr/lib:$HOME/.luarocks/lib/lua/5.3:$HOME/usr/local/tmp/cling-obj/lib:$HOME/lib:$HOME/bin_poco/lib:/usr/local/lib:/lib:/usr/lib:/opt/local/lib:/opt/local/lib/postgresql13
 	export DYLD_FALLBACK_LIBRARY_PATH
@@ -35,6 +35,9 @@ then
 elif [ -f /opt/local/share/luarocks/share/lua/5.3/generate_val.lua ]
 then
 	LUA_FILE="/opt/local/share/luarocks/share/lua/5.3/generate_val.lua"
+elif [ -f $INSTALL_DIRECTORY/usr/share/lua/5.3/generate_val.lua ] 
+then
+	LUA_FILE="$INSTALL_DIRECTORY/usr/share/lua/5.3/generate_val.lua"
 else
     echo "File generate_val.lua not found"
     exit 1
