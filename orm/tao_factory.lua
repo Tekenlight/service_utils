@@ -718,5 +718,35 @@ tao.generic_select_query = function (self, context, where_statement, ...)
 	return data;
 end
 
+tao_factory.prepare_mod_key = function(self, context, db_name, table_name, rec)
+	assert(context ~= nil and type(context) == 'table');
+	assert(db_name ~= nil and type(db_name) == 'string');
+	assert(table_name ~= nil and type(table_name) == 'string');
+	assert(rec ~= nil and type(rec) == 'table');
+
+	local tao = tao_factory.open(context, db_name, table_name)
+    local key_columns = tao.tbl_def.key_col_names;
+    local key = {};
+    for i = 1, #key_columns do
+        local obj_key = key_columns[i]
+        key[obj_key] = rec[obj_key];
+    end
+    local str = ""
+    for k, v in pairs(key) do
+        str = str .. k .. "~" .. v .. "~~"
+    end
+    return string.sub(str, 1, -3); 
+end
+
+tao_factory.key_from_mod = function(input_string)
+	assert(input_string ~= nil and type(input_string) == 'string');
+	local obj = {}
+
+    for key, value in input_string:gmatch("(%w+)~([^~]+)") do
+        obj[key] = value
+    end
+
+    return obj
+end
 
 return tao_factory;
