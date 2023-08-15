@@ -5,7 +5,7 @@
 -- logging.log_to_console = false
 -- logging.log_to_file = false
 
-local log = require('evlualogger');
+local log = require('service_utils.logging.logger');
 local some_func = function ()
     log:debug("try");
     local context = { user_id = 123, ip_address = "192.168.1.1", uuid = require('service_utils.common.utils').uuid() }
