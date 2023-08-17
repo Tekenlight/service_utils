@@ -19,7 +19,8 @@ dependencies = {
    "lua-uri",
    "luafilesystem",
    "markdown",
-   "ldoc"
+   "ldoc",
+   "lualogging"
 }
 
 source = {
