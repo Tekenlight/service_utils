@@ -186,7 +186,7 @@ function context_harness.prepare_uc(databases, module_path, jwt_token)
 
 	error_handler.init();
 
-	return uc;
+	return uc, nil;
 end
 
 context_harness.prepare_uc_REST = function(request, url_parts)

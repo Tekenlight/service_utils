@@ -420,9 +420,14 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 
 	for i, col in ipairs(tbl_def.key_col_names) do
 		count = count + 1;
-		local obj_col_name = col_map[col];
-		assert(obj_col_name ~= nil);
-		local val = val_of_elem_in_obj(obj, obj_col_name);
+		local val;
+		if (col_map ~= nil) then
+			local obj_col_name = col_map[col];
+			assert(obj_col_name ~= nil);
+			val = val_of_elem_in_obj(obj, obj_col_name);
+		else
+			val = obj[col];
+		end
 		inputs[count] = val
 		assert(inputs[count] ~= nil);
 		key_columns[col] = val
@@ -432,9 +437,15 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 			stmt = stmt.." "..col.."=?";
 		end
 	end
+
 	if (tbl_def.col_props.update_fields) then
 		count = count + 1;
-		local val = get_element_val_from_obj(obj, 'version', col_map);
+		local val;
+		if (col_map ~= nil) then 
+			val = get_element_val_from_obj(obj, 'version', col_map);
+		else
+			val = obj['version'];
+		end
 		inputs[count] = val
 		key_columns["version"] = val
 		stmt = stmt.." AND version" .. "=?";
