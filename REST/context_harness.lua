@@ -145,6 +145,43 @@ local function does_request_need_auth(request, url_parts)
 	return true;
 end
 
+local upd_token_contents = function(context, jwt_token, token_header, sig, token_parts, key, token_body)
+	assert(token_body ~= nil);
+	assert(sig ~= nil);
+	assert(token_parts ~= nil);
+	if (token_body.typ ~= 'jwt/access') then
+		return nil, "Only access tokens are allowed";
+	end
+	if (token_body.verified == nil or (not token_body.verified)) then
+		local token_valid, msg = jwt.valid(token_header, token_body, sig, key, token_parts);
+		if (not token_valid) then
+			return nil, msg;
+		end
+	end
+	token_body.verified = true;
+	context.access_token = jwt.encode(token_body, key, token_header.alg);;
+	context.orig_token = jwt_token;
+	--context.verified_jwt_token = jwt.encode(token_body, key, token_header.alg);
+	token_body.exp_time = date_utils.from_xml_datetime(os.date('%Y-%m-%dT%TZ', token_body.exp));
+	token_body.nbf_time = date_utils.from_xml_datetime(os.date('%Y-%m-%dT%TZ', token_body.nbf));
+	token_body.uid = ffi.cast("int64_t", tonumber(token_body.uid));
+	context.uid = token_body.uid;
+	context.token_body = token_body;
+
+	return context;
+end
+
+context_harness.upd_token = function(context, jwt_token)
+	assert(type(context) == 'table', "first input parameter invalid: context")
+	assert(type(jwt_token) == 'string', "second input parameter invalid: jwt_token")
+	local key = properties_funcs.get_string_property("service_utils.jwtSignatureKey");
+	local token_header, token_body, sig, token_parts = jwt.deserialize(jwt_token, key, true);
+	assert(token_header ~= nil, "INVALID JWT TOKEN");
+	local new_context, msg = upd_token_contents(context, jwt_token, token_header, sig, token_parts, key, token_body);
+	assert(new_context ~= nil, msg);
+	return new_context;
+end
+
 context_harness.prepare_uc_REST = function(request, url_parts)
 	local uc = require('service_utils.common.user_context').new();
 
@@ -170,6 +207,7 @@ context_harness.prepare_uc_REST = function(request, url_parts)
 				uc.uid = ffi.cast("int64_t", 0);
 			end
 		else
+			--[[
 			assert(token_body ~= nil);
 			assert(sig ~= nil);
 			assert(token_parts ~= nil);
@@ -191,6 +229,12 @@ context_harness.prepare_uc_REST = function(request, url_parts)
 			token_body.uid = ffi.cast("int64_t", tonumber(token_body.uid));
 			uc.uid = token_body.uid;
 			uc.token_body = token_body;
+			]]
+			local new_uc, msg = upd_token_contents(uc, jwt_token, token_header, sig, token_parts, key, token_body);
+			if (new_uc == nil) then
+				return nil, msg;
+			end
+			uc = new_uc;
 		end
 	end
 
