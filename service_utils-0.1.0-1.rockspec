@@ -20,7 +20,8 @@ dependencies = {
    "luafilesystem",
    "markdown",
    "ldoc",
-   "lualogging"
+   "lualogging",
+   "rapidjson",
 }
 
 source = {

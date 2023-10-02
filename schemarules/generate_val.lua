@@ -139,6 +139,7 @@ return ]=]..package_parts[n]..[=[;
 	if (]=] .. v.assertion._attr.condition..[=[) then
 		validations_array[j] = {};
 		validations_array[j].val_func = function(context, obj, addnl_obj)
+		validations_array[j].val_func_name = "generated_condition_check";
 			if (not (]=]..v.assertion._contained_value..[=[)) then
 ]=];
 				local error_msg_inp_elements = '';
@@ -190,6 +191,7 @@ return ]=]..package_parts[n]..[=[;
 			else -- } {
 				code = code .. [=[
 	validations_array[j] = {};
+	validations_array[j].val_func_name = "generated_condition_check";
 	validations_array[j].val_func = function(context, obj, addnl_obj)
 		if (not (]=]..v.assertion._contained_value..[=[)) then
 ]=];
@@ -259,6 +261,8 @@ return ]=]..package_parts[n]..[=[;
 			validations_array[j].type = ']=]..tostring(v._attr.type)..[=[';
 			local package = require(']=]..v.validation._attr.package..[=[');
 			validations_array[j].val_func = package[']=]..v.validation._attr.method..[=['];
+			validations_array[j].val_func_class = ']=]..v.validation._attr.package..[=[';
+			validations_array[j].val_func_name = ']=]..v.validation._attr.method..[=[';
 			if (validations_array[j].val_func == nil) then
 				error("Function []=]..v.validation._attr.method..[=[] not found in package []=]..v.validation._attr.package..[=[]");
 			end
@@ -303,6 +307,8 @@ return ]=]..package_parts[n]..[=[;
 		validations_array[j].type = ']=]..tostring(v._attr.type)..[=[';
 		local package = require(']=]..v.validation._attr.package..[=[');
 		validations_array[j].val_func = package[']=]..v.validation._attr.method..[=['];
+		validations_array[j].val_func_class = ']=]..v.validation._attr.package..[=[';
+		validations_array[j].val_func_name = ']=]..v.validation._attr.method..[=[';
 		if (validations_array[j].val_func == nil) then
 			error("Function []=]..v.validation._attr.method..[=[] not found in package []=]..v.validation._attr.package..[=[]");
 		end

@@ -77,6 +77,9 @@ function harness.prepare_uc(databases, db_schema_name, module_path, jwt_token)
 	token.nbf_time = os.date('%Y-%m-%d %T', token.nbf);
 	uc.uid = ffi.cast("int64_t", tonumber(token.uid));
 	uc.token = token;
+	uc.orig_token = jwt_token;
+	--uc.access_token = jwt.encode(token, key, header.alg);;
+	uc.access_token = jwt_token;
 	local now = os.time();
 
 	tao_factory.init(uc);
