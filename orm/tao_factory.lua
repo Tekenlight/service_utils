@@ -79,6 +79,14 @@ local function get_element_val_from_obj(obj, name, col_map)
 	end
 end
 
+local function get_element_name_in_obj(tbl_col_name, col_map)
+	if (col_map == nil) then
+		return tbl_col_name;
+	else
+		return col_map[tbl_col_name];
+	end
+end
+
 local function assert_key_columns_present(context, tbl_def, obj, col_map)
 	assert(col_map == nil or type(col_map) == 'table');
 	if (col_map == nil) then
@@ -295,7 +303,23 @@ tao.insert = function(self, context, obj, col_map)
 	return true, nil, ret;
 end
 
-local function get_column_map_from_obj_meta(context, tbl_def, obj_meta)
+tao_factory.get_column_map_from_obj_meta = function(context, tbl_def, obj_meta, columns)
+	assert(columns == nil or type(columns) == 'table');
+	local columns_map = nil;
+	if (columns) then
+		columns_map = {};
+		for i, name in ipairs(columns) do
+			columns_map[name] = 1;
+		end
+		for i, name in ipairs(tbl_def.key_col_names) do
+			columns_map[name] = 1;
+		end
+		--[[
+		for i, name in ipairs(tbl_def.auto_col_names) do
+			columns_map[name] = 1;
+		end
+		]]
+	end
 	assert(obj_meta ~= nil);
 	assert(tbl_def ~= nil);
 	local out = {};
@@ -307,8 +331,10 @@ local function get_column_map_from_obj_meta(context, tbl_def, obj_meta)
 	assert(elem_handler ~= nil);
 	local elems = elem_handler.properties.generated_subelements;
 	for i, col in ipairs(tbl_def.declared_col_names) do
-		if (elems[col] ~= nil and elems[col].properties.content_type == 'S') then
-			out[col] = col;
+		if (columns_map == nil or columns_map[col] ~= nil) then
+			if (elems[col] ~= nil and elems[col].properties.content_type == 'S') then
+				out[col] = col;
+			end
 		end
 	end
 	if (tbl_def.col_props.update_fields == true) then
@@ -319,10 +345,39 @@ local function get_column_map_from_obj_meta(context, tbl_def, obj_meta)
 	return out;
 end
 
-tao.insert_using_meta = function(self, context, obj, obj_meta)
+tao.insert_using_meta = function(self, context, obj, obj_meta, columns)
 	assert(obj_meta ~= nil);
-	local col_map = get_column_map_from_obj_meta(context, self.tbl_def, obj_meta)
+	local col_map = tao_factory.get_column_map_from_obj_meta(context, self.tbl_def, obj_meta, columns)
 	return self:insert(context, obj, col_map);
+end
+
+local function set_auto_columns(context, tbl_def, obj, data, col_map)
+	if (tbl_def.col_props.update_fields) then
+		local element_name = get_element_name_in_obj("version", col_map);
+		if (element_name) then
+			obj[element_name] = data["version"]
+		end
+
+		element_name = get_element_name_in_obj("update_uid", col_map);
+		if (element_name) then
+			obj[element_name] = data["update_uid"]
+		end
+
+		element_name = get_element_name_in_obj("update_time", col_map);
+		if (element_name) then
+			obj[element_name] = data["update_time"]
+		end
+	end
+
+	--[[
+	if (tbl_def.col_props.entity_state_field == true) then
+		local element_name = get_element_name_in_obj("entity_state", col_map);
+		if (element_name) then
+			obj[element_name] = data["entity_state"]
+		end
+    end
+	]]
+	return;
 end
 
 local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
@@ -488,6 +543,8 @@ tao.raw_update = function(self, context, obj, col_map)
 		return false, msg, ret;
 	end
 
+	set_auto_columns(context, tbl_def, obj, data, col_map);
+
 	-- insert data into the dml ops map
 	transaction.append_to_ops_list(context, tbl_def.tbl_props.name, 1, data, key_columns, self.db_name);
 
@@ -500,9 +557,9 @@ tao.update = function(self, context, obj, col_map)
 	return self:raw_update(context, obj, col_map);
 end
 
-tao.update_using_meta = function(self, context, obj, obj_meta)
+tao.update_using_meta = function(self, context, obj, obj_meta, columns)
 	assert(obj_meta ~= nil);
-	local col_map = get_column_map_from_obj_meta(context, self.tbl_def, obj_meta)
+	local col_map = tao_factory.get_column_map_from_obj_meta(context, self.tbl_def, obj_meta, columns)
 	return self:raw_update(context, obj, col_map);
 end
 

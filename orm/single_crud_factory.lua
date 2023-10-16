@@ -52,6 +52,15 @@ local function get_key_params_str(tao, obj)
 	return key_param_str;
 end
 
+single_crud.prepare_mod_key = function (self, context, entity_name, obj)
+	assert(type(entity_name) == 'string', "Invalid entity_name");
+	local key_obj = {};
+	key_obj.entity_name = entity_name;
+	key_obj.entity_key = tao_factory:prepare_mod_key(context, self.db_name, self.tbl_name, obj);
+
+	return key_obj;
+end
+
 single_crud.fetch = function (self, context, query_params)
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 
@@ -178,12 +187,11 @@ single_crud.undelete = function (self, context, obj)
 
 	return true, nil, ret;
 end
-
-single_crud.approve = function (self, context, obj)
+single_crud.cancel_amendment = function (self, context, obj)
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 	assert(obj.entity_state ~= nil)
 
-	if (obj.entity_state ~= '0' and obj.entity_state ~= '2') then
+	if (obj.entity_state ~= '2') then
 		local key_params_str = get_key_params_str(tao, obj);
 		local msg = messages:format('INVALID_OPERATION', key_params_str);
 		error_handler.raise_error(400, msg);
@@ -206,6 +214,100 @@ single_crud.approve = function (self, context, obj)
 	end
 	return true, nil, 0;
 end
+
+
+single_crud.approve = function (self, context, obj)
+	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
+	assert(obj.entity_state ~= nil)
+
+	if (obj.entity_state ~= '0' and obj.entity_state ~= '2') then
+		local key_params_str = get_key_params_str(tao, obj);
+		local msg = messages:format('INVALID_OPERATION', key_params_str);
+		error_handler.raise_error(400, msg);
+		return false, msg, -1;
+	end
+
+	if (obj.entity_state == '2') then
+		local key_params, key_count = get_key_params(tao, obj);
+		local out, msg = tao:select(context, table.unpack(key_params));
+		if (out == nil) then
+			local key_param_str = get_key_params_str(tao, obj);
+			local msg = messages:format('RECORD_NOT_FOUND', key_param_str);
+			error_handler.raise_error(404, msg);
+			return false, nil;
+		end
+
+		local colmap = tao_factory.get_column_map_from_obj_meta(context, tao.tbl_def, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+		if (out.version) then
+			obj[colmap.version] = out.version;
+		end
+	end
+	obj.entity_state = '1';
+	local flg, msg, ret = tao:update_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+
+	if (not flg) then
+		if (ret == 0) then
+			local key_params_str = get_key_params_str(tao, obj);
+			local msg = messages:format('RECORD_NOT_FOUND', key_params_str);
+			error_handler.raise_error(404, msg);
+			return false, msg, ret;
+		else
+			error_handler.raise_error(500, msg);
+			return false, msg, ret;
+		end
+	end
+	return true, nil, 0;
+end
+
+single_crud.dependent_action_on_approve = function (self, context, obj)
+	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
+
+	local vercol = 'version';
+	local delcol = "deleted";
+	local colmap = tao_factory.get_column_map_from_obj_meta(context, tao.tbl_def, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+	if (colmap.version ~= nil) then vercol = colmap.version; end
+	if (colmap.deleted ~= nil) then delcol = colmap.deleted; end
+
+	local action = 'NO_ACTION';
+	if (obj[vercol] == nil) then
+		if (obj[delcol]) then
+			action = 'DELETE';
+		end
+		action = 'INSERT';
+	else
+		action = 'UPDATE';
+		if (obj[delcol]) then
+			action = 'DELETE';
+		end
+	end
+
+	if (action == 'UPDATE' or action == 'DELETE') then
+		local key_params, key_count = get_key_params(tao, obj);
+		local out, msg = tao:select(context, table.unpack(key_params));
+		if (out == nil) then
+			local key_param_str = get_key_params_str(tao, obj);
+			local msg = messages:format('RECORD_NOT_FOUND', key_param_str);
+			error_handler.raise_error(404, msg);
+			return false, nil;
+		end
+
+		if (out.version) then
+			obj[vercol] = out.version;
+		end
+	end
+
+	if (action == 'INSERT') then
+		return self:add(context, obj);
+	elseif (action == 'UPDATE') then
+		return self:modify(context, obj);
+	elseif (action == 'DELETE') then
+		return self:delete(context, obj);
+	else
+		assert(action == 'NO_ACTION', "SOMETHING HAS GONE WRONG");
+		return false, "SOMETHING HAS GONE WRONG", -1;
+	end
+end
+
 
 single_crud.approve_and_select = function (self, context, obj)
 	local approve_flg, error_msg, ret = single_crud.approve(self, context, obj);
@@ -236,7 +338,7 @@ single_crud.approve_and_select = function (self, context, obj)
 	return true, obj, ret;
 end
 
-single_crud.initiate_amendement = function (self, context, obj)
+single_crud.initiate_amendement = function (self, context, obj, columns)
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 	assert(obj.entity_state ~= nil)
 
@@ -248,7 +350,7 @@ single_crud.initiate_amendement = function (self, context, obj)
 	end
 
 	obj.entity_state = '2';
-	local flg, msg, ret = tao:update_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+	local flg, msg, ret = tao:update_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns}, columns);
 	if (not flg) then
 		if (ret == 0) then
 			local key_params_str = get_key_params_str(tao, obj);
