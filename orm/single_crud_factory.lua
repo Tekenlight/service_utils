@@ -259,7 +259,9 @@ single_crud.approve = function (self, context, obj)
 	return true, nil, 0;
 end
 
-single_crud.dependent_action_on_approve = function (self, context, obj)
+single_crud.dependent_action = function (self, context, obj, default_action)
+	if (default_action == nil) then default_action = 'NO_ACTION'; end
+	assert(type(default_action) == 'string');
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 
 	local vercol = 'version';
@@ -268,7 +270,7 @@ single_crud.dependent_action_on_approve = function (self, context, obj)
 	if (colmap.version ~= nil) then vercol = colmap.version; end
 	if (colmap.deleted ~= nil) then delcol = colmap.deleted; end
 
-	local action = 'NO_ACTION';
+	local action = default_action;
 	if (obj[vercol] == nil) then
 		if (obj[delcol]) then
 			action = 'DELETE';
