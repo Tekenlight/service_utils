@@ -188,6 +188,7 @@ single_crud.undelete = function (self, context, obj)
 	return true, nil, ret;
 end
 single_crud.cancel_amendment = function (self, context, obj, columns)
+	if (columns == nil) then columns = {}; end
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 	assert(obj.entity_state ~= nil)
 
@@ -341,6 +342,7 @@ single_crud.approve_and_select = function (self, context, obj)
 end
 
 single_crud.initiate_amendement = function (self, context, obj, columns)
+	if (columns == nil) then columns = {}; end
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 	assert(obj.entity_state ~= nil)
 
