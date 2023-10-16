@@ -187,7 +187,7 @@ single_crud.undelete = function (self, context, obj)
 
 	return true, nil, ret;
 end
-single_crud.cancel_amendment = function (self, context, obj)
+single_crud.cancel_amendment = function (self, context, obj, columns)
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 	assert(obj.entity_state ~= nil)
 
@@ -199,7 +199,7 @@ single_crud.cancel_amendment = function (self, context, obj)
 	end
 
 	obj.entity_state = '1';
-	local flg, msg, ret = tao:update_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+	local flg, msg, ret = tao:update_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns}, columns);
 
 	if (not flg) then
 		if (ret == 0) then
