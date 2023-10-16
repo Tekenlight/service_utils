@@ -431,15 +431,15 @@ rest_controller.handle_service_request = function (request, response)
 	do --{
 		--if (req_processor.message[func] == nil) then
 		if (req_processor_interface.methods[func] == nil) then
-			flg = false;
-			obj = nil;
-			msg = "Invalid function "..func;
 			error_cond = 1;
-		elseif (req_processor_interface.methods[func].message == nil) then
 			flg = false;
 			obj = nil;
-			msg = "Invalid function "..func;
+			msg = "Invalid function "..func .. ":"..error_cond;
+		elseif (req_processor_interface.methods[func].message == nil) then
 			error_cond = 2;
+			flg = false;
+			obj = nil;
+			msg = "Invalid function "..func .. ":"..error_cond;
 		else
 			--local t = req_processor.message[func][1];
 			flg, qp = validate_query_params(req_processor_interface, qp, func);
