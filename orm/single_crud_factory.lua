@@ -273,10 +273,9 @@ single_crud.dependent_action = function (self, context, obj, default_action)
 
 	local action = default_action;
 	if (obj[vercol] == nil) then
-		if (obj[delcol]) then
-			action = 'DELETE';
+		if (obj[delcol] ~= true) then
+			action = 'INSERT';
 		end
-		action = 'INSERT';
 	else
 		action = 'UPDATE';
 		if (obj[delcol]) then
@@ -307,8 +306,9 @@ single_crud.dependent_action = function (self, context, obj, default_action)
 		return self:delete(context, obj);
 	else
 		assert(action == 'NO_ACTION', "SOMETHING HAS GONE WRONG");
-		return false, "SOMETHING HAS GONE WRONG", -1;
 	end
+
+	return true, nil, 0;
 end
 
 
