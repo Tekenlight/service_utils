@@ -51,6 +51,7 @@ targetNamespace="http://evpoco.tekenlight.org/tbl_spec" xmlns:ns="http://evpoco.
 		<xsd:attribute name="tablespace" type="xsd:token" use="required"/>
 		<xsd:attribute name="package" type="xsd:token" use="required"/>
 		<xsd:attribute name="sync" type="xsd:boolean" use="required" />
+		<xsd:attribute name="cache" type="xsd:boolean" use="optional" default="false"/>
 	</xsd:complexType>
 
 	<xsd:element name="tbldef" type="ns:tbldef_type"/>

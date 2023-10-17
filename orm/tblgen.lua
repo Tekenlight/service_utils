@@ -34,8 +34,28 @@ if (tbl_struct == nil) then
 end
 
 local tbl_def = {};
-
 tbl_def.tbl_props = tbl_struct._attr;
+for n,v in pairs(tbl_msg_handler.properties.attr._generated_attr) do
+	if (tbl_def.tbl_props[n] == nil) then
+		local attr_props = tbl_msg_handler.properties.attr._attr_properties[v];
+		if (attr_props.properties.default ~= "") then
+			if (attr_props.facets.datatype == 'string') then
+				tbl_def.tbl_props[n] = attr_props.properties.default;
+			elseif (attr_props.facets.datatype == 'boolean') then
+				if (attr_props.properties.default == 'true') then
+					tbl_def.tbl_props[n] = true;
+				else
+					tbl_def.tbl_props[n] = false;
+				end
+			elseif (attr_props.facets.datatype == 'number') then
+				tbl_def.tbl_props[n] = tonumber(attr_props.properties.default);
+			else
+				error("Datatype [" .. attr_prop.facets.datatype .."] not yet supported ");
+			end
+		end
+	end
+end
+
 tbl_def.col_props = tbl_struct.columns._attr;
 tbl_def.declared_col_names = {};
 tbl_def.auto_col_names = {};

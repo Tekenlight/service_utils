@@ -6,6 +6,33 @@ local tao = {}
 local issue_savepoint_sql = [[SAVEPOINT ORM_TAO_FACTORY_SAVEPOINT]]
 local rollback_savepoint_sql = [[ROLLBACK TO SAVEPOINT ORM_TAO_FACTORY_SAVEPOINT]]
 
+local function get_db_table_name(tbl_def)
+	return tbl_def.tbl_props.database_schema .. "." .. tbl_def.tbl_props.name;
+end
+
+local low_prepare_str_key = function(tbl_def, rec)
+	assert(rec ~= nil and type(rec) == 'table');
+
+    local key_columns = tbl_def.key_col_names;
+    local key = {};
+    for i = 1, #key_columns do
+        local obj_key = key_columns[i]
+        key[obj_key] = rec[obj_key];
+    end
+    local str = ""
+    for k, v in pairs(key) do
+        str = str .. k .. "~" .. v .. "~~"
+    end
+    return string.sub(str, 1, -3); 
+end
+
+local prepare_str_key = function(tao, rec)
+	assert(tao ~= nil and type(tao) == 'table');
+	assert(rec ~= nil and type(rec) == 'table');
+
+	return low_prepare_str_key(tao.tbl_def, rec);
+end
+
 local function get_qualified_table_name(context, tbl_name)
 	local tbl_def_class_name = context.module_path..".tbl."..tbl_name
 	return tbl_def_class_name;
@@ -123,11 +150,15 @@ local function assert_version_column_present(context, tbl_def, obj, col_map)
 	end
 end
 
+declare("TOTAL_TRIALS", 0);
+declare("TOTAL_HITS", 0);
+
 tao.select = function(self, context, ...)
 	assert(context ~= nil and type(context) == 'table');
 	local tbl_def = self.tbl_def;
 	local obj = {};
 	local inp_args = {...};
+	local key = {};
 	do
 		local n = #inp_args;
 		local v = nil;
@@ -136,10 +167,32 @@ tao.select = function(self, context, ...)
 			if (v == nil) then
 				error("Parameter:["..i.."]:["..col.."] cannot be NULL")
 			end
+			key[tbl_def.key_col_names[i]] = v;
 		end
 	end
 	local conn = context:get_connection(self.db_name);
 	assert(conn ~= nil);
+	do
+		-- Caching
+		TOTAL_TRIALS = TOTAL_TRIALS + 1;
+		local key_str = prepare_str_key(self, key)
+		local db_table_name = get_db_table_name(tbl_def);
+		if (conn.cached_data[db_table_name] == nil) then
+			conn.cached_data[db_table_name] = {};
+		end
+		local out = conn.cached_data[db_table_name][key_str];
+		if (out ~= nil) then
+			TOTAL_HITS = TOTAL_HITS + 1;
+			return out;
+		end
+		--[[
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline, TOTAL_HITS);
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline, TOTAL_TRIALS);
+		]]
+	end
+	do
+		-- MD-caching
+	end
 
 	local stmt = conn:prepare(tbl_def.select_stmt);
 	stmt:execute(table.unpack({...}));
@@ -160,6 +213,18 @@ tao.select = function(self, context, ...)
 	end
 
 	local out = stmt.map(result, tbl_def.selected_col_names);
+	do
+		-- Caching
+		local key_str = prepare_str_key(self, out)
+		local db_table_name = get_db_table_name(tbl_def);
+		if (conn.cached_data[db_table_name] == nil) then
+			conn.cached_data[db_table_name] = {}
+		end
+		conn.cached_data[db_table_name][key_str] = out;
+	end
+	do
+		-- MD-caching
+	end
 	return out;
 end
 
@@ -180,6 +245,13 @@ tao.selupd = function(self, context, ...)
 	end
 	local conn = context:get_connection(self.db_name);
 	assert(conn ~= nil);
+	do
+		-- Caching
+		-- NO CACHING FOR SELUPD
+	end
+	do
+		-- MD-caching
+	end
 
 	local stmt = conn:prepare(tbl_def.selupd_stmt);
 	stmt:execute(table.unpack({...}));
@@ -200,6 +272,18 @@ tao.selupd = function(self, context, ...)
 	end
 
 	local out = stmt.map(result, tbl_def.selected_col_names);
+	do
+		-- Caching
+		local key_str = prepare_str_key(self, out)
+		local db_table_name = get_db_table_name(tbl_def);
+		if (conn.cached_data[db_table_name] == nil) then
+			conn.cached_data[db_table_name] = {}
+		end
+		conn.cached_data[db_table_name][key_str] = out;
+	end
+	do
+		-- MD-caching
+	end
 	return out;
 end
 
@@ -297,6 +381,18 @@ tao.insert = function(self, context, obj, col_map)
 		return false, msg, ret;
 	end
 
+	do
+		-- Caching
+		local key_str = prepare_str_key(self, data)
+		local db_table_name = get_db_table_name(tbl_def);
+		if (conn.cached_data[db_table_name] == nil) then
+			conn.cached_data[db_table_name] = {};
+		end
+		conn.cached_data[db_table_name][key_str] = data;;
+	end
+	do
+		-- MD-caching
+	end
 	-- insert data into the dml ops map
 	transaction.append_to_ops_list(context, self.tbl_def.tbl_props.name, 0, data, key_columns, self.db_name);
 
@@ -543,6 +639,24 @@ tao.raw_update = function(self, context, obj, col_map)
 		return false, msg, ret;
 	end
 
+	do
+		-- Caching
+		local key_str = prepare_str_key(self, data)
+		local db_table_name = get_db_table_name(tbl_def);
+		if (conn.cached_data[db_table_name] == nil) then
+			conn.cached_data[db_table_name] = {};
+		end
+		local out = conn.cached_data[db_table_name][key_str];
+		if (out ~= nil) then
+			for n,v in pairs(data) do
+				out[n] = v;
+			end
+		end
+	end
+	do
+		-- MD-caching
+	end
+
 	set_auto_columns(context, tbl_def, obj, data, col_map);
 
 	-- insert data into the dml ops map
@@ -561,6 +675,24 @@ tao.update_using_meta = function(self, context, obj, obj_meta, columns)
 	assert(obj_meta ~= nil);
 	local col_map = tao_factory.get_column_map_from_obj_meta(context, self.tbl_def, obj_meta, columns)
 	return self:raw_update(context, obj, col_map);
+end
+
+tao.flush = function(self, context)
+	local tbl_def = self.tbl_def;
+	do
+		-- Caching
+		local db_table_name = get_db_table_name(tbl_def);
+		if (conn.cached_data[db_table_name] == nil) then
+			conn.cached_data[db_table_name] = {};
+		end
+		for n,v  in pairs(conn.cached_data[db_table_name]) do
+			conn.cached_data[db_table_name][n] = nil;
+		end
+	end
+	do
+		-- MD-caching
+	end
+	return ;
 end
 
 tao.delete = function(self, context, obj)
@@ -604,6 +736,22 @@ tao.delete = function(self, context, obj)
 		msg = "["..tbl_def.tbl_props.database_schema .. "." .. tbl_def.tbl_props.name.."]:"
 		msg = msg.."Error : Trying to delete a non existent or an older version of the record";
 		return false, msg, ret;
+	end
+
+	do
+		-- Caching
+		local key_str = prepare_str_key(self, data)
+		local db_table_name = get_db_table_name(tbl_def);
+		if (conn.cached_data[db_table_name] == nil) then
+			conn.cached_data[db_table_name] = {};
+		end
+		local out = conn.cached_data[db_table_name][key_str];
+		if (out ~= nil) then
+			conn.cached_data[db_table_name][key_str] = nil;
+		end
+	end
+	do
+		-- MD-caching
 	end
 
 	-- insert data into the dml ops map
@@ -691,6 +839,24 @@ local function logical_del_or_undel(context, conn, action, tbl_def, obj, name)
 			msg = msg.."Error : Did not find the correct deleted version of the record for logical delete";
 		end
 		return false, msg, ret;
+	end
+
+	do
+		-- Caching
+		local key_str = low_prepare_str_key(tbl_def, data)
+		local db_table_name = get_db_table_name(tbl_def);
+		if (conn.cached_data[db_table_name] == nil) then
+			conn.cached_data[db_table_name] = {};
+		end
+		local out = conn.cached_data[db_table_name][key_str];
+		if (out ~= nil) then
+			for n,v in pairs(data) do
+				out[n] = v;
+			end
+		end
+	end
+	do
+		-- MD-caching
 	end
 
 	-- insert data into the dml ops map
@@ -793,17 +959,7 @@ tao_factory.prepare_mod_key = function(self, context, db_name, table_name, rec)
 	assert(rec ~= nil and type(rec) == 'table');
 
 	local tao = tao_factory.open(context, db_name, table_name)
-    local key_columns = tao.tbl_def.key_col_names;
-    local key = {};
-    for i = 1, #key_columns do
-        local obj_key = key_columns[i]
-        key[obj_key] = rec[obj_key];
-    end
-    local str = ""
-    for k, v in pairs(key) do
-        str = str .. k .. "~" .. v .. "~~"
-    end
-    return string.sub(str, 1, -3); 
+	return prepare_str_key(tao, rec);
 end
 
 tao_factory.key_from_mod = function(input_string)

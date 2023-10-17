@@ -42,7 +42,13 @@ local open_connection_internal = function(host, port, dbname, user, password)
 	if (nil == conn) then
 		return nil, msg;
 	end
-	local c = {_conn = conn, cursor_num = 1, _in_tran = false, _exec = false}
+	local c = {
+		_conn = conn,
+		cursor_num = 1,
+		_in_tran = false,
+		_exec = false,
+		cached_data = {},
+	};
 	c = setmetatable(c, c_mt);
 	return c;
 end
@@ -427,6 +433,7 @@ ev_postgres_conn.prepare = function(self, sql_stmt)
 end
 
 ev_postgres_conn.reset_connection_error = function(self)
+	self._conn.cached_data = {};
 	return self._conn:reset_connection_error();
 end
 
