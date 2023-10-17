@@ -1,6 +1,8 @@
 local ffi = require('ffi');
 local schema_processor = require("schema_processor");
 local transaction = require("service_utils.orm.transaction");
+local master_db_cache = require('service_utils.orm.master_db_cache');
+
 local tao = {}
 
 local issue_savepoint_sql = [[SAVEPOINT ORM_TAO_FACTORY_SAVEPOINT]]
@@ -190,8 +192,18 @@ tao.select = function(self, context, ...)
 		print(debug.getinfo(1).source, debug.getinfo(1).currentline, TOTAL_TRIALS);
 		]]
 	end
-	do
+	--[[
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	require 'pl.pretty'.dump(self.tbl_def.tbl_props);
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	]]
+	if (self.tbl_def.tbl_props.cache) then
 		-- MD-caching
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+		local out = master_db_cache.fetch(context, self, key);
+		if (out ~= nil) then
+			return out;
+		end
 	end
 
 	local stmt = conn:prepare(tbl_def.select_stmt);
@@ -222,8 +234,9 @@ tao.select = function(self, context, ...)
 		end
 		conn.cached_data[db_table_name][key_str] = out;
 	end
-	do
+	if (self.tbl_def.tbl_props.cache) then
 		-- MD-caching
+		master_db_cache.add(context, self, out);
 	end
 	return out;
 end
@@ -249,8 +262,9 @@ tao.selupd = function(self, context, ...)
 		-- Caching
 		-- NO CACHING FOR SELUPD
 	end
-	do
+	if (self.tbl_def.tbl_props.cache) then
 		-- MD-caching
+		-- NO CACHING FOR SELUPD
 	end
 
 	local stmt = conn:prepare(tbl_def.selupd_stmt);
@@ -281,8 +295,9 @@ tao.selupd = function(self, context, ...)
 		end
 		conn.cached_data[db_table_name][key_str] = out;
 	end
-	do
+	if (self.tbl_def.tbl_props.cache) then
 		-- MD-caching
+		master_db_cache.add(context, self, out);
 	end
 	return out;
 end
@@ -390,8 +405,9 @@ tao.insert = function(self, context, obj, col_map)
 		end
 		conn.cached_data[db_table_name][key_str] = data;;
 	end
-	do
+	if (self.tbl_def.tbl_props.cache) then
 		-- MD-caching
+		-- Nothing to be done during insert
 	end
 	-- insert data into the dml ops map
 	transaction.append_to_ops_list(context, self.tbl_def.tbl_props.name, 0, data, key_columns, self.db_name);
@@ -653,8 +669,10 @@ tao.raw_update = function(self, context, obj, col_map)
 			end
 		end
 	end
-	do
+	if (self.tbl_def.tbl_props.cache) then
 		-- MD-caching
+		-- Remove the record from MDB cache when there is an update
+		master_db_cache.remove(context, self, data);
 	end
 
 	set_auto_columns(context, tbl_def, obj, data, col_map);
@@ -689,8 +707,9 @@ tao.flush = function(self, context)
 			conn.cached_data[db_table_name][n] = nil;
 		end
 	end
-	do
+	if (self.tbl_def.tbl_props.cache) then
 		-- MD-caching
+		-- Nothing to be done during table flush, as this is a local operation
 	end
 	return ;
 end
@@ -750,8 +769,10 @@ tao.delete = function(self, context, obj)
 			conn.cached_data[db_table_name][key_str] = nil;
 		end
 	end
-	do
+	if (self.tbl_def.tbl_props.cache) then
 		-- MD-caching
+		-- Remove the record from MDB cache when there is a delete
+		master_db_cache.remove(context, self, data);
 	end
 
 	-- insert data into the dml ops map
@@ -855,8 +876,10 @@ local function logical_del_or_undel(context, conn, action, tbl_def, obj, name)
 			end
 		end
 	end
-	do
+	if (tbl_def.tbl_props.cache) then
 		-- MD-caching
+		-- Remove the record from MDB cache when there is an logdel/undel (update)
+		master_db_cache.remove(context, self, data);
 	end
 
 	-- insert data into the dml ops map

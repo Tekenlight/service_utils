@@ -20,5 +20,9 @@ function client_params:get_params(...)
 	return params;
 end
 
+function client_params:get_db_params(db)
+	return self.client_params[db];
+end
+
 return client_params;
 

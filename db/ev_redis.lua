@@ -56,6 +56,12 @@ local function valid_self(self)
 	assert(string.match(tostring(self._conn), '[^:]+') == 'REDIS_CONNECTION');
 end
 
+local function valid_number(value)
+	assert(value ~= nil);
+	local tn = type(value);
+	assert(( (tn == 'number') ));
+end
+
 local function valid_value(value)
 	assert(value ~= nil);
 	local tn = type(value);
@@ -67,6 +73,22 @@ ev_redis_connection.get = function(self, key)
 	valid_key(key);
 
 	local query = 'GET '..key;
+	local status, response, msg = self._conn:transceive(query);
+	if (not status) then
+		return status, nil, msg;
+	else
+		return status, response;
+	end
+end
+
+--[[
+-- Avaialable from 7.0.0
+--]]
+ev_redis_connection.expiretime = function(self, key)
+	valid_self(self);
+	valid_key(key);
+
+	local query = 'EXPIRETIME '..key;
 	local status, response, msg = self._conn:transceive(query);
 	if (not status) then
 		return status, nil, msg;
@@ -88,6 +110,9 @@ ev_redis_connection.del = function(self, key)
 	end
 end
 
+--[[
+-- Available from 6.2
+--]]
 ev_redis_connection.getdel = function(self, key)
 	valid_self(self);
 	valid_key(key);
@@ -98,6 +123,23 @@ ev_redis_connection.getdel = function(self, key)
 		return status, nil, msg;
 	else
 		return status, response;
+	end
+end
+
+ev_redis_connection.set_expiry = function(self, key, value, option)
+	valid_self(self);
+	valid_key(key);
+	valid_number(value);
+	assert(option == nil or option == 'NX' or option == 'XX' or option == 'GT' or option == 'LT');
+
+	local query;
+	query = 'EXPIRE '..key..' '..tostring(value);
+	if (option) then query = query .. ' '.. option; end
+	local status, response, msg = self._conn:transceive(query);
+	if (not status) then
+		return status,  msg;
+	else
+		return status;
 	end
 end
 

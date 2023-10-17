@@ -127,6 +127,7 @@ build = {
 		["service_utils.orm.tao_factory"] = 'orm/tao_factory.lua',
 		["service_utils.orm.mapping_util"] = 'orm/mapping_util.lua',
 		["service_utils.orm.single_crud_factory"] = 'orm/single_crud_factory.lua',
+		["service_utils.orm.master_db_cache"] = 'orm/master_db_cache.lua',
 
 		["service_utils.unitt.harness"] = 'unitt/harness.lua',
 
