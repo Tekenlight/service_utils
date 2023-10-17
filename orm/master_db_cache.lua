@@ -81,6 +81,10 @@ master_db_cache.add = function (context, tao, record)
 	local config_conn = make_config_conn();
 
 	local key_str = master_db_cache.form_key(context, tao, record);
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline, "CACHE ADD");
+		print(key_str);
+		require 'pl.pretty'.dump(record);
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline, "CACHE ADD");
 
 	local status, msg = config_conn:set(key_str, cu.str_base64_encode(serialize(record)));
 	if (not status) then
@@ -117,11 +121,17 @@ master_db_cache.fetch = function (context, tao, key)
 
 	if (response ~= nil) then
 		MD_TOTAL_HITS = MD_TOTAL_HITS + 1;
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline, "CACHE HIT");
+		print(key_str);
+		require 'pl.pretty'.dump(key);
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline, "CACHE HIT");
 		print(debug.getinfo(1).source, debug.getinfo(1).currentline, "CACHE HIT", MD_TOTAL_HITS);
 		print(debug.getinfo(1).source, debug.getinfo(1).currentline, "CACHE HIT", MD_TOTAL_TRIALS);
 		return deserialize(cu.str_base64_decode(response));
 	else
 		print(debug.getinfo(1).source, debug.getinfo(1).currentline, "CACHE MISS");
+		print(key_str);
+		require 'pl.pretty'.dump(key);
 		print(debug.getinfo(1).source, debug.getinfo(1).currentline, "CACHE MISS");
 		return nil;
 	end
