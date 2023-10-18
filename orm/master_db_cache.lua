@@ -56,7 +56,7 @@ local low_prepare_str_key = function(db_name, tbl_def, rec)
         local obj_key = key_columns[i]
         key[obj_key] = rec[obj_key];
     end
-    local str = db_name .."." .. tbl_def.tbl_props.database_schema.. "." .. tbl_def.tbl_props.name;
+    local str = db_name .."." .. tbl_def.tbl_props.database_schema.. "." .. tbl_def.tbl_props.name..".";
     for k, v in pairs(key) do
         str = str .. k .. "~" .. v .. "~~"
     end
