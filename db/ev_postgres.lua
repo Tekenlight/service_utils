@@ -433,7 +433,7 @@ ev_postgres_conn.prepare = function(self, sql_stmt)
 end
 
 ev_postgres_conn.reset_connection_error = function(self)
-	self._conn.cached_data = {};
+	self.cached_data = {};
 	return self._conn:reset_connection_error();
 end
 
