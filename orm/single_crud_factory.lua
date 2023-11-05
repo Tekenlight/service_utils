@@ -75,15 +75,32 @@ single_crud.fetch = function (self, context, query_params)
 		return false, nil;
 	end
 
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	local obj = mapper.copy_elements(self.msg_ns, self.msg_elem_name, out);
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 
 	return true, obj;
 end
 
-single_crud.add = function (self, context, obj)
+single_crud.add = function (self, context, obj, extra_columns)
+	if (extra_columns == nil) then extra_columns = {}; end
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 
-	local flg, msg, ret = tao:insert_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+	local colmap = tao_factory.get_column_map_from_obj_meta(context, tao.tbl_def, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+	for n,v in pairs(extra_columns) do
+		colmap[n] = n;
+	end
+
+	local upd_obj = {};
+	for n,v in pairs(obj) do
+		upd_obj[n] = v;
+	end
+	for n,v in pairs(extra_columns) do
+		upd_obj[n] = v;
+	end
+
+	--local flg, msg, ret = tao:insert_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+	local flg, msg, ret = tao:insert(context, upd_obj, colmap);
 	if (not flg) then
 		if (ret == -1) then
 			local key_params_str = get_key_params_str(tao, obj);
@@ -99,10 +116,25 @@ single_crud.add = function (self, context, obj)
 	return true, nil, ret;
 end
 
-single_crud.modify = function (self, context, obj)
+single_crud.modify = function (self, context, obj, extra_columns)
+	if (extra_columns == nil) then extra_columns = {}; end
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 
-	local flg, msg, ret = tao:update_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+	local colmap = tao_factory.get_column_map_from_obj_meta(context, tao.tbl_def, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+	for n,v in pairs(extra_columns) do
+		colmap[n] = n;
+	end
+
+	local upd_obj = {};
+	for n,v in pairs(obj) do
+		upd_obj[n] = v;
+	end
+	for n,v in pairs(extra_columns) do
+		upd_obj[n] = v;
+	end
+
+	--local flg, msg, ret = tao:update_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+	local flg, msg, ret = tao:update(context, upd_obj, colmap);
 	if (not flg) then
 		if (ret == 0) then
 			local key_params_str = get_key_params_str(tao, obj);
@@ -187,8 +219,8 @@ single_crud.undelete = function (self, context, obj)
 
 	return true, nil, ret;
 end
-single_crud.cancel_amendment = function (self, context, obj, columns)
-	if (columns == nil) then columns = {}; end
+single_crud.cancel_amendment = function (self, context, obj, extra_columns)
+	if (extra_columns == nil) then extra_columns = {}; end
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 	assert(obj.entity_state ~= nil)
 
@@ -199,9 +231,23 @@ single_crud.cancel_amendment = function (self, context, obj, columns)
 		return false, msg, -1;
 	end
 
-	obj.entity_state = '1';
-	local flg, msg, ret = tao:update_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns}, columns);
+	local colmap = tao_factory.get_column_map_from_obj_meta(context, tao.tbl_def, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+	for n,v in pairs(extra_columns) do
+		colmap[n] = n;
+	end
 
+	obj.entity_state = '1';
+
+	local upd_obj = {};
+	for n,v in pairs(obj) do
+		upd_obj[n] = v;
+	end
+	for n,v in pairs(extra_columns) do
+		upd_obj[n] = v;
+	end
+
+	--local flg, msg, ret = tao:update_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns}, columns);
+	local flg, msg, ret = tao:update(context, upd_obj, colmap);
 	if (not flg) then
 		if (ret == 0) then
 			local key_params_str = get_key_params_str(tao, obj);
@@ -217,7 +263,8 @@ single_crud.cancel_amendment = function (self, context, obj, columns)
 end
 
 
-single_crud.approve = function (self, context, obj)
+single_crud.approve = function (self, context, obj, extra_columns)
+	if (extra_columns == nil) then extra_columns = {}; end
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 	assert(obj.entity_state ~= nil)
 
@@ -226,6 +273,11 @@ single_crud.approve = function (self, context, obj)
 		local msg = messages:format('INVALID_OPERATION', key_params_str);
 		error_handler.raise_error(400, msg);
 		return false, msg, -1;
+	end
+
+	local colmap = tao_factory.get_column_map_from_obj_meta(context, tao.tbl_def, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+	for n,v in pairs(extra_columns) do
+		colmap[n] = n;
 	end
 
 	if (obj.entity_state == '2') then
@@ -238,14 +290,22 @@ single_crud.approve = function (self, context, obj)
 			return false, nil;
 		end
 
-		local colmap = tao_factory.get_column_map_from_obj_meta(context, tao.tbl_def, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
 		if (out.version) then
 			obj[colmap.version] = out.version;
 		end
 	end
 	obj.entity_state = '1';
-	local flg, msg, ret = tao:update_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
 
+	local upd_obj = {};
+	for n,v in pairs(obj) do
+		upd_obj[n] = v;
+	end
+	for n,v in pairs(extra_columns) do
+		upd_obj[n] = v;
+	end
+
+	--local flg, msg, ret = tao:update_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+	local flg, msg, ret = tao:update(context, upd_obj, colmap);
 	if (not flg) then
 		if (ret == 0) then
 			local key_params_str = get_key_params_str(tao, obj);
@@ -260,9 +320,8 @@ single_crud.approve = function (self, context, obj)
 	return true, nil, 0;
 end
 
-single_crud.dependent_action = function (self, context, obj, default_action)
-	if (default_action == nil) then default_action = 'NO_ACTION'; end
-	assert(type(default_action) == 'string');
+single_crud.dependent_action = function (self, context, obj, options)
+	if (options == nil) then options = {}; end
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 
 	local vercol = 'version';
@@ -271,7 +330,7 @@ single_crud.dependent_action = function (self, context, obj, default_action)
 	if (colmap.version ~= nil) then vercol = colmap.version; end
 	if (colmap.deleted ~= nil) then delcol = colmap.deleted; end
 
-	local action = default_action;
+	local action = 'NO_ACTION';
 	if (obj[vercol] == nil) then
 		if (obj[delcol] ~= true) then
 			action = 'INSERT';
@@ -303,7 +362,11 @@ single_crud.dependent_action = function (self, context, obj, default_action)
 	elseif (action == 'UPDATE') then
 		return self:modify(context, obj);
 	elseif (action == 'DELETE') then
-		return self:delete(context, obj);
+		if (options.physical_delete == true) then
+			return self:phydel(context, obj);
+		else
+			return self:delete(context, obj);
+		end
 	else
 		assert(action == 'NO_ACTION', "SOMETHING HAS GONE WRONG");
 	end
@@ -341,8 +404,8 @@ single_crud.approve_and_select = function (self, context, obj)
 	return true, obj, ret;
 end
 
-single_crud.initiate_amendement = function (self, context, obj, columns)
-	if (columns == nil) then columns = {}; end
+single_crud.initiate_amendement = function (self, context, obj, extra_columns)
+	if (extra_columns == nil) then extra_columns = {}; end
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 	assert(obj.entity_state ~= nil)
 
@@ -353,8 +416,23 @@ single_crud.initiate_amendement = function (self, context, obj, columns)
 		return false, msg, -1;
 	end
 
+	local colmap = tao_factory.get_column_map_from_obj_meta(context, tao.tbl_def, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+	for n,v in pairs(extra_columns) do
+		colmap[n] = n;
+	end
+
 	obj.entity_state = '2';
-	local flg, msg, ret = tao:update_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns}, columns);
+
+	local upd_obj = {};
+	for n,v in pairs(obj) do
+		upd_obj[n] = v;
+	end
+	for n,v in pairs(extra_columns) do
+		upd_obj[n] = v;
+	end
+
+	--local flg, msg, ret = tao:update_using_meta(context, obj, {elem = self.msg_elem_name, elem_ns = self.msg_ns}, columns);
+	local flg, msg, ret = tao:update(context, upd_obj, colmap);
 	if (not flg) then
 		if (ret == 0) then
 			local key_params_str = get_key_params_str(tao, obj);

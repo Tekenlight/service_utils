@@ -241,7 +241,7 @@ local function prepare_uc(request, url_parts)
 	return uc;
 end
 
-local invoke_func = function(request, req_processor_interface, req_processor, func, url_parts, qp, obj)
+local invoke_func = function(request, req_processor_interface, req_processor, func, url_parts, qp, obj, class_name)
 	local proc_stat, status, out_obj, flg;
 	local http_method = request:get_method();
 	local ret = 200;
@@ -325,7 +325,7 @@ local invoke_func = function(request, req_processor_interface, req_processor, fu
 		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		if (message_validation_context.status.error_message == nil or
 			message_validation_context.status.error_message == '') then
-			message_validation_context.status.error_message = "Unknown error occured";
+			message_validation_context.status.error_message = "Unknown error occured, while calling "..class_name.."."..func;
 			message_validation_context.status.error_no = 500;
 		end
 		out_obj = {};
@@ -512,7 +512,7 @@ rest_controller.handle_service_request = function (request, response)
 		require 'pl.pretty'.dump(hdr_flds);
 		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		]]
-		local status, table_output, ret = invoke_func(request, req_processor_interface, req_processor, func, url_parts, qp, obj)
+		local status, table_output, ret = invoke_func(request, req_processor_interface, req_processor, func, url_parts, qp, obj, class_name)
 		if (type(ret) ~= 'number' or ret < 200 or ret > 550) then
 			error('Invalid error code returned '..ret);
 		end

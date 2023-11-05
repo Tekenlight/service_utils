@@ -78,6 +78,14 @@ tao_factory.open = function(context, db_name, tbl_name)
 	return obj;
 end
 
+tao_factory.flush_all = function(context)
+	for _, conn in pairs(context.db_connections) do
+		if (conn.conn.cached_data) then
+			conn.conn.cached_data = {};
+		end
+	end
+end
+
 local function val_of_elem_in_obj(obj, name)
 	assert(obj ~= nil and type(obj) == 'table');
 	assert(name ~= nil and type(name) == 'string');
@@ -202,6 +210,7 @@ tao.select = function(self, context, ...)
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		local out = master_db_cache.fetch(context, self, key);
 		if (out ~= nil) then
+			print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 			return out;
 		end
 	end

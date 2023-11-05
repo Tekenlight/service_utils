@@ -127,7 +127,10 @@ master_db_cache.fetch = function (context, tao, key)
 		print(debug.getinfo(1).source, debug.getinfo(1).currentline, "CACHE HIT");
 		print(debug.getinfo(1).source, debug.getinfo(1).currentline, "CACHE HIT", MD_TOTAL_HITS);
 		print(debug.getinfo(1).source, debug.getinfo(1).currentline, "CACHE HIT", MD_TOTAL_TRIALS);
-		return deserialize(cu.str_base64_decode(response));
+		local result = deserialize(cu.str_base64_decode(response));
+		print(debug.traceback(1));
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+		return result
 	else
 		print(debug.getinfo(1).source, debug.getinfo(1).currentline, "CACHE MISS");
 		print(key_str);
