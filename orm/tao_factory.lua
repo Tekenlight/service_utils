@@ -15,17 +15,17 @@ end
 local low_prepare_str_key = function(tbl_def, rec)
 	assert(rec ~= nil and type(rec) == 'table');
 
-    local key_columns = tbl_def.key_col_names;
-    local key = {};
-    for i = 1, #key_columns do
-        local obj_key = key_columns[i]
-        key[obj_key] = rec[obj_key];
-    end
-    local str = ""
-    for k, v in pairs(key) do
-        str = str .. k .. "~" .. v .. "~~"
-    end
-    return string.sub(str, 1, -3); 
+	local key_columns = tbl_def.key_col_names;
+	local key = {};
+	for i = 1, #key_columns do
+		local obj_key = key_columns[i]
+		key[obj_key] = rec[obj_key];
+	end
+	local str = ""
+	for k, v in pairs(key) do
+		str = str .. k .. "~" .. v .. "~~"
+	end
+	return string.sub(str, 1, -3);
 end
 
 local prepare_str_key = function(tao, rec)
@@ -116,7 +116,7 @@ local function get_element_val_from_obj(obj, name, col_map)
 	end
 end
 
-local function get_element_name_in_obj(tbl_col_name, col_map)
+tao_factory.get_element_name_in_obj = function(tbl_col_name, col_map)
 	if (col_map == nil) then
 		return tbl_col_name;
 	else
@@ -357,7 +357,7 @@ tao.insert = function(self, context, obj, col_map)
 			inputs[count] = elemet_val
 			data[col] = elemet_val;
 		else
-			local default_value = tbl_def.declared_columns[col].default_value; 
+			local default_value = tbl_def.declared_columns[col].default_value;
 			if(default_value ~= nil) then
 				inputs[count] = default_value;
 				data[col] = default_value;
@@ -373,7 +373,7 @@ tao.insert = function(self, context, obj, col_map)
 			inputs[count] = auto_columns[col];
 			data[col] = auto_columns[col];
 		else
-			local default_value = tbl_def.auto_columns[col].default_value; 
+			local default_value = tbl_def.auto_columns[col].default_value;
 			if(default_value ~= nil) then
 				inputs[count] = default_value;
 				data[col] = default_value;
@@ -418,6 +418,9 @@ tao.insert = function(self, context, obj, col_map)
 		-- MD-caching
 		-- Nothing to be done during insert
 	end
+
+	tao_factory.set_auto_columns(context, tbl_def, obj, data, col_map);
+
 	-- insert data into the dml ops map
 	transaction.append_to_ops_list(context, self.tbl_def.tbl_props.name, 0, data, key_columns, self.db_name);
 
@@ -472,19 +475,19 @@ tao.insert_using_meta = function(self, context, obj, obj_meta, columns)
 	return self:insert(context, obj, col_map);
 end
 
-local function set_auto_columns(context, tbl_def, obj, data, col_map)
+tao_factory.set_auto_columns = function(context, tbl_def, obj, data, col_map)
 	if (tbl_def.col_props.update_fields) then
-		local element_name = get_element_name_in_obj("version", col_map);
+		local element_name = tao_factory.get_element_name_in_obj("version", col_map);
 		if (element_name) then
 			obj[element_name] = data["version"]
 		end
 
-		element_name = get_element_name_in_obj("update_uid", col_map);
+		element_name = tao_factory.get_element_name_in_obj("update_uid", col_map);
 		if (element_name) then
 			obj[element_name] = data["update_uid"]
 		end
 
-		element_name = get_element_name_in_obj("update_time", col_map);
+		element_name = tao_factory.get_element_name_in_obj("update_time", col_map);
 		if (element_name) then
 			obj[element_name] = data["update_time"]
 		end
@@ -492,11 +495,11 @@ local function set_auto_columns(context, tbl_def, obj, data, col_map)
 
 	--[[
 	if (tbl_def.col_props.entity_state_field == true) then
-		local element_name = get_element_name_in_obj("entity_state", col_map);
+		local element_name = tao_factory.get_element_name_in_obj("entity_state", col_map);
 		if (element_name) then
 			obj[element_name] = data["entity_state"]
 		end
-    end
+	end
 	]]
 	return;
 end
@@ -617,7 +620,7 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 	if (tbl_def.col_props.update_fields) then
 		count = count + 1;
 		local val;
-		if (col_map ~= nil) then 
+		if (col_map ~= nil) then
 			val = get_element_val_from_obj(obj, 'version', col_map);
 		else
 			val = obj['version'];
@@ -684,12 +687,11 @@ tao.raw_update = function(self, context, obj, col_map)
 		master_db_cache.remove(context, self, data);
 	end
 
-	set_auto_columns(context, tbl_def, obj, data, col_map);
+	tao_factory.set_auto_columns(context, tbl_def, obj, data, col_map);
 
 	-- insert data into the dml ops map
 	transaction.append_to_ops_list(context, tbl_def.tbl_props.name, 1, data, key_columns, self.db_name);
 
-	
 	return true, nil, ret;
 end
 
@@ -824,12 +826,15 @@ local function logical_del_or_undel(context, conn, action, tbl_def, obj, name)
 
 		count = count + 1;
 		inputs[count] = context.uid;
+		data["update_uid"] = context.uid
 
 		count = count + 1;
 		inputs[count] = now;
+		data["update_time"] = now
 
 		count = count + 1;
 		inputs[count] = new_version;
+		data["version"] = new_version;
 	end
 
 	for i, col in ipairs(tbl_def.key_col_names) do
@@ -847,7 +852,6 @@ local function logical_del_or_undel(context, conn, action, tbl_def, obj, name)
 	if (tbl_def.col_props.update_fields) then
 		count = count + 1;
 		inputs[count] = obj.version;
-		data["version"] = obj.version;
 	end
 
 	local stmt = conn:prepare(tbl_def.logdel_stmt);
@@ -890,6 +894,8 @@ local function logical_del_or_undel(context, conn, action, tbl_def, obj, name)
 		-- Remove the record from MDB cache when there is an logdel/undel (update)
 		master_db_cache.remove(context, self, data);
 	end
+
+	tao_factory.set_auto_columns(context, tbl_def, obj, data, nil);
 
 	-- insert data into the dml ops map
 	transaction.append_to_ops_list(context, tbl_def.tbl_props.name, operation, data, data, name);
@@ -998,11 +1004,11 @@ tao_factory.key_from_mod = function(input_string)
 	assert(input_string ~= nil and type(input_string) == 'string');
 	local obj = {}
 
-    for key, value in input_string:gmatch("(%w+)~([^~]+)") do
-        obj[key] = value
-    end
+	for key, value in input_string:gmatch("(%w+)~([^~]+)") do
+		obj[key] = value
+	end
 
-    return obj
+	return obj
 end
 
 return tao_factory;

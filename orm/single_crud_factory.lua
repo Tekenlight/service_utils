@@ -82,6 +82,34 @@ single_crud.fetch = function (self, context, query_params)
 	return true, obj;
 end
 
+local upd_auto_columns = function(context, tbl_def, obj, data, col_map)
+	if (tbl_def.col_props.update_fields) then
+		local element_name = tao_factory.get_element_name_in_obj("version", col_map);
+		if (element_name) then
+			obj[element_name] = data[element_name]
+		end
+
+		element_name = tao_factory.get_element_name_in_obj("update_uid", col_map);
+		if (element_name) then
+			obj[element_name] = data[element_name]
+		end
+
+		element_name = tao_factory.get_element_name_in_obj("update_time", col_map);
+		if (element_name) then
+			obj[element_name] = data[element_name]
+		end
+	end
+
+	if (tbl_def.col_props.entity_state_field == true) then
+		local element_name = tao_factory.get_element_name_in_obj("entity_state", col_map);
+		if (element_name) then
+			obj[element_name] = data[element_name]
+		end
+	end
+
+	return;
+end
+
 single_crud.add = function (self, context, obj, extra_columns)
 	if (extra_columns == nil) then extra_columns = {}; end
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
@@ -112,6 +140,8 @@ single_crud.add = function (self, context, obj, extra_columns)
 			return false, msg, ret;
 		end
 	end
+	local new_colmap = tao_factory.get_column_map_from_obj_meta(context, tao.tbl_def, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+	upd_auto_columns(context, tao.tbl_def, obj, upd_obj, new_colmap);
 
 	return true, nil, ret;
 end
@@ -146,6 +176,8 @@ single_crud.modify = function (self, context, obj, extra_columns)
 			return false, msg, ret;
 		end
 	end
+	local new_colmap = tao_factory.get_column_map_from_obj_meta(context, tao.tbl_def, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+	upd_auto_columns(context, tao.tbl_def, obj, upd_obj, new_colmap);
 
 	return true, nil, ret;
 end
@@ -219,6 +251,7 @@ single_crud.undelete = function (self, context, obj)
 
 	return true, nil, ret;
 end
+
 single_crud.cancel_amendment = function (self, context, obj, extra_columns)
 	if (extra_columns == nil) then extra_columns = {}; end
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
@@ -259,6 +292,9 @@ single_crud.cancel_amendment = function (self, context, obj, extra_columns)
 			return false, msg, ret;
 		end
 	end
+	local new_colmap = tao_factory.get_column_map_from_obj_meta(context, tao.tbl_def, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+	upd_auto_columns(context, tao.tbl_def, obj, upd_obj, new_colmap);
+
 	return true, nil, 0;
 end
 
@@ -317,6 +353,9 @@ single_crud.approve = function (self, context, obj, extra_columns)
 			return false, msg, ret;
 		end
 	end
+	local new_colmap = tao_factory.get_column_map_from_obj_meta(context, tao.tbl_def, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+	upd_auto_columns(context, tao.tbl_def, obj, upd_obj, new_colmap);
+
 	return true, nil, 0;
 end
 
@@ -444,6 +483,8 @@ single_crud.initiate_amendement = function (self, context, obj, extra_columns)
 			return false, msg, ret;
 		end
 	end
+	local new_colmap = tao_factory.get_column_map_from_obj_meta(context, tao.tbl_def, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+	upd_auto_columns(context, tao.tbl_def, obj, upd_obj, new_colmap);
 
 	return true, nil, ret;
 end
