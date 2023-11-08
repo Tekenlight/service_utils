@@ -211,6 +211,15 @@ tao.select = function(self, context, ...)
 		local out = master_db_cache.fetch(context, self, key);
 		if (out ~= nil) then
 			print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+
+			-- Caching
+			local key_str = prepare_str_key(self, out)
+			local db_table_name = get_db_table_name(tbl_def);
+			if (conn.cached_data[db_table_name] == nil) then
+				conn.cached_data[db_table_name] = {}
+			end
+			conn.cached_data[db_table_name][key_str] = out;
+
 			return out;
 		end
 	end
@@ -343,7 +352,8 @@ tao.insert = function(self, context, obj, col_map)
 	end
 
 	for i, col in ipairs(tbl_def.key_col_names) do
-		if (obj[col] ~= nil) then
+		local element_name = tao_factory.get_element_name_in_obj(col, col_map)
+		if (obj[element_name] ~= nil) then
 			local elemet_val = get_element_val_from_obj(obj, col, col_map)
 			key_columns[col] = elemet_val;
 		end
@@ -493,14 +503,12 @@ tao_factory.set_auto_columns = function(context, tbl_def, obj, data, col_map)
 		end
 	end
 
-	--[[
 	if (tbl_def.col_props.entity_state_field == true) then
 		local element_name = tao_factory.get_element_name_in_obj("entity_state", col_map);
 		if (element_name) then
 			obj[element_name] = data["entity_state"]
 		end
 	end
-	]]
 	return;
 end
 

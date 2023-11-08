@@ -146,6 +146,15 @@ single_crud.add = function (self, context, obj, extra_columns)
 	return true, nil, ret;
 end
 
+single_crud.addapproved = function (self, context, obj, extra_columns)
+	local stat, msg, ret = self:add(context, obj, extra_columns);
+	if (not stat) then
+		return stat, msg, ret;
+	end
+	stat, msg, ret = self:approve(context, obj, extra_columns);
+	return stat, msg, ret;
+end
+
 single_crud.modify = function (self, context, obj, extra_columns)
 	if (extra_columns == nil) then extra_columns = {}; end
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
