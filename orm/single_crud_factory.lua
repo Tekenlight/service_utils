@@ -264,9 +264,18 @@ end
 single_crud.cancel_amendment = function (self, context, obj, extra_columns)
 	if (extra_columns == nil) then extra_columns = {}; end
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
-	assert(obj.entity_state ~= nil)
+	assert(tao.tbl_def.col_props.entity_state_field == true);
 
-	if (obj.entity_state ~= '2') then
+	local key_params, key_count = get_key_params(tao, obj);
+	local out, msg = tao:select(context, table.unpack(key_params));
+	if (out == nil) then
+		local key_param_str = get_key_params_str(tao, obj);
+		local msg = messages:format('RECORD_NOT_FOUND', key_param_str);
+		error_handler.raise_error(404, msg);
+		return false, nil;
+	end
+
+	if (out.entity_state ~= '2') then
 		local key_params_str = get_key_params_str(tao, obj);
 		local msg = messages:format('INVALID_OPERATION', key_params_str);
 		error_handler.raise_error(400, msg);
@@ -307,40 +316,40 @@ single_crud.cancel_amendment = function (self, context, obj, extra_columns)
 	return true, nil, 0;
 end
 
-
 single_crud.approve = function (self, context, obj, extra_columns)
 	if (extra_columns == nil) then extra_columns = {}; end
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
+	assert(tao.tbl_def.col_props.entity_state_field == true);
 	assert(obj.entity_state ~= nil)
-
-	if (obj.entity_state ~= '0' and obj.entity_state ~= '2') then
-		local key_params_str = get_key_params_str(tao, obj);
-		local msg = messages:format('INVALID_OPERATION', key_params_str);
-		error_handler.raise_error(400, msg);
-		return false, msg, -1;
-	end
 
 	local colmap = tao_factory.get_column_map_from_obj_meta(context, tao.tbl_def, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
 	for n,v in pairs(extra_columns) do
 		colmap[n] = n;
 	end
 
-	if (obj.entity_state == '2') then
-		local key_params, key_count = get_key_params(tao, obj);
-		local out, msg = tao:select(context, table.unpack(key_params));
-		if (out == nil) then
-			local key_param_str = get_key_params_str(tao, obj);
-			local msg = messages:format('RECORD_NOT_FOUND', key_param_str);
-			error_handler.raise_error(404, msg);
-			return false, nil;
-		end
+	local key_params, key_count = get_key_params(tao, obj);
+	local out, msg = tao:select(context, table.unpack(key_params));
+	if (out == nil) then
+		local key_param_str = get_key_params_str(tao, obj);
+		local msg = messages:format('RECORD_NOT_FOUND', key_param_str);
+		error_handler.raise_error(404, msg);
+		return false, nil;
+	end
 
+	if (out.entity_state ~= '0' and out.entity_state ~= '2') then
+		local key_params_str = get_key_params_str(tao, obj);
+		local msg = messages:format('INVALID_OPERATION', key_params_str);
+		error_handler.raise_error(400, msg);
+		return false, msg, -1;
+	end
+
+	if (out.entity_state == '2') then
 		if (out.version) then
 			obj[colmap.version] = out.version;
 		end
 	end
-	obj.entity_state = '1';
 
+	obj.entity_state = '1';
 	local upd_obj = {};
 	for n,v in pairs(obj) do
 		upd_obj[n] = v;
@@ -455,9 +464,18 @@ end
 single_crud.initiate_amendement = function (self, context, obj, extra_columns)
 	if (extra_columns == nil) then extra_columns = {}; end
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
-	assert(obj.entity_state ~= nil)
+	assert(tao.tbl_def.col_props.entity_state_field == true);
 
-	if (obj.entity_state ~= '1' and obj.entity_state ~= '2') then
+	local key_params, key_count = get_key_params(tao, obj);
+	local out, msg = tao:select(context, table.unpack(key_params));
+	if (out == nil) then
+		local key_param_str = get_key_params_str(tao, obj);
+		local msg = messages:format('RECORD_NOT_FOUND', key_param_str);
+		error_handler.raise_error(404, msg);
+		return false, nil;
+	end
+
+	if (out.entity_state ~= '1' and out.entity_state ~= '2') then
 		local key_params_str = get_key_params_str(tao, obj);
 		local msg = messages:format('INVALID_OPERATION', key_params_str);
 		error_handler.raise_error(400, msg);
