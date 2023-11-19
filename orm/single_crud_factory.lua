@@ -75,9 +75,7 @@ single_crud.fetch = function (self, context, query_params)
 		return false, nil;
 	end
 
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	local obj = mapper.copy_elements(self.msg_ns, self.msg_elem_name, out);
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 
 	return true, obj;
 end
@@ -151,6 +149,7 @@ single_crud.addapproved = function (self, context, obj, extra_columns)
 	if (not stat) then
 		return stat, msg, ret;
 	end
+	obj.entity_state = '0';
 	stat, msg, ret = self:approve(context, obj, extra_columns);
 	return stat, msg, ret;
 end
