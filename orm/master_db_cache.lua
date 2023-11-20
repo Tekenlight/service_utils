@@ -123,7 +123,7 @@ master_db_cache.fetch = function (context, tao, key)
 		MD_TOTAL_HITS = MD_TOTAL_HITS + 1;
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, "CACHE HIT");
 		--print(key_str);
-		require 'pl.pretty'.dump(key);
+		--require 'pl.pretty'.dump(key);
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, "CACHE HIT");
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, "CACHE HIT", MD_TOTAL_HITS);
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, "CACHE HIT", MD_TOTAL_TRIALS);

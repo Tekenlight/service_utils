@@ -210,7 +210,7 @@ tao.select = function(self, context, ...)
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		local out = master_db_cache.fetch(context, self, key);
 		if (out ~= nil) then
-			print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+			--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 
 			-- Caching
 			local key_str = prepare_str_key(self, out)
