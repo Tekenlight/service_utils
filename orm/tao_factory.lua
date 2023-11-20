@@ -952,7 +952,7 @@ tao.get_list = function(self, context, query_params)
 	assert(1 ~= 1);
 end
 
-tao.generic_select_query = function (self, context, where_statement, ...)
+tao.generic_select_query = function (self, context, order_by, where_statement, ...)
 	assert(where_statement == nil or (type(where_statement) == 'string' and string.len(where_statement) > 0));
 	assert(context ~= nil and type(context) == 'table');
 
@@ -971,6 +971,10 @@ tao.generic_select_query = function (self, context, where_statement, ...)
 
 	if where_statement ~= nil then
 		select_query = select_query .. " WHERE " .. where_statement;
+	end
+
+	if order_by ~= nil then
+		select_query = select_query .. " ORDER BY " .. order_by;
 	end
 
 	local conn = context:get_connection(self.db_name);
