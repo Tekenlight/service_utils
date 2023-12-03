@@ -535,6 +535,7 @@ rest_controller.handle_service_request = function (request, response)
 			successfully_processed = true;
 			response:set_status(200);
 			--if (req_processor.message[func][2] ~= nil) then
+
 			if (req_processor_interface.methods[func].message.in_out[2] ~= nil) then
 				if (table_output ~= nil) then
 					local t = req_processor_interface.methods[func].message.in_out[2];
@@ -546,6 +547,11 @@ rest_controller.handle_service_request = function (request, response)
 						optionally be commit is also done
 						]]
 						successfully_processed = true;
+					else
+						print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+						print(msg);
+						require 'pl.pretty'.dump(table_output);
+						print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 					end
 				else
 					-- OOPS function returned outut in an unexpected format
