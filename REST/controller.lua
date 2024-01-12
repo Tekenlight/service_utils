@@ -436,11 +436,19 @@ rest_controller.handle_service_request = function (request, response)
 			flg = false;
 			obj = nil;
 			msg = "Invalid function "..func .. ":"..error_cond;
+			print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+			print(json_input);
+			print(msg);
+			print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		elseif (req_processor_interface.methods[func].message == nil) then
 			error_cond = 2;
 			flg = false;
 			obj = nil;
 			msg = "Invalid function "..func .. ":"..error_cond;
+			print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+			print(json_input);
+			print(msg);
+			print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		else
 			--local t = req_processor.message[func][1];
 			flg, qp = validate_query_params(req_processor_interface, qp, func);
@@ -449,6 +457,10 @@ rest_controller.handle_service_request = function (request, response)
 				obj = nil;
 				msg = qp;
 				error_cond = 3;
+				print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+				print(json_input);
+				print(msg);
+				print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 			else
 				local t = req_processor_interface.methods[func].message.in_out[1];
 				if (json_input ~= nil) then
@@ -459,12 +471,20 @@ rest_controller.handle_service_request = function (request, response)
 							obj = nil;
 							msg = "Unable to find message schema handler";
 							error_cond = 4;
+							print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+							print(json_input);
+							print(msg);
+							print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 						else
 							flg = true;
 							obj, msg = msg_handler:from_json(json_input);
 							if (obj == nil) then
 								flg = false;
 								error_cond = 6;
+								print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+								print(json_input);
+								print(msg);
+								print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 							end
 						end
 					else
@@ -476,6 +496,10 @@ rest_controller.handle_service_request = function (request, response)
 						flg = false;
 						obj = nil;
 						msg = "Unable to derserialize JSON, schema not specified";
+						print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+						print(json_input);
+						print(msg);
+						print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 						error_cond = 7;
 					end
 				else
@@ -483,6 +507,10 @@ rest_controller.handle_service_request = function (request, response)
 						flg = false;
 						msg = "NULL Message received, while expecting one";
 						error_cond = 8;
+						print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+						print(json_input);
+						print(msg);
+						print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 					else
 						flg = true;
 					end

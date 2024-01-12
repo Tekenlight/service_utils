@@ -105,12 +105,12 @@ local function val_of_elem_in_obj(obj, name)
 
 end
 
-local function get_element_val_from_obj(obj, name, col_map)
+local function get_element_val_from_obj(obj, name, col_map, tbl_def)
 	if (col_map == nil) then
 		return obj[name];
 	else
 		local obj_col_name = col_map[name];
-		assert(obj_col_name ~= nil and type(obj_col_name) == 'string');
+		assert(obj_col_name ~= nil and type(obj_col_name) == 'string', "column ["..name.."] not present in ["..get_db_table_name(tbl_def).."]");
 		local val = val_of_elem_in_obj(obj, obj_col_name);
 		return val;
 	end
@@ -135,7 +135,16 @@ local function assert_key_columns_present(context, tbl_def, obj, col_map)
 	else
 		for i, col in ipairs(tbl_def.key_col_names) do
 			local obj_col_name = col_map[col];
-			assert(obj_col_name ~= nil and type(obj_col_name) == 'string');
+			--[[
+			if (not(obj_col_name ~= nil and type(obj_col_name) == 'string')) then
+				print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+				require 'pl.pretty'.dump(tbl_def.key_col_names);
+				require 'pl.pretty'.dump(obj);
+				require 'pl.pretty'.dump(col_map);
+				print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+			end
+			]]
+			assert(obj_col_name ~= nil and type(obj_col_name) == 'string', "Key columns not present ["..get_db_table_name(tbl_def).."]");
 			local val = val_of_elem_in_obj(obj, obj_col_name);
 			if (val == nil) then
 				error("Key column ["..obj_col_name.."] must be present in the input object");
@@ -354,7 +363,7 @@ tao.insert = function(self, context, obj, col_map)
 	for i, col in ipairs(tbl_def.key_col_names) do
 		local element_name = tao_factory.get_element_name_in_obj(col, col_map)
 		if (obj[element_name] ~= nil) then
-			local elemet_val = get_element_val_from_obj(obj, col, col_map)
+			local elemet_val = get_element_val_from_obj(obj, col, col_map, tbl_def)
 			key_columns[col] = elemet_val;
 		end
 	end
@@ -363,7 +372,7 @@ tao.insert = function(self, context, obj, col_map)
 		count = count + 1;
 		if (obj[col] ~= nil) then
 			--inputs[count] = obj[col];
-			local elemet_val = get_element_val_from_obj(obj, col, col_map)
+			local elemet_val = get_element_val_from_obj(obj, col, col_map, tbl_def)
 			inputs[count] = elemet_val
 			data[col] = elemet_val;
 		else
@@ -529,7 +538,7 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 
 	for i, col in ipairs(tbl_def.key_col_names) do
 		if (obj[col] ~= nil) then
-			local elemet_val = get_element_val_from_obj(obj, col, col_map)
+			local elemet_val = get_element_val_from_obj(obj, col, col_map, tbl_def)
 		end
 	end
 
@@ -629,7 +638,7 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 		count = count + 1;
 		local val;
 		if (col_map ~= nil) then
-			val = get_element_val_from_obj(obj, 'version', col_map);
+			val = get_element_val_from_obj(obj, 'version', col_map, tbl_def);
 		else
 			val = obj['version'];
 		end
