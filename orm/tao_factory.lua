@@ -110,7 +110,7 @@ local function get_element_val_from_obj(obj, name, col_map, tbl_def)
 		return obj[name];
 	else
 		local obj_col_name = col_map[name];
-		assert(obj_col_name ~= nil and type(obj_col_name) == 'string', "column ["..name.."] not present in ["..get_db_table_name(tbl_def).."]");
+		assert(obj_col_name ~= nil and type(obj_col_name) == 'string', "column ["..name.."] not present in object corresponding to table ["..get_db_table_name(tbl_def).."]");
 		local val = val_of_elem_in_obj(obj, obj_col_name);
 		return val;
 	end
