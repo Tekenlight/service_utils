@@ -104,6 +104,7 @@ build = {
 		["service_utils.common.constants"] = 'common/constants.lua',
 		["service_utils.common.primitive_serde"] = 'common/primitive_serde.lua',
 		["service_utils.common.compression"] = 'common/compression.lua',
+		["service_utils.common.primitives"] = 'common/primitives.lua',
 
 		["service_utils.db.client_params"] = 'db/client_params.lua',
 		["service_utils.db.ev_database"] = 'db/ev_database.lua',
