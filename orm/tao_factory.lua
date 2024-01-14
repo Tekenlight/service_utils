@@ -161,7 +161,8 @@ local function assert_version_column_present(context, tbl_def, obj, col_map)
 		end
 	else
 		local obj_col_name = col_map.version;
-		assert(obj_col_name ~= nil and type(obj_col_name) == 'string');
+		assert(obj_col_name ~= nil and type(obj_col_name) == 'string',
+			"version should be present in col_map for table ".. get_db_table_name(tbl_def));
 		local val = val_of_elem_in_obj(obj, obj_col_name);
 		if (val == nil) then
 			error("Version Column [".. obj_col_name .."] not present in the input object");
