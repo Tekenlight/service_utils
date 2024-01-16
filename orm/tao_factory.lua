@@ -185,7 +185,7 @@ tao.select = function(self, context, ...)
 		for i,col in ipairs(tbl_def.key_col_names) do
 			v = select(i, table.unpack(inp_args));
 			if (v == nil) then
-				error("Parameter:["..i.."]:["..col.."] cannot be NULL")
+				error(get_db_table_name(tbl_def)..":SELECT:".."Parameter:["..i.."]:["..col.."] cannot be NULL")
 			end
 			key[tbl_def.key_col_names[i]] = v;
 		end
