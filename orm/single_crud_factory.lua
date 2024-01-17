@@ -9,6 +9,10 @@ local mt = { __index = single_crud };
 
 local crud_factory = {};
 
+local function get_db_table_name(tbl_def)
+	return tbl_def.tbl_props.database_schema .. "." .. tbl_def.tbl_props.name;
+end
+
 crud_factory.new = function(crud_params)
 	assert(crud_params ~= nil and type(crud_params) == 'table');
 	assert(crud_params.class_name ~= nil and type(crud_params.class_name) == 'string');
