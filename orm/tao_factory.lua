@@ -147,7 +147,7 @@ local function assert_key_columns_present(context, tbl_def, obj, col_map)
 			assert(obj_col_name ~= nil and type(obj_col_name) == 'string', "Key columns not present ["..get_db_table_name(tbl_def).."]");
 			local val = val_of_elem_in_obj(obj, obj_col_name);
 			if (val == nil) then
-				error("Key column ["..obj_col_name.."] must be present in the input object");
+				error("["..get_db_table_name(tbl_def).."]:".."Key column ["..obj_col_name.."] must be present in the input object");
 			end
 		end
 	end
