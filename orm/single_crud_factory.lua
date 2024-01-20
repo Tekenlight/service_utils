@@ -194,7 +194,7 @@ single_crud.modify = function (self, context, obj, extra_columns)
 	return true, nil, ret;
 end
 
-single_crud.phydel = function (self, context, obj)
+single_crud.phydel = function (self, context, obj, extra_columns)
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 
 	local flg, msg, ret = tao:delete(context, obj);
@@ -213,7 +213,7 @@ single_crud.phydel = function (self, context, obj)
 	return true, nil, ret;
 end
 
-single_crud.logdel = function (self, context, obj)
+single_crud.logdel = function (self, context, obj, extra_columns)
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 
 	local flg, msg, ret = tao:logdel(context, obj);
@@ -232,12 +232,12 @@ single_crud.logdel = function (self, context, obj)
 	return true, nil, ret;
 end
 
-single_crud.delete = function (self, context, obj)
+single_crud.delete = function (self, context, obj, extra_columns)
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 	if (tao.tbl_def.col_props.soft_del) then
-		return self:logdel(context, obj)
+		return self:logdel(context, obj, extra_columns)
 	else
-		return self:phydel(context, obj)
+		return self:phydel(context, obj, extra_columns)
 	end
 end
 
@@ -380,7 +380,7 @@ single_crud.approve = function (self, context, obj, extra_columns)
 	return true, nil, 0;
 end
 
-single_crud.dependent_action = function (self, context, obj, options)
+single_crud.dependent_action = function (self, context, obj, options, extra_columns)
 	if (options == nil) then options = {}; end
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 
@@ -418,14 +418,14 @@ single_crud.dependent_action = function (self, context, obj, options)
 	end
 
 	if (action == 'INSERT') then
-		return self:add(context, obj);
+		return self:add(context, obj, extra_columns);
 	elseif (action == 'UPDATE') then
-		return self:modify(context, obj);
+		return self:modify(context, obj, extra_columns);
 	elseif (action == 'DELETE') then
 		if (options.physical_delete == true) then
-			return self:phydel(context, obj);
+			return self:phydel(context, obj, extra_columns);
 		else
-			return self:delete(context, obj);
+			return self:delete(context, obj, extra_columns);
 		end
 	else
 		assert(action == 'NO_ACTION', "SOMETHING HAS GONE WRONG");
