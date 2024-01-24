@@ -610,6 +610,7 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 			else
 				stmt = stmt..", entity_state=?";
 			end
+			data.entity_state = obj.entity_state;
 		end
 	end
 
