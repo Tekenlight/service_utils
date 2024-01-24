@@ -688,7 +688,7 @@ tao.raw_update = function(self, context, obj, col_map)
 
 	do
 		-- Caching
-		local key_str = prepare_str_key(self, data)
+		local key_str = prepare_str_key(self, key_columns)
 		local db_table_name = get_db_table_name(tbl_def);
 		if (conn.cached_data[db_table_name] == nil) then
 			conn.cached_data[db_table_name] = {};
