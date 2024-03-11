@@ -3,7 +3,7 @@ local bc = require("bigdecimal");
 local du = require('lua_schema.date_utils');
 local cu = require('lua_schema.core_utils');
 local types = require('service_utils.db.ev_types');
-local xmlua = require("xmlua");
+local xmlua = require("lua_schema.xmlua");
 local nu = require("lua_schema.number_utils");
 
 local xml_date_utils = xmlua.XMLDateUtils.new();
