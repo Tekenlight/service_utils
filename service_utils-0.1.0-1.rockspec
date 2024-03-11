@@ -22,6 +22,7 @@ dependencies = {
    "ldoc",
    "lualogging",
    "rapidjson",
+   "luaffi-tkl",
 }
 
 source = {
