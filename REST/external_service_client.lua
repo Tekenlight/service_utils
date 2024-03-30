@@ -17,9 +17,10 @@ external_service_client.make_connection = function(inp)
 	if (inp.secure == nil) then
 		inp.secure = false;
 	end
+	assert(inp.peer_name == nil or type(inp.peer_name) == 'string', "Invalid peer_name");
 
 	local client = rest_client_factory.new(inp.url, tonumber(inp.port), inp.secure,
-									true, constants.RECV_TIMEOUT_EXTERNAL_SOCKETS);
+									true, constants.RECV_TIMEOUT_EXTERNAL_SOCKETS, inp.peer_name);
 	if (client ~= nil) then
 		client._recv_timeout = constants.RECV_TIMEOUT_EXTERNAL_SOCKETS;
 		client._send_timeout = constants.SEND_TIMEOUT_EXTERNAL_SOCKETS;

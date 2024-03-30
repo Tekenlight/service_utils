@@ -10,12 +10,13 @@ local function get_uri_from_url(url)
 	return string.match(url, '[^?]+');
 end
 
-local function make_new_http_client(hostname, port, secure, external, timeout)
-	assert(hostname ~= nil and type(hostname) == 'string');
-	assert(port ~= nil and math.type(port) == 'integer');
-	assert(type(secure) == 'boolean');
-	assert(type(external) == 'boolean');
-	assert(type(timeout) == 'number');
+local function make_new_http_client(hostname, port, secure, external, timeout, peer_name)
+	assert(hostname ~= nil and type(hostname) == 'string', "Invalid hostname");
+	assert(port ~= nil and math.type(port) == 'integer', "Invalid port");
+	assert(type(secure) == 'boolean', "Invalid secure");
+	assert(type(external) == 'boolean', "Invalid external");
+	assert(type(timeout) == 'number', "Invalid timeout");
+	assert(peer_name == nil or type(peer_name) == 'string', "Invalid peer_name");
 
 	if (secure == nil) then secure = false; end
 
@@ -32,7 +33,7 @@ local function make_new_http_client(hostname, port, secure, external, timeout)
 	new_client._ev_conn_stream_sock = cn;
 
 	if (secure) then
-		new_client:connect_TLS();
+		new_client:connect_TLS(peer_name);
 		platform.make_http_connection_secure(new_client._http_conn, new_client._ss);
 	end
 
@@ -55,12 +56,12 @@ client_maker.deduce_details = function(url, port)
 	return uri;
 end
 
-client_maker.new = function(url, port, secure, external, timeout)
-	return make_new_http_client(url, port, secure, external, timeout);
+client_maker.new = function(url, port, secure, external, timeout, peer_name)
+	return make_new_http_client(url, port, secure, external, timeout, peer_name);
 end
 
-client_maker.new_through_proxy = function(url, port, secure, external, timeout)
-	return make_new_http_client(url, port, secure, external, timeout);
+client_maker.new_through_proxy = function(url, port, secure, external, timeout, peer_name)
+	return make_new_http_client(url, port, secure, external, timeout, peer_name);
 end
 
 client.send_request = function (self, uri, headers, body)
@@ -73,6 +74,8 @@ client.send_request = function (self, uri, headers, body)
 			or headers.method == 'POST' or headers.method == 'DELETE');
 
 	local request = platform.new_request();
+	--request:set_method(headers.method);
+	--headers.method = nil;
 	for n,v in pairs(headers) do
 		request:set_hdr_field(n, v);
 	end
@@ -80,8 +83,8 @@ client.send_request = function (self, uri, headers, body)
 	request:set_host(self._host);
 	--request:set_chunked_trfencoding(true);
 	if (body ~= nil) then request:set_content_length(string.len(body)); end
-	request:set_expect_continue(true);
-	request:set_content_type('application/json');
+	--request:set_expect_continue(true);
+	--request:set_content_type('application/json');
 
 	platform.send_request_header(self._http_conn, request);
 	if (body ~= nil) then
@@ -92,14 +95,14 @@ client.send_request = function (self, uri, headers, body)
 	return;
 end
 
-client.connect_TLS = function (self)
-	netssl.connect_TLS(self._ss);
+client.connect_TLS = function (self, peer_name)
+	netssl.connect_TLS(self._ss, peer_name);
 end
 
 client.recv_response = function (self)
 	assert(self ~= nil and type(self) == 'table');
 
-	local status, response = pcall(platform.receive_http_response, self._http_conn, self._recv_timeout);
+	local status, response, msg = pcall(platform.receive_http_response, self._http_conn, self._recv_timeout);
 	if (not status) then
 		error(response);
 	end

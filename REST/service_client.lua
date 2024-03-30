@@ -106,7 +106,7 @@ service_client.remove_internal_hostent = function(context, client)
 	return;
 end
 
-service_client.make_connection_to_internal_host = function(context, service_name, clear_cache_on_failure)
+service_client.make_connection_to_internal_host = function(context, service_name, clear_cache_on_failure, peer_name)
 	assert(service_name ~= nil and type(service_name) == 'string');
 	assert(type(clear_cache_on_failure) == 'boolean');
 
@@ -134,7 +134,7 @@ service_client.make_connection_to_internal_host = function(context, service_name
 	end
 
 	local client = rest_client_factory.new(host_config_element.host,
-					tonumber(host_config_element.port), host_config_element.secure, false, -1);
+					tonumber(host_config_element.port), host_config_element.secure, false, -1, peer_name);
 
 	if (client == nil and clear_cache_on_failure) then
 		config_conn:zrem(service_name, b64_host_str);
@@ -220,6 +220,7 @@ service_client.transceive_using_client = function(context, inp, client)
 end
 
 service_client.transceive = function(context, inp, clear_cache_on_failure)
+	assert(inp.peer_name == nil or type(inp.peer_name) == 'string', "Invalid peer_name");
 	if (clear_cache_on_failure == nil) then
 		clear_cache_on_failure = false;
 	end
@@ -228,7 +229,7 @@ service_client.transceive = function(context, inp, clear_cache_on_failure)
 	assert(inp ~= nil and type(inp) == 'table');
 
 
-	local client = service_client.make_connection_to_internal_host(context, inp.service_name, clear_cache_on_failure);
+	local client = service_client.make_connection_to_internal_host(context, inp.service_name, clear_cache_on_failure, inp.peer_name);
 
 	return service_client.transceive_using_client(context, inp, client);
 end
