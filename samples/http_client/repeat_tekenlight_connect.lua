@@ -36,6 +36,8 @@ print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 client:send_request("/", { ["method"] = "GET", ["Host"] = "tekenlight.com", ["User-Agent"] = "curl/7.81.0", ["Accept"] = "*/*"}, nil);
 client:send_request("/", { ["method"] = "GET", ["Host"] = "tekenlight.com", ["User-Agent"] = "curl/7.81.0", ["Accept"] = "*/*"}, nil);
 
+platform.ev_hibernate(5);
+
 
 print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 local status, response_json, http_status, hdrs = client:recv_response();
