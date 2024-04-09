@@ -4,7 +4,7 @@
 ------
 A set of lua libraries which expose the platform capabilities of [evpoco](https://github.com/Tekenlight/evpoco) to lua ([evlua](https://github.com/Tekenlight/.github/wiki)) programming environment.
 
-An application developer can use service\_utils togther with [evpoco](https://github.com/Tekenlight/evpoco) in order to develop an application backend and expose them as services or trigger them as a daemon etc.
+An application developer can use service\_utils together with [evpoco](https://github.com/Tekenlight/evpoco) in order to develop an application backend and expose them as services or trigger them as a daemon etc.
 
 A set of modules comprising of various utilities needed to develop a web-application are available as part of this library
 * REST: Set of classes to deal with client and server side infrastructure code to deal with REST request handling
