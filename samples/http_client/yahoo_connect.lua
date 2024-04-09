@@ -27,7 +27,6 @@ establish_connection(inp);
 
 print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 require 'pl.pretty'.dump(client);
-platform.debug_ss_ptr(client._ss);
 print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 
 
