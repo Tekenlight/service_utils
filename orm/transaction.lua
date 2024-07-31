@@ -11,11 +11,15 @@ transaction.enable_org_refresh = function (context, name, org_id, exception_case
     context.dml_ops[name].exception_case = exception_case;
 end
 
-transaction.enable_generic_refresh = function (context, name)
+transaction.enable_generic_refresh = function (context, name, exception_case)
     assert(context.dml_ops[name] ~= nil and type(context.dml_ops[name]) == 'table');
     assert(context.dml_ops[name].enable_audit == true);
     assert(context.dml_ops[name].org_refresh == false);
     assert(context.dml_ops[name].refresh_org_id == nil);
+    if (exception_case == nil) then exception_case = false; end
+    assert(exception_case ~= nil and type(exception_case) == 'boolean');
+
+    context.dml_ops[name].exception_case = exception_case;
     context.dml_ops[name].generic_refresh = true;
 end
 
