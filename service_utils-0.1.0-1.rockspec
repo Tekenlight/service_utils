@@ -134,6 +134,8 @@ build = {
 
 		["service_utils.unitt.harness"] = 'unitt/harness.lua',
 
+		["service_utils.os"] = 'os/os.lua',
+
    },
    install = {
 		bin = {
