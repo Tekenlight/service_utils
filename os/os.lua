@@ -1,5 +1,5 @@
 local ffi = require('ffi');
-local cu = require('lua_schema.core_utils');
+local core_utils = require('lua_schema.core_utils');
 
 ffi.cdef[[
 int pipe(int pipefd[2]);
@@ -10,6 +10,9 @@ ssize_t read(int fd, void *buf, size_t count);
 ssize_t write(int fd, const void *buf, size_t count);
 void *memset(void *s, int c, size_t n);
 void *realloc(void *ptr, size_t size);
+int mkstemps(char *template, int suffixlen);
+char* tempnam(const char *dir, const char *pfx);
+void free(void *ptr);
 ]]
 
 local os = {}
@@ -37,6 +40,11 @@ os.system = function(cmd)
         error(msg .. 'errno = ' .. errno);
     elseif (pid > 0) then
         ret, msg, errno = syswait.wait(pid);
+        if (ret <= 0) then
+            error("waitpid call failed, "..errno.. " ["..msg.."]");
+        else
+            ret = 0;
+        end
     else
         error('Unable to fork error:['..pid..']');
     end
@@ -45,7 +53,7 @@ os.system = function(cmd)
 end
 
 os.r_popen = function(cmd, inp_data)
-    assert(type(cmd) == 'string', 'Invalid input to os.system');
+    assert(type(cmd) == 'string', 'Invalid input to os.r_popen');
     assert((inp_data == nil or ffi.istype("hex_data_s_type", inp_data) == true), 'Invalid input to os.r_popen');
 
     local r_pipefd = ffi.new('int [2]')
@@ -129,6 +137,67 @@ os.r_pclose = function(fd)
 
     return;
 end
+
+os.chrome_name = function()
+    local os = core_utils.os_name();
+    if (os == 'Darwin') then
+        return [[/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome]];
+    elseif (os == 'Linux') then
+        return "/usr/bin/google-chrome"
+    else
+        error("OS ["..os.."] not supported");
+    end
+end
+
+os.open_temp_file = function(prefix, suffix)
+    assert(type(prefix) == 'string', "Invalid input to os.open_temp_file");
+    assert(type(suffix) == 'string', "Invalid input to os.open_temp_file");
+
+    local template = ffi.cast("char [128]", prefix.."-XXXXXX"..suffix);
+
+    local fd = ffi.C.mkstemps(template, #suffix);
+    if (fd < 0) then
+        local msg, n = pe.errno();
+        error("Error while creating temporary file : "..msg..":"..n);
+    end
+    return fd, ffi.string(template);
+end
+
+os.string_html_to_pdf = function(s_html)
+    assert(type(s_html) == 'string', "Invalid input to os.string_html_to_pdf");
+
+    local ddata = ffi.new("hex_data_s_type", 0);
+    ddata.buf_mem_managed = 1;
+    ddata.value = ffi.cast("char *", s_html);
+    ddata.size = #s_html;
+
+    local chrome = os.chrome_name();
+    local fd, filename = os.open_temp_file("/tmp/temp", ".html");
+    local ret = ffi.C.write(fd, ffi.cast("char *", s_html), #s_html);
+    if (ret < 0) then
+        local msg, n = pe.errno();
+        ffi.C.close(fd);
+        error('Error writing to fd '.. msg);
+    end
+    ffi.C.close(fd);
+
+    local temp_name = ffi.C.tempnam("/tmp", "outfile");
+    local out_file_name = ffi.string(temp_name) .. ".pdf"
+    ffi.C.free(temp_name);
+
+    local command = string.format(chrome .. [[ --headless --disable-gpu --print-to-pdf=]]..out_file_name.." --no-pdf-header-footer "..filename);
+    local ret, msg, errno = os.system(command);
+    if (ret ~= 0) then
+        local msg, n = pe.errno();
+        os.system("/usr/bin/rm "..filename);
+        error('Error while executing ['..command..']: '.. msg.. ':[ret='..ret..']');
+    end
+    os.system("/usr/bin/rm "..filename);
+
+    return out_file_name;
+
+end
+
 
 --[[
 local ret, fd = os.r_popen('ls -lrt');
