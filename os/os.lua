@@ -21,6 +21,8 @@ local unistd = require 'posix.unistd';
 local stringx = require('pl.stringx');
 local syswait = require('posix.sys.wait');
 local pe = require('posix.errno');
+local fcntl = require('posix.fcntl');
+local sys_stat = require('posix.sys.stat');
 
 --[[
 This is an implementation similar to glibc system.
@@ -100,7 +102,7 @@ os.r_popen = function(cmd, inp_data)
     return ret, r_pipefd[0], msg, errno;
 end
 
-os.r_pread = function(fd)
+os.fd_read = function(fd)
     local c_buf = ffi.cast('char*', ffi.new('char*', ffi.C.NULL));
     local n = ffi.new('ssize_t [2]', 0);
     ffi.C.memset(n, 0, 2);
@@ -163,15 +165,52 @@ os.open_temp_file = function(prefix, suffix)
     return fd, ffi.string(template);
 end
 
+os.open_file = function(filename, oflags, mode)
+    assert(type(filename) == 'string', "Invalid input to os.open_file");
+    assert(mode == nil or type(mode) == 'number', "Invalid input to os.open_file");
+    assert(oflags == nil or type(oflags) == 'number', "Invalid input to os.open_file");
+
+    if (oflags == nil) then oflags = fcntl.O_RDONLY; end
+    if (mode == nil and (oflags&fcntl.O_CREAT ~= 0)) then
+        mode = sys_stat.S_IRUSR | sys_stat.S_IRUSR | sys_stat.S_IRUSR | sys_stat.S_IRUSR;
+    end
+
+    local fd, msg, err = fcntl.open(filename, oflags, mode);
+    if (fd == nil) then
+        error("Error opening file "..filename.." : "..msg..":"..n);
+    end
+
+    return fd;
+end
+
+os.html_to_pdf = function(filename)
+    assert(type(filename) == 'string', "Invalid input to os.html_to_pdf");
+
+    local temp_name = ffi.C.tempnam("/tmp", "outfile");
+    local out_file_name = ffi.string(temp_name) .. ".pdf"
+    ffi.C.free(temp_name);
+
+    local chrome = os.chrome_name();
+    local command =
+        string.format(chrome .. [[ --headless --disable-gpu --print-to-pdf=]]..out_file_name.." --no-pdf-header-footer "..filename);
+    local ret, msg, errno = os.system(command);
+    if (ret ~= 0) then
+        local msg, n = pe.errno();
+        os.system("/usr/bin/rm "..filename);
+        error('Error while executing ['..command..']: '.. msg.. ':[ret='..ret..']');
+    end
+
+    local fd = os.open_file(out_file_name);
+    local file_data = os.fd_read(fd);
+    ffi.C.close(fd);
+    os.system("/usr/bin/rm "..out_file_name);
+
+    return file_data;
+end
+
 os.string_html_to_pdf = function(s_html)
     assert(type(s_html) == 'string', "Invalid input to os.string_html_to_pdf");
 
-    local ddata = ffi.new("hex_data_s_type", 0);
-    ddata.buf_mem_managed = 1;
-    ddata.value = ffi.cast("char *", s_html);
-    ddata.size = #s_html;
-
-    local chrome = os.chrome_name();
     local fd, filename = os.open_temp_file("/tmp/temp", ".html");
     local ret = ffi.C.write(fd, ffi.cast("char *", s_html), #s_html);
     if (ret < 0) then
@@ -181,27 +220,18 @@ os.string_html_to_pdf = function(s_html)
     end
     ffi.C.close(fd);
 
-    local temp_name = ffi.C.tempnam("/tmp", "outfile");
-    local out_file_name = ffi.string(temp_name) .. ".pdf"
-    ffi.C.free(temp_name);
+    local out_file_data = os.html_to_pdf(filename);
 
-    local command = string.format(chrome .. [[ --headless --disable-gpu --print-to-pdf=]]..out_file_name.." --no-pdf-header-footer "..filename);
-    local ret, msg, errno = os.system(command);
-    if (ret ~= 0) then
-        local msg, n = pe.errno();
-        os.system("/usr/bin/rm "..filename);
-        error('Error while executing ['..command..']: '.. msg.. ':[ret='..ret..']');
-    end
     os.system("/usr/bin/rm "..filename);
 
-    return out_file_name;
+    return out_file_data;
 
 end
 
 
 --[[
 local ret, fd = os.r_popen('ls -lrt');
-local buf = os.r_pread(fd);
+local buf = os.fd_read(fd);
 print(ffi.string(buf.value));
 os.r_pclose(fd);
 ]]
