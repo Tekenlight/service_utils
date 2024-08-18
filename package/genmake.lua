@@ -8,7 +8,9 @@ local val_sources_tbl = {};
 local ddl_targets_tbl = {};
 local ddl_sources_tbl = {};
 local src_targets_tbl = {};
+local csrc_targets_tbl = {};
 local src_sources_tbl = {};
+local csrc_sources_tbl = {};
 local sql_targets_tbl = {};
 local sql_sources_tbl = {};
 local idl_targets_tbl = {};
@@ -90,6 +92,21 @@ function add_src_targets(directory)
 	return;
 end
 
+function add_csrc_targets(directory)
+    local i, t = 0, {};
+    local pfile = io.popen([[ls -1 ]] .. directory .. [[ |grep -E '\.c|\.h|\.cc|\.hh|\.cpp|\.cxx|\.hxx|\.hpp|\.H$']])
+    for filename in pfile:lines() do
+        i = i + 1
+        t[i] = filename;
+        local source_filename = directory .. filename;
+        local target_filename = "build/" .. directory .. filename;
+        table.insert(csrc_targets_tbl, target_filename);
+        table.insert(csrc_sources_tbl, source_filename);
+    end
+    pfile:close()
+	return;
+end
+
 function add_idl_targets(directory)
 	local i, t = 0,{};
 	local pfile1;
@@ -144,6 +161,11 @@ function add_targets(directory)
 	if (folder_exists(directory.."src/") == true) then
     	add_src_targets(directory.."src/");
     	table.insert(all_targets_tbl, src_targets_tbl);
+	end
+
+	if (folder_exists(directory.."csrc/") == true) then
+    	add_csrc_targets(directory.."csrc/");
+    	table.insert(all_targets_tbl, csrc_targets_tbl);
 	end
 
 	if (folder_exists(directory.."idl/") == true) then
@@ -229,6 +251,16 @@ function write_makefile()
 			local t_path = returnpath(target)
             file:write(target .. " : " .. source .. "\n\tmkdir -p "..t_path.."\n");
             file:write("\tluac -o " .. target .. " " .. source .. "\n")
+            file:write("\ttouch build/rockspec.out\n\n");
+        end
+    end
+    if (folder_exists("csrc/") == true) then
+        file:write("#Copying handcoded C sources into build\n\n")
+        for i, source in ipairs(csrc_sources_tbl) do
+            local target = "build/" .. source;
+			local t_path = returnpath(target)
+            file:write(target .. " : " .. source .. "\n\tmkdir -p " ..t_path .."\n");
+            file:write("\tcp " .. source .. " " .. target .. "\n")
             file:write("\ttouch build/rockspec.out\n\n");
         end
     end
