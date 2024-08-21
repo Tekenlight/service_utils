@@ -464,7 +464,7 @@ single_crud.approve_and_select = function (self, context, obj)
 	return true, obj, ret;
 end
 
-single_crud.initiate_amendement = function (self, context, obj, extra_columns)
+single_crud.initiate_amendment = function (self, context, obj, extra_columns)
 	if (extra_columns == nil) then extra_columns = {}; end
 	local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 	assert(tao.tbl_def.col_props.entity_state_field == true);
