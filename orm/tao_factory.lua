@@ -498,26 +498,35 @@ tao_factory.set_auto_columns = function(context, tbl_def, obj, data, col_map)
 	if (tbl_def.col_props.update_fields) then
 		local element_name = tao_factory.get_element_name_in_obj("version", col_map);
 		if (element_name) then
-			obj[element_name] = data["version"]
+            if (data["version"] ~= nil) then
+                obj[element_name] = data["version"];
+            end
 		end
 
 		element_name = tao_factory.get_element_name_in_obj("update_uid", col_map);
 		if (element_name) then
-			obj[element_name] = data["update_uid"]
+            if (data["update_uid"] ~= nil) then
+                obj[element_name] = data["update_uid"];
+            end
 		end
 
 		element_name = tao_factory.get_element_name_in_obj("update_time", col_map);
 		if (element_name) then
-			obj[element_name] = data["update_time"]
+            if (data["update_time"] ~= nil) then
+                obj[element_name] = data["update_time"];
+            end
 		end
 	end
 
 	if (tbl_def.col_props.entity_state_field == true) then
 		local element_name = tao_factory.get_element_name_in_obj("entity_state", col_map);
 		if (element_name) then
-			obj[element_name] = data["entity_state"]
+            if (data["entity_state"] ~= nil) then
+                obj[element_name] = data["entity_state"];
+            end
 		end
 	end
+
 	return;
 end
 
