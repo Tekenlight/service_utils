@@ -290,10 +290,13 @@ single_crud.cancel_amendment = function (self, context, obj, extra_columns)
 		colmap[n] = n;
 	end
 
-	obj.entity_state = '1';
+	out.entity_state = '1';
+    if (obj.entity_state ~= nil) then
+        obj.entity_state = '1';
+    end
 
 	local upd_obj = {};
-	for n,v in pairs(obj) do
+	for n,v in pairs(out) do
 		upd_obj[n] = v;
 	end
 	for n,v in pairs(extra_columns) do
@@ -313,6 +316,7 @@ single_crud.cancel_amendment = function (self, context, obj, extra_columns)
 			return false, msg, ret;
 		end
 	end
+
 	local new_colmap = tao_factory.get_column_map_from_obj_meta(context, tao.tbl_def, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
 	upd_auto_columns(context, tao.tbl_def, obj, upd_obj, new_colmap);
 
@@ -353,9 +357,13 @@ single_crud.approve = function (self, context, obj, extra_columns)
 	end
 
 	obj.entity_state = '1';
+
 	local upd_obj = {};
+    for n,v in pairs(out) do
+        upd_obj[n] = v;
+    end
 	for n,v in pairs(obj) do
-		upd_obj[n] = v;
+        upd_obj[n] = v;
 	end
 	for n,v in pairs(extra_columns) do
 		upd_obj[n] = v;
@@ -374,6 +382,7 @@ single_crud.approve = function (self, context, obj, extra_columns)
 			return false, msg, ret;
 		end
 	end
+
 	local new_colmap = tao_factory.get_column_map_from_obj_meta(context, tao.tbl_def, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
 	upd_auto_columns(context, tao.tbl_def, obj, upd_obj, new_colmap);
 
@@ -471,7 +480,7 @@ single_crud.initiate_amendment = function (self, context, obj, extra_columns)
 
 	local key_params, key_count = get_key_params(tao, obj);
 	local out, msg = tao:select(context, table.unpack(key_params));
-	if (out == nil) then
+	if (out == nil or out.version ~= obj.version) then
 		local key_param_str = get_key_params_str(tao, obj);
 		local msg = messages:format('RECORD_NOT_FOUND', key_param_str);
 		error_handler.raise_error(404, msg);
@@ -490,10 +499,13 @@ single_crud.initiate_amendment = function (self, context, obj, extra_columns)
 		colmap[n] = n;
 	end
 
-	obj.entity_state = '2';
+	out.entity_state = '2';
+    if (obj.entity_state ~= nil) then
+        obj.entity_state = '2';
+    end
 
 	local upd_obj = {};
-	for n,v in pairs(obj) do
+	for n,v in pairs(out) do
 		upd_obj[n] = v;
 	end
 	for n,v in pairs(extra_columns) do
@@ -513,6 +525,7 @@ single_crud.initiate_amendment = function (self, context, obj, extra_columns)
 			return false, msg, ret;
 		end
 	end
+
 	local new_colmap = tao_factory.get_column_map_from_obj_meta(context, tao.tbl_def, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
 	upd_auto_columns(context, tao.tbl_def, obj, upd_obj, new_colmap);
 
