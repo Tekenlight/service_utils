@@ -275,7 +275,7 @@ local invoke_func = function(request, req_processor_interface, req_processor, fu
 		end
 	end
 	do
-		error_handler.init();
+		error_handler.init(request:get_uri());
 		local error_msg_handler = function (msg) 
 			local msg_line = msg;
 			if (msg_line == nil) then
@@ -302,7 +302,7 @@ local invoke_func = function(request, req_processor_interface, req_processor, fu
 			proc_stat, status, out_obj = xpcall(req_processor[func], error_msg_handler, req_processor, uc, qp, obj);
 		end
 	end
-	local message_validation_context = error_handler.reset_init();
+	local message_validation_context = error_handler.reset_init(request:get_uri());
 	if (not proc_stat) then
 		-- since there is a fatal error, it is a panic and thus
 		-- this error will override any other error that was previously generated.

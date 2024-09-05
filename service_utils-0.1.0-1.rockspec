@@ -23,6 +23,7 @@ dependencies = {
    "lualogging",
    "rapidjson",
    "luaffi-tkl",
+   "lua-resty-template",
 }
 
 source = {
