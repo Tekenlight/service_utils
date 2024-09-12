@@ -43,11 +43,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        top_level_group = true,
-        generated_subelement_name = '_sequence_group',
+        max_occurs = 1,
         group_type = 'S',
         min_occurs = 1,
-        max_occurs = 1,
+        top_level_group = true,
+        generated_subelement_name = '_sequence_group',
         'from',
         'password',
         'sender_name',
@@ -87,67 +87,62 @@ end
 
 do
     element_handler.properties.subelement_properties = {};
+    element_handler.properties.subelement_properties['{}password'] = {};
+    do
+element_handler.properties.subelement_properties['{}password'].super_element_content_type = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
+
+element_handler.properties.subelement_properties['{}password'].type_of_simple = 'A';
+
+        do
+            element_handler.properties.subelement_properties['{}password'].properties = {};
+            element_handler.properties.subelement_properties['{}password'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{}password'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{}password'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
+            element_handler.properties.subelement_properties['{}password'].properties.bi_type = {};
+            element_handler.properties.subelement_properties['{}password'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{}password'].properties.bi_type.name = 'string';
+            element_handler.properties.subelement_properties['{}password'].properties.bi_type.id = '1';
+            element_handler.properties.subelement_properties['{}password'].properties.attr = {};
+            element_handler.properties.subelement_properties['{}password'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{}password'].properties.attr._generated_attr = {};
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}password'].particle_properties = {};
+            element_handler.properties.subelement_properties['{}password'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{}password'].particle_properties.q_name.ns = '';
+            element_handler.properties.subelement_properties['{}password'].particle_properties.q_name.local_name = 'password';
+            element_handler.properties.subelement_properties['{}password'].particle_properties.generated_name = 'password';
+        end
+
+        -- Simple type properties
+        do
+            element_handler.properties.subelement_properties['{}password'].base = {};
+            element_handler.properties.subelement_properties['{}password'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{}password'].base.name = 'string';
+            element_handler.properties.subelement_properties['{}password'].local_facets = {};
+            element_handler.properties.subelement_properties['{}password'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{}password']);
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}password'].type_handler = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
+            element_handler.properties.subelement_properties['{}password'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{}password'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{}password'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{}password'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{}password'].parse_xml = basic_stuff.parse_xml;
+        end
+
+        element_handler.properties.subelement_properties['{}password'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{}password'].particle_properties.min_occurs = 1;
+        element_handler.properties.subelement_properties['{}password'].particle_properties.max_occurs = 1;
+    end
+
     do
         element_handler.properties.subelement_properties['{}recipients'] = 
             (basic_stuff.get_element_handler('http://evpoco.tekenlight.org', 'recipient_dtls_type'):
             new_instance_as_local_element({ns = '', local_name = 'recipients', generated_name = 'recipients',
                     root_element = false, min_occurs = 1, max_occurs = -1}));
-    end
-
-    element_handler.properties.subelement_properties['{}from'] = {};
-    do
-element_handler.properties.subelement_properties['{}from'].super_element_content_type = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
-
-element_handler.properties.subelement_properties['{}from'].type_of_simple = 'A';
-
-        do
-            element_handler.properties.subelement_properties['{}from'].properties = {};
-            element_handler.properties.subelement_properties['{}from'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{}from'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{}from'].properties.schema_type = '{http://evpoco.tekenlight.org}email_id_type';
-            element_handler.properties.subelement_properties['{}from'].properties.bi_type = {};
-            element_handler.properties.subelement_properties['{}from'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{}from'].properties.bi_type.name = 'token';
-            element_handler.properties.subelement_properties['{}from'].properties.bi_type.id = '0';
-            element_handler.properties.subelement_properties['{}from'].properties.attr = {};
-            element_handler.properties.subelement_properties['{}from'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{}from'].properties.attr._generated_attr = {};
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}from'].particle_properties = {};
-            element_handler.properties.subelement_properties['{}from'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{}from'].particle_properties.q_name.ns = '';
-            element_handler.properties.subelement_properties['{}from'].particle_properties.q_name.local_name = 'from';
-            element_handler.properties.subelement_properties['{}from'].particle_properties.generated_name = 'from';
-        end
-
-        -- Simple type properties
-        do
-            element_handler.properties.subelement_properties['{}from'].base = {};
-            element_handler.properties.subelement_properties['{}from'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{}from'].base.name = 'token';
-            element_handler.properties.subelement_properties['{}from'].local_facets = {};
-            element_handler.properties.subelement_properties['{}from'].local_facets.max_length = 320;
-            element_handler.properties.subelement_properties['{}from'].local_facets.pattern = {};
-            element_handler.properties.subelement_properties['{}from'].local_facets.pattern[1] = {};
-            element_handler.properties.subelement_properties['{}from'].local_facets.pattern[1].str_p = [=[([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})]=];
-            element_handler.properties.subelement_properties['{}from'].local_facets.pattern[1].com_p = nil;
-            element_handler.properties.subelement_properties['{}from'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{}from']);
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}from'].type_handler = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
-            element_handler.properties.subelement_properties['{}from'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{}from'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{}from'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{}from'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{}from'].parse_xml = basic_stuff.parse_xml;
-        end
-
-        element_handler.properties.subelement_properties['{}from'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{}from'].particle_properties.min_occurs = 1;
-        element_handler.properties.subelement_properties['{}from'].particle_properties.max_occurs = 1;
     end
 
     element_handler.properties.subelement_properties['{}subject'] = {};
@@ -201,6 +196,69 @@ element_handler.properties.subelement_properties['{}subject'].type_of_simple = '
         element_handler.properties.subelement_properties['{}subject'].particle_properties.max_occurs = 1;
     end
 
+    element_handler.properties.subelement_properties['{}from'] = {};
+    do
+element_handler.properties.subelement_properties['{}from'].super_element_content_type = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
+
+element_handler.properties.subelement_properties['{}from'].type_of_simple = 'A';
+
+        do
+            element_handler.properties.subelement_properties['{}from'].properties = {};
+            element_handler.properties.subelement_properties['{}from'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{}from'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{}from'].properties.schema_type = '{http://evpoco.tekenlight.org}email_id_type';
+            element_handler.properties.subelement_properties['{}from'].properties.bi_type = {};
+            element_handler.properties.subelement_properties['{}from'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{}from'].properties.bi_type.name = 'token';
+            element_handler.properties.subelement_properties['{}from'].properties.bi_type.id = '0';
+            element_handler.properties.subelement_properties['{}from'].properties.attr = {};
+            element_handler.properties.subelement_properties['{}from'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{}from'].properties.attr._generated_attr = {};
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}from'].particle_properties = {};
+            element_handler.properties.subelement_properties['{}from'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{}from'].particle_properties.q_name.ns = '';
+            element_handler.properties.subelement_properties['{}from'].particle_properties.q_name.local_name = 'from';
+            element_handler.properties.subelement_properties['{}from'].particle_properties.generated_name = 'from';
+        end
+
+        -- Simple type properties
+        do
+            element_handler.properties.subelement_properties['{}from'].base = {};
+            element_handler.properties.subelement_properties['{}from'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{}from'].base.name = 'token';
+            element_handler.properties.subelement_properties['{}from'].local_facets = {};
+            element_handler.properties.subelement_properties['{}from'].local_facets.max_length = 320;
+            element_handler.properties.subelement_properties['{}from'].local_facets.pattern = {};
+            element_handler.properties.subelement_properties['{}from'].local_facets.pattern[1] = {};
+            element_handler.properties.subelement_properties['{}from'].local_facets.pattern[1].str_p = [=[([0-9a-zA-Z]([-._\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})]=];
+            element_handler.properties.subelement_properties['{}from'].local_facets.pattern[1].com_p = nil;
+            element_handler.properties.subelement_properties['{}from'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{}from']);
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}from'].type_handler = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
+            element_handler.properties.subelement_properties['{}from'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{}from'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{}from'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{}from'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{}from'].parse_xml = basic_stuff.parse_xml;
+        end
+
+        element_handler.properties.subelement_properties['{}from'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{}from'].particle_properties.min_occurs = 1;
+        element_handler.properties.subelement_properties['{}from'].particle_properties.max_occurs = 1;
+    end
+
+    do
+        element_handler.properties.subelement_properties['{}attachments'] = 
+            (basic_stuff.get_element_handler('http://evpoco.tekenlight.org', 'attachment_dtls_type'):
+            new_instance_as_local_element({ns = '', local_name = 'attachments', generated_name = 'attachments',
+                    root_element = false, min_occurs = 0, max_occurs = -1}));
+    end
+
     element_handler.properties.subelement_properties['{}message_body'] = {};
     do
 element_handler.properties.subelement_properties['{}message_body'].super_element_content_type = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
@@ -250,57 +308,6 @@ element_handler.properties.subelement_properties['{}message_body'].type_of_simpl
         element_handler.properties.subelement_properties['{}message_body'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{}message_body'].particle_properties.min_occurs = 1;
         element_handler.properties.subelement_properties['{}message_body'].particle_properties.max_occurs = 1;
-    end
-
-    element_handler.properties.subelement_properties['{}password'] = {};
-    do
-element_handler.properties.subelement_properties['{}password'].super_element_content_type = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
-
-element_handler.properties.subelement_properties['{}password'].type_of_simple = 'A';
-
-        do
-            element_handler.properties.subelement_properties['{}password'].properties = {};
-            element_handler.properties.subelement_properties['{}password'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{}password'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{}password'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
-            element_handler.properties.subelement_properties['{}password'].properties.bi_type = {};
-            element_handler.properties.subelement_properties['{}password'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{}password'].properties.bi_type.name = 'string';
-            element_handler.properties.subelement_properties['{}password'].properties.bi_type.id = '1';
-            element_handler.properties.subelement_properties['{}password'].properties.attr = {};
-            element_handler.properties.subelement_properties['{}password'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{}password'].properties.attr._generated_attr = {};
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}password'].particle_properties = {};
-            element_handler.properties.subelement_properties['{}password'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{}password'].particle_properties.q_name.ns = '';
-            element_handler.properties.subelement_properties['{}password'].particle_properties.q_name.local_name = 'password';
-            element_handler.properties.subelement_properties['{}password'].particle_properties.generated_name = 'password';
-        end
-
-        -- Simple type properties
-        do
-            element_handler.properties.subelement_properties['{}password'].base = {};
-            element_handler.properties.subelement_properties['{}password'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{}password'].base.name = 'string';
-            element_handler.properties.subelement_properties['{}password'].local_facets = {};
-            element_handler.properties.subelement_properties['{}password'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{}password']);
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}password'].type_handler = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
-            element_handler.properties.subelement_properties['{}password'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{}password'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{}password'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{}password'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{}password'].parse_xml = basic_stuff.parse_xml;
-        end
-
-        element_handler.properties.subelement_properties['{}password'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{}password'].particle_properties.min_occurs = 1;
-        element_handler.properties.subelement_properties['{}password'].particle_properties.max_occurs = 1;
     end
 
     element_handler.properties.subelement_properties['{}sender_name'] = {};
@@ -353,13 +360,6 @@ element_handler.properties.subelement_properties['{}sender_name'].type_of_simple
         element_handler.properties.subelement_properties['{}sender_name'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{}sender_name'].particle_properties.min_occurs = 0;
         element_handler.properties.subelement_properties['{}sender_name'].particle_properties.max_occurs = 1;
-    end
-
-    do
-        element_handler.properties.subelement_properties['{}attachments'] = 
-            (basic_stuff.get_element_handler('http://evpoco.tekenlight.org', 'attachment_dtls_type'):
-            new_instance_as_local_element({ns = '', local_name = 'attachments', generated_name = 'attachments',
-                    root_element = false, min_occurs = 0, max_occurs = -1}));
     end
 
 end

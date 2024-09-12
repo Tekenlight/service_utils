@@ -57,7 +57,7 @@ do
     element_handler.local_facets.max_length = 320;
     element_handler.local_facets.pattern = {};
     element_handler.local_facets.pattern[1] = {};
-    element_handler.local_facets.pattern[1].str_p = [=[([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})]=];
+    element_handler.local_facets.pattern[1].str_p = [=[([0-9a-zA-Z]([-._\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})]=];
     element_handler.local_facets.pattern[1].com_p = nil;
     element_handler.facets = basic_stuff.inherit_facets(element_handler);
 end

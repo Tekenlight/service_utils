@@ -10,7 +10,7 @@ targetNamespace="http://evpoco.tekenlight.org" xmlns:ns="http://evpoco.tekenligh
         </xsd:annotation>
         <xsd:restriction base="xsd:token">
             <xsd:maxLength value="320"/>
-            <xsd:pattern value="([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})"/>
+            <xsd:pattern value="([0-9a-zA-Z]([-._\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})"/>
         </xsd:restriction>
     </xsd:simpleType>
 
