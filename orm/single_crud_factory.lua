@@ -76,12 +76,12 @@ single_crud.fetch = function (self, context, query_params)
         local key_param_str = get_key_params_str(tao, query_params);
         local msg = messages:format('RECORD_NOT_FOUND', key_param_str);
         error_handler.raise_error(404, msg);
-        return false, nil;
+        return false, nil, nil;
     end
 
     local obj = mapper.copy_elements(self.msg_ns, self.msg_elem_name, out);
 
-    return true, obj;
+    return true, obj, out;
 end
 
 local upd_auto_columns = function(context, tbl_def, obj, data, col_map)
@@ -421,7 +421,7 @@ single_crud.dependent_action = function (self, context, obj, options, extra_colu
             local key_param_str = get_key_params_str(tao, obj);
             local msg = messages:format('RECORD_NOT_FOUND', key_param_str);
             error_handler.raise_error(404, msg);
-            return false, nil;
+            return false, nil, nil;
         end
 
         if (out.version) then
@@ -443,7 +443,8 @@ single_crud.dependent_action = function (self, context, obj, options, extra_colu
         local key_params, key_count = get_key_params(tao, obj);
         local out, msg = tao:select(context, table.unpack(key_params));
         if (out ~= nil) then
-            local stat, msg = self:phydel(context, obj, extra_columns);
+            local stat, msg, ret = self:phydel(context, obj, extra_columns);
+            assert(stat, msg);
         end
         return self:add(context, obj, extra_columns);
     else
@@ -469,7 +470,7 @@ single_crud.approve_and_select = function (self, context, obj)
         local key_param_str = get_key_params_str(tao, obj);
         local msg = messages:format('RECORD_NOT_FOUND', key_param_str);
         error_handler.raise_error(404, msg);
-        return false, nil;
+        return false, nil, nil;
     end
 
     -- remove creation_uid, creation_time, update_uid, update_time from the table
@@ -494,7 +495,7 @@ single_crud.initiate_amendment = function (self, context, obj, extra_columns)
         local key_param_str = get_key_params_str(tao, obj);
         local msg = messages:format('RECORD_NOT_FOUND', key_param_str);
         error_handler.raise_error(404, msg);
-        return false, nil;
+        return false, nil, nil;
     end
 
     if (out.entity_state ~= '1' and out.entity_state ~= '2') then

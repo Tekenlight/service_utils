@@ -474,6 +474,7 @@ rest_controller.handle_service_request = function (request, response)
 							print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 							print(json_input);
 							print(msg);
+                            require 'pl.pretty'.dump(t);
 							print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 						else
 							flg = true;
@@ -484,6 +485,7 @@ rest_controller.handle_service_request = function (request, response)
 								print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 								print(json_input);
 								print(msg);
+                                require 'pl.pretty'.dump(t);
 								print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 							end
 						end
