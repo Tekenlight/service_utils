@@ -5,6 +5,7 @@ local utils = {}
 ffi.cdef[[
 int getentropy(void *buf, size_t buflen);
 void * pin_loaded_so(const char * libname);
+double str_cosine_similarity(const char *str1, const char *str2);
 ]]
 
 function utils.get_rand_int()
@@ -77,6 +78,13 @@ function utils.uuid()
 		local v = (c == 'x') and random(0, 0xf) or random(8, 0xb)
 		return string.format('%x', v)
 	end)
+end
+
+function utils.string_similarity(s1, s2)
+    assert(type(s1) == 'string');
+    assert(type(s2) == 'string');
+
+    return tonumber(ffi.C.str_cosine_similarity(s1, s2));
 end
 
 return utils;
