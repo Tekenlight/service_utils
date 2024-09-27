@@ -2,6 +2,7 @@ local error_handler = require('lua_schema.error_handler');
 
 local validate_map = {};
 local depth = 0;
+local val_debug = false;
 
 local get_tabs = function()
 	local s_tabs = "";
@@ -41,7 +42,12 @@ validate_map.run = function(context, map, data, additional_data)
 						if (ae_val == true) then
 							flg = val.val_func(context, val.argument[i], val.addnl_argument);
 							if (not flg) then
-								--require 'pl.pretty'.dump(val)
+                                if (val_debug) then
+                                    print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                                    print("falied validation");
+                                    require 'pl.pretty'.dump(val)
+                                    print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                                end
 								status = flg;
 							end
 						end
@@ -51,7 +57,12 @@ validate_map.run = function(context, map, data, additional_data)
 				else
 					flg = val.val_func(context, val.argument, val.addnl_argument);
 					if (not flg) then
-						--require 'pl.pretty'.dump(val)
+                        if (val_debug) then
+                            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                            print("falied validation");
+                            require 'pl.pretty'.dump(val)
+                            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                        end
 						status = flg;
 					end
 				end
@@ -96,7 +107,12 @@ validate_map.run = function(context, map, data, additional_data)
 									--print("END MAIN_VAL ["..tostring(status).."] }");
 								end
 								depth = depth - 1;
-								--require 'pl.pretty'.dump(val)
+                                if (val_debug) then
+                                    print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                                    print("falied validation");
+                                    require 'pl.pretty'.dump(val)
+                                    print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                                end
 								return false;
 							end
 						end
@@ -110,8 +126,12 @@ validate_map.run = function(context, map, data, additional_data)
 						if (depth == 1) then
 							--print("END MAIN_VAL ["..tostring(status).."] }");
 						end
-						depth = depth - 1;
-						--require 'pl.pretty'.dump(val)
+                        if (val_debug) then
+                            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                            print("falied validation");
+                            require 'pl.pretty'.dump(val)
+                            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                        end
 						return false;
 					end
 				end
