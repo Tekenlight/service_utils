@@ -175,7 +175,7 @@ local function begin_transaction(req_processor_interface, func, uc)
     return flg;
 end
 
-local function end_transaction(req_processor_interface, func, uc, status)
+local function end_transaction(req_processor_interface, func, uc, status, message_validation_context)
     local flg = false;
 
     local i = 0;
@@ -195,8 +195,17 @@ local function end_transaction(req_processor_interface, func, uc, status)
                 -- uc.db_connections[name].conn:commit();
                 transaction.commit_transaction(uc, name, nil);
             else
-                -- uc.db_connections[name].conn:rollback();
-                transaction.rollback_transaction(uc, name, nil);
+                if (message_validation_context ~= nil and
+                    message_validation_context.status ~= nil and
+                    message_validation_context.status.err_type == 'X') then
+
+                    -- uc.db_connections[name].conn:commit();
+                    transaction.commit_transaction(uc, name, nil);
+                else
+
+                    -- uc.db_connections[name].conn:rollback();
+                    transaction.rollback_transaction(uc, name, nil);
+                end
             end
         end
         flg = true;
@@ -209,13 +218,20 @@ local function end_transaction(req_processor_interface, func, uc, status)
             pcall(conn.close_open_cursors, conn);
             if (req_processor_interface.methods[func].transactional == true) then
                 if (status) then
-                    -- pcall(conn.commit, conn);
-                    transaction.commit_transaction(uc, nil, conn);
-                    flg = true;
+                    -- uc.db_connections[name].conn:commit();
+                    transaction.commit_transaction(uc, name, nil);
                 else
-                    -- pcall(conn.rollback, conn);
-                    transaction.rollback_transaction(uc, nil, conn);
-                    flg = true;
+                    if (message_validation_context ~= nil and
+                        message_validation_context.status ~= nil and
+                        message_validation_context.status.err_type == 'X') then
+
+                        -- uc.db_connections[name].conn:commit();
+                        transaction.commit_transaction(uc, name, nil);
+                    else
+
+                        -- uc.db_connections[name].conn:rollback();
+                        transaction.rollback_transaction(uc, name, nil);
+                    end
                 end
             end
         end
@@ -315,7 +331,7 @@ local invoke_func = function(request, req_processor_interface, req_processor, fu
         status = false;
     end
     if (db_init_done) then
-        local flg = end_transaction(req_processor_interface, func, uc, status);
+        local flg = end_transaction(req_processor_interface, func, uc, status, message_validation_context);
         reset_db_connections(uc);
     end
     if (not status) then
