@@ -349,7 +349,7 @@ local invoke_func = function(request, req_processor_interface, req_processor, fu
         print(debug.getinfo(1).source, debug.getinfo(1).currentline);
         out_obj = {};
         out_obj.err_type = message_validation_context.status.err_type;
-        if (message_validation_context.status.err_type == 'X') then
+        if (message_validation_context.excp_obj ~= nil) then
             out_obj.excp_obj = message_validation_context.excp_obj;
         end
         out_obj.error_message = message_validation_context.status.error_message;
