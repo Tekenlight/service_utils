@@ -137,6 +137,7 @@ function context_harness.prepare_uc(databases, module_path, jwt_token)
 	local db_conection_params = master_db_params:get_params(table.unpack(databases));
 
 	local uc = require('service_utils.common.user_context').new();
+    uc.hdr_flds = {};
 	uc.module_path = module_path;
 
 	--[[ TBD: To consider implementation of disabling auth check for this ]]
@@ -198,6 +199,7 @@ context_harness.prepare_uc_REST = function(request, url_parts)
 	local hdr_flds = request:get_hdr_fields();
 	local jwt_token = hdr_flds['X-Auth'];
 	local offset = 1;
+    uc.hdr_flds = hdr_flds;
 
 	if (jwt_token == nil) then
 		if (does_request_need_auth(request, url_parts)) then
