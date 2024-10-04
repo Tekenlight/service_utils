@@ -21,6 +21,5 @@ else
     -- Print the keys and their corresponding values
     for i, key in ipairs(keys) do
         print(key .. ": " .. values[i])
-        client:del(key);
     end
 end
