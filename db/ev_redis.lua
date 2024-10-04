@@ -81,6 +81,37 @@ ev_redis_connection.get = function(self, key)
 	end
 end
 
+ev_redis_connection.keys = function(self, pattern)
+	valid_self(self);
+	valid_key(pattern);
+
+	local query = 'KEYS '..pattern;
+	local status, response, msg = self._conn:transceive(query);
+	if (not status) then
+		return status, nil, msg;
+	else
+		return status, response;
+	end
+end
+
+ev_redis_connection.mget = function(self, ...)
+    local args = {...};
+	valid_self(self);
+    assert(#args > 0);
+
+    local query = 'MGET ';
+    for i,v in ipairs(args) do
+        query = query .. v ..' ';
+    end
+
+	local status, response, msg = self._conn:transceive(query);
+	if (not status) then
+		return status, nil, msg;
+	else
+		return status, response;
+	end
+end
+
 --[[
 -- Avaialable from 7.0.0
 --]]
@@ -97,11 +128,16 @@ ev_redis_connection.expiretime = function(self, key)
 	end
 end
 
-ev_redis_connection.del = function(self, key)
+ev_redis_connection.del = function(self, ...)
+    local args = {...};
 	valid_self(self);
-	valid_key(key);
+    assert(#args > 0);
 
-	local query = 'DEL '..key;
+    local query = 'DEL ';
+    for i,v in ipairs(args) do
+        query = query .. v ..' ';
+    end
+
 	local status, response, msg = self._conn:transceive(query);
 	if (not status) then
 		return status, nil, msg;
