@@ -150,13 +150,12 @@ local function begin_transaction(req_processor_interface, func, uc)
         local i = 0;
         local name = nil;
         for n,v in pairs(uc.db_connections) do
-            i = i + 1;
-            if (i == 1) then
+            if (v.client_type == 'rdbms' and name == nil) then
                 name = n;
-            else
-                break;
             end
+            i = i + 1;
         end
+        assert(name ~= nil, "CONNECTION NOT FOUND");
         if (i == 1) then
             -- uc.db_connections[name].conn:begin();
             transaction.begin_transaction(uc, name);
@@ -167,6 +166,8 @@ local function begin_transaction(req_processor_interface, func, uc)
                 return false;
             else
                 -- uc.db_connections[req_processor_interface.methods[func].db_schema_name].conn:begin();
+                name = req_processor_interface.methods[func].db_schema_name;
+                assert(uc.db_connections[name].client_type == 'rdbms', "CANNOT BEGIN TRANSACTION");
                 transaction.begin_transaction(uc, req_processor_interface.methods[func].db_schema_name);
                 flg = true;
             end
@@ -181,13 +182,12 @@ local function end_transaction(req_processor_interface, func, uc, status, messag
     local i = 0;
     local name = nil;
     for n,v in pairs(uc.db_connections) do
-        i = i + 1;
-        if (i == 1) then
+        if (v.client_type == 'rdbms' and name == nil) then
             name = n;
-        else
-            break;
         end
+        i = i + 1;
     end
+    assert(name ~= nil, "CONNECTION NOT FOUND");
     if (i == 1) then
         pcall(uc.db_connections[name].conn.close_open_cursors,uc.db_connections[name].conn);
         if (req_processor_interface.methods[func].transactional == true) then
@@ -214,6 +214,8 @@ local function end_transaction(req_processor_interface, func, uc, status, messag
             error("CONNECTION NAME MUST BE SPECIFIED FOR "..func.." IF TRANSACTIONA CONTROL IS REQUIRED");
             return false
         else
+            name = req_processor_interface.methods[func].db_schema_name;
+            assert(uc.db_connections[name].client_type == 'rdbms', "CANNOT END TRANSACTION");
             local conn = uc.db_connections[req_processor_interface.methods[func].db_schema_name].conn;
             pcall(conn.close_open_cursors, conn);
             if (req_processor_interface.methods[func].transactional == true) then
