@@ -20,3 +20,8 @@ print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 print(status);
 print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 
+local status = crypto_utils.verify_signature_prv_key(str, rsa_pair.prv_key, "sha256", sig);
+print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+print(status);
+print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+

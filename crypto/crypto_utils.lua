@@ -235,6 +235,18 @@ crypto_utils.verify_signature = function(message, pub_key, digest_name, sig)
     return status;
 end
 
+crypto_utils.verify_signature_prv_key = function(message, prv_key, digest_name, sig)
+    assert(type(message) == 'string');
+    assert(type(prv_key) == 'string');
+    assert(type(digest_name) == 'string');
+    assert(type(sig) == 'string');
+    assert(sig_digest_alg_names[digest_name] == 1);
+
+    local status = evl_crypto.verify_signature_prv_key(message, prv_key, digest_name, sig);
+
+    return status;
+end
+
 crypto_utils.get_rsa_public_key = function(rsa_pub_key)
 	assert(type(rsa_pub_key) == 'userdata');
 	local status, pub_key = pcall(evl_crypto.get_rsa_public_key, rsa_pub_key);
