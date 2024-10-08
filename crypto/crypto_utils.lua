@@ -202,6 +202,39 @@ crypto_utils.form_rsa_key_pair = function(modulus)
 	return { pub_key = pub_key, prv_key = prv_key };
 end
 
+local sig_digest_alg_names = {
+    sha224 = 1,
+    sha256 = 1,
+    sha512 = 1,
+    sha512_224 = 1,
+    sha512_256 = 1,
+    sha384 = 1,
+    sha512 = 1
+}
+
+crypto_utils.sign_message = function(message, prv_key, digest_name)
+    assert(type(message) == 'string');
+    assert(type(prv_key) == 'string');
+    assert(type(digest_name) == 'string');
+    assert(sig_digest_alg_names[digest_name] == 1);
+
+    local sig = evl_crypto.sign_message(message, prv_key, digest_name);
+
+    return sig;
+end
+
+crypto_utils.verify_signature = function(message, pub_key, digest_name, sig)
+    assert(type(message) == 'string');
+    assert(type(pub_key) == 'string');
+    assert(type(digest_name) == 'string');
+    assert(type(sig) == 'string');
+    assert(sig_digest_alg_names[digest_name] == 1);
+
+    local status = evl_crypto.verify_signature(message, pub_key, digest_name, sig);
+
+    return status;
+end
+
 crypto_utils.get_rsa_public_key = function(rsa_pub_key)
 	assert(type(rsa_pub_key) == 'userdata');
 	local status, pub_key = pcall(evl_crypto.get_rsa_public_key, rsa_pub_key);
