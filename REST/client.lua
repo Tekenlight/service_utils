@@ -74,8 +74,9 @@ client.send_request = function (self, uri, headers, body)
 			or headers.method == 'POST' or headers.method == 'DELETE');
 
 	local request = platform.new_request();
-	--request:set_method(headers.method);
-	--headers.method = nil;
+	request:set_method(headers.method);
+	headers.method = nil;
+
 	for n,v in pairs(headers) do
 		request:set_hdr_field(n, v);
 	end

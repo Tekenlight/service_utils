@@ -11,7 +11,9 @@ This is some test message for the purpose of testing digital signature
 
 local rsa_pair = crypto_utils.form_rsa_key_pair(1024);
 
+print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 local sig = crypto_utils.sign_message(str, rsa_pair.prv_key, "sha256")
+print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 
 
 

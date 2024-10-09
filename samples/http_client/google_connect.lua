@@ -9,7 +9,7 @@ local client;
 
 --local url = "biop.tekenlight.com"
 --local url = "tekenlight.com"
-local url = "google.com"
+local url = "www.google.com"
 
 local function establish_connection(inp)
 	print(debug.getinfo(1).source, debug.getinfo(1).currentline);

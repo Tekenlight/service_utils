@@ -1,217 +1,238 @@
-local cjson  = require 'cjson'
+local cjson = require 'cjson'
 local core_utils = require("lua_schema.core_utils");
 local evl_crypto = (require('service_utils.common.utils')).load_library('libevlcrypto');
 
 local alg_sign = {
-	['HS256'] = function(data, key) 
-		-- for HS256 the minimum required key size is 256bits i.e 256/8 = 32 characters
-		assert(key ~= nil and type(key) == 'string' and string.len(key) >= 32)
-		return evl_crypto.hmac_digest('sha256', data, key, true) 
-	end,
-	['HS384'] = function(data, key) 
-		-- for HS384 the minimum required key size is 384bits i.e 384/8 = 48 characters
-		assert(key ~= nil and type(key) == 'string' and string.len(key) >= 48)
-		return evl_crypto.hmac_digest('sha384', data, key, true) 
-	end,
-	['HS512'] = function(data, key) 
-		-- for HS512 the minimum required key size is 512bits i.e 512/8 = 64 characters
-		assert(key ~= nil and type(key) == 'string' and string.len(key) >= 64)
-		return evl_crypto.hmac_digest('sha512', data, key, true) 
-	end,
+    ['HS256'] = function(data, key)
+        -- for HS256 the minimum required key size is 256bits i.e 256/8 = 32 characters
+        assert(key ~= nil and type(key) == 'string' and string.len(key) >= 32)
+        return evl_crypto.hmac_digest('sha256', data, key, true)
+    end,
+    ['HS384'] = function(data, key)
+        -- for HS384 the minimum required key size is 384bits i.e 384/8 = 48 characters
+        assert(key ~= nil and type(key) == 'string' and string.len(key) >= 48)
+        return evl_crypto.hmac_digest('sha384', data, key, true)
+    end,
+    ['HS512'] = function(data, key)
+        -- for HS512 the minimum required key size is 512bits i.e 512/8 = 64 characters
+        assert(key ~= nil and type(key) == 'string' and string.len(key) >= 64)
+        return evl_crypto.hmac_digest('sha512', data, key, true)
+    end,
+    ['RS256'] = function(data, priv_key)
+        assert(priv_key ~= nil and type(priv_key) == 'string' and string.len(priv_key) >= 64)
+        return evl_crypto.sign_message(data, priv_key, 'sha256')
+    end,
 }
 
 local alg_verify = {
-	['HS256'] = function(data, signature, key) return signature == alg_sign['HS256'](data, key) end,
-	['HS384'] = function(data, signature, key) return signature == alg_sign['HS384'](data, key) end,
-	['HS512'] = function(data, signature, key) return signature == alg_sign['HS512'](data, key) end,
+    ['HS256'] = function(data, signature, key) return signature == alg_sign['HS256'](data, key) end,
+    ['HS384'] = function(data, signature, key) return signature == alg_sign['HS384'](data, key) end,
+    ['HS512'] = function(data, signature, key) return signature == alg_sign['HS512'](data, key) end,
+    ['RS256'] = function(data, signature, pub_key)
+        local status = evl_crypto.verify_signature(data, pub_key, 'sha256', signature);
+        return status;
+    end,
 }
 
-local function b64_encode_str(input)	
-	local result = core_utils.str_base64_encode(input)
+--[[
+Base64 encoding typically uses the characters + and /, but if the encoded string is used in URLs or filenames,
+it can be problematic because these characters have special meanings in URLs. To address this, a variant called
+URL-safe Base64 encoding is often used. In this variant:
 
-	result = result:gsub('+','-'):gsub('/','_'):gsub('=','')
+The + character is replaced with -.
+The / character is replaced with _.
 
-	return result
+This ensures that the encoded string is safe to use in URLs or as a part of filenames without needing further encoding.
+For example, in some libraries or frameworks, you might see options or functions like base64url or base64_encode with a
+URL-safe flag to handle this conversion automatically.
+]]
+
+local function b64_encode_str(input)
+    local result = core_utils.str_base64_encode(input)
+
+    result = result:gsub('+','-'):gsub('/','_'):gsub('=','')
+
+    return result
 end
 
 local function url_decode(input)
-	local i = 1;
-	local len = string.len(input);
-	local b64_len = 0;
-	local c;
-	while (i <= len) do
-		c = string.sub(input, i, i);
-		if (c ~= ' ' and c ~= '\t' and  c ~= '\r' and c ~= '\n') then
-			b64_len = b64_len + 1;
-		end
-		i = i + 1;
-	end
-	while ((b64_len % 4) ~= 0) do
-		input = input .. '=';
-		b64_len = b64_len + 1;
-	end
+    local i = 1;
+    local len = string.len(input);
+    local b64_len = 0;
+    local c;
+    while (i <= len) do
+        c = string.sub(input, i, i);
+        if (c ~= ' ' and c ~= '\t' and  c ~= '\r' and c ~= '\n') then
+            b64_len = b64_len + 1;
+        end
+        i = i + 1;
+    end
+    while ((b64_len % 4) ~= 0) do
+        input = input .. '=';
+        b64_len = b64_len + 1;
+    end
 
-	input = input:gsub('-','+'):gsub('_','/')
+    input = input:gsub('-','+'):gsub('_','/')
 
-	return input;
+    return input;
 end
 
 
 local function b64_decode(input)
-	return core_utils.base64_decode(url_decode(input))
+    return core_utils.base64_decode(url_decode(input))
 end
 
 local function b64_decode_str(input)
-	return core_utils.str_base64_decode(url_decode(input))
+    return core_utils.str_base64_decode(url_decode(input))
 end
 
 local function tokenize(str, div, len)
-	local result, pos = {}, 0
+    local result, pos = {}, 0
 
-	for st, sp in function() return str:find(div, pos, true) end do
+    for st, sp in function() return str:find(div, pos, true) end do
 
-		result[#result + 1] = str:sub(pos, st-1)
-		pos = sp + 1
+        result[#result + 1] = str:sub(pos, st-1)
+        pos = sp + 1
 
-		len = len - 1
+        len = len - 1
 
-		if len <= 1 then
-			break
-		end
-	end
+        if len <= 1 then
+            break
+        end
+    end
 
-	result[#result + 1] = str:sub(pos)
+    result[#result + 1] = str:sub(pos)
 
-	return result
+    return result
 end
 
 local M = {}
 
 function M.encode(data, key, alg)
-	if type(data) ~= 'table' then return nil, "Argument #1 must be table" end
-	if type(key) ~= 'string' then return nil, "Argument #2 must be string" end
+    if type(data) ~= 'table' then return nil, "Argument #1 must be table" end
+    if type(key) ~= 'string' then return nil, "Argument #2 must be string" end
 
-	alg = alg or "HS256";
+    alg = alg or "HS256";
 
-	if not alg_sign[alg] then
-		return nil, "Algorithm not supported"
-	end
+    if not alg_sign[alg] then
+        return nil, "Algorithm not supported"
+    end
 
-	local header = { typ='JWT', alg=alg }
+    local header = { typ='JWT', alg=alg }
 
-	local segments = {
-		b64_encode_str(cjson.encode(header)),
-		b64_encode_str(cjson.encode(data))
-	}
+    local segments = {
+        b64_encode_str(cjson.encode(header)),
+        b64_encode_str(cjson.encode(data))
+    }
 
-	local signing_input = table.concat(segments, ".");
+    local signing_input = table.concat(segments, ".");
 
-	local status, signature = pcall(alg_sign[alg], signing_input, key);
-	if (not status) then
-		local err = signature;
-		return nil, err, nil;
-	end
-	local s = b64_encode_str(signature);
+    local status, signature = pcall(alg_sign[alg], signing_input, key);
+    if (not status) then
+        local err = signature;
+        return nil, err, nil;
+    end
+    local s = b64_encode_str(signature);
 
-	segments[#segments+1] = b64_encode_str(signature);
+    segments[#segments+1] = b64_encode_str(signature);
 
-	return table.concat(segments, "."), nil;
+    return table.concat(segments, "."), nil;
 end
 
 function M.deserialize(data, key, verify)
-	if key and verify == nil then verify = true end
-	if type(data) ~= 'string' then return nil, "Argument #1 must be string" end
-	if verify and type(key) ~= 'string' then return nil, "Argument #2 must be string" end
+    if key and verify == nil then verify = true end
+    if type(data) ~= 'string' then return nil, "Argument #1 must be string" end
+    if verify and type(key) ~= 'string' then return nil, "Argument #2 must be string" end
 
-	local token = tokenize(data, '.', 3)
+    local token = tokenize(data, '.', 3)
 
-	if #token ~= 3 then
-		return nil, "Invalid token"
-	end
+    if #token ~= 3 then
+        return nil, "Invalid token"
+    end
 
-	local headerb64, bodyb64, sigb64 = token[1], token[2], token[3]
+    local headerb64, bodyb64, sigb64 = token[1], token[2], token[3]
 
-	local ok, header, body, sig = pcall(function ()
+    local ok, header, body, sig = pcall(function ()
 
-		return	cjson.decode(b64_decode_str(headerb64)), 
-			cjson.decode(b64_decode_str(bodyb64)),
-			b64_decode_str(sigb64)
-	end)	
+        return    cjson.decode(b64_decode_str(headerb64)),
+            cjson.decode(b64_decode_str(bodyb64)),
+            b64_decode_str(sigb64)
+    end)
 
 
-	if not ok then
-		return nil, "Invalid json"
-	end
+    if not ok then
+        return nil, "Invalid json"
+    end
 
-	return header, body, sig, token;
+    return header, body, sig, token;
 
 end
 
 function M.valid(header, body, sig, key, token)
-	local headerb64, bodyb64, sigb64 = token[1], token[2], token[3]
+    local headerb64, bodyb64, sigb64 = token[1], token[2], token[3]
 
-	if not header.typ or header.typ ~= "JWT" then
-		return false, "Invalid typ"
-	end
+    if not header.typ or header.typ ~= "JWT" then
+        return false, "Invalid typ"
+    end
 
-	if not header.alg or type(header.alg) ~= "string" then
-		return false, "Invalid alg"
-	end
+    if not header.alg or type(header.alg) ~= "string" then
+        return false, "Invalid alg"
+    end
 
-	if body.exp and type(body.exp) ~= "number" then
-		return false, "exp must be number"
-	end
+    if body.exp and type(body.exp) ~= "number" then
+        return false, "exp must be number"
+    end
 
-	if body.nbf and type(body.nbf) ~= "number" then
-		return false, "nbf must be number"
-	end
+    if body.nbf and type(body.nbf) ~= "number" then
+        return false, "nbf must be number"
+    end
 
-	if not alg_verify[header.alg] then
-		return false, "Algorithm not supported"
-	end
+    if not alg_verify[header.alg] then
+        return false, "Algorithm not supported"
+    end
 
-	if not alg_verify[header.alg](headerb64 .. "." .. bodyb64, sig, key) then
-		return false, "Invalid signature"
-	end
+    if not alg_verify[header.alg](headerb64 .. "." .. bodyb64, sig, key) then
+        return false, "Invalid signature"
+    end
 
-	if body.exp and os.time() >= body.exp then
-		return false, "Not acceptable by exp"
-	end
+    if body.exp and os.time() >= body.exp then
+        return false, "Not acceptable by exp"
+    end
 
-	if body.nbf and os.time() < body.nbf then
-		return false, "Not acceptable by nbf"
-	end
+    if body.nbf and os.time() < body.nbf then
+        return false, "Not acceptable by nbf"
+    end
 
-	return true;
+    return true;
 end
 
 function M.verify_signature(header, sig, key, token)
-	local headerb64, bodyb64 = token[1], token[2]
-	if not alg_verify[header.alg] then
-		return false, "Algorithm not supported"
-	end
+    local headerb64, bodyb64 = token[1], token[2]
+    if not alg_verify[header.alg] then
+        return false, "Algorithm not supported"
+    end
 
-	if not alg_verify[header.alg](headerb64 .. "." .. bodyb64, sig, key) then
-		return false, "Invalid signature"
-	end
+    if not alg_verify[header.alg](headerb64 .. "." .. bodyb64, sig, key) then
+        return false, "Invalid signature"
+    end
 
-	return true;
+    return true;
 end
 
 function M.decode(data, key, verify)
-	local header, body, sig, token = M.deserialize(data, key, verify);
-	if (header == nil) then
-		return header, body;
-	end
+    local header, body, sig, token = M.deserialize(data, key, verify);
+    if (header == nil) then
+        return header, body;
+    end
 
-	if verify then
-		local status, msg =  M.valid(header, body, sig, key, token);
-		if (not status) then
-			return status, msg;
-		end
-	end
+    if verify then
+        local status, msg =  M.valid(header, body, sig, key, token);
+        if (not status) then
+            return status, msg;
+        end
+    end
 
-	return body, header, sig;
+    return body, header, sig;
 end
 
 return M

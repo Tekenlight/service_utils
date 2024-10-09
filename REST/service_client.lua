@@ -60,14 +60,27 @@ service_client.get_interface_method_properties = function(context, inp)
     return method_properties, interface_class;
 end
 
-service_client.core_transcieve = function(context, rest_client, uri, headers, request_json)
+service_client.send_and_receive = function(rest_client, uri, headers, request_str)
     assert(type(headers) == 'table');
     assert(type(uri) == 'string');
-    assert(type(request_json) == 'string');
+    assert(type(request_str) == 'string' or request_str == nil);
 
-    rest_client:send_request(uri, headers, request_json);
+    rest_client:send_request(uri, headers, request_str);
 
-    local status, response_json, http_status, hdrs = rest_client:recv_response();
+    local status, response_str, http_status, hdrs = rest_client:recv_response();
+
+    return status, response_str, http_status, hdrs;
+end
+
+service_client.core_transcieve = function(context, rest_client, uri, headers, request_str)
+    assert(type(headers) == 'table');
+    assert(type(uri) == 'string');
+    assert(type(request_str) == 'string');
+
+    rest_client:send_request(uri, headers, request_str);
+
+    local status, response_json, http_status, hdrs =
+            service_client.send_and_receive(rest_client, uri, headers, request_str);
     if (not status) then
         if (response_json ~= nil) then
             local obj, msg = json_parser.decode(response_json);
