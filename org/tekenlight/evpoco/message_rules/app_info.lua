@@ -27,7 +27,7 @@ do
     element_handler.properties = {};
     element_handler.properties.element_type = 'C';
     element_handler.properties.content_type = 'C';
-    element_handler.properties.schema_type = '{http://evpoco.tekenlight.org/message_rules}app_info';
+    element_handler.properties.schema_type = '{}app_info';
     element_handler.properties.attr = {};
     element_handler.properties.attr._attr_properties = {};
     element_handler.properties.attr._generated_attr = {};
@@ -44,11 +44,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
+        generated_subelement_name = '_sequence_group',
         max_occurs = 1,
         top_level_group = true,
-        group_type = 'S',
         min_occurs = 1,
-        generated_subelement_name = '_sequence_group',
+        group_type = 'S',
         'rule_set',
         'mappings',
     };

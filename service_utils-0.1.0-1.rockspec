@@ -59,6 +59,8 @@ build = {
 		["service_utils.SMTP.mail_message"] = 'SMTP/mail_message.lua',
 		["service_utils.SMTP.smtp_client"] = 'SMTP/smtp_client.lua',
 
+		["service_utils.gmail.email_client"] = 'gmail/email_client.lua',
+
 		["service_utils.crypto.crypto_utils"] = 'crypto/crypto_utils.lua',
 
 		["org.tekenlight.evpoco.user_name_type"] = 'org/tekenlight/evpoco/user_name_type.lua',
@@ -68,6 +70,11 @@ build = {
 		["org.tekenlight.evpoco.email_message"] = 'org/tekenlight/evpoco/email_message.lua',
 		["org.tekenlight.evpoco.email_id_type"] = 'org/tekenlight/evpoco/email_id_type.lua',
 		["org.tekenlight.evpoco.attachment_dtls_type"] = 'org/tekenlight/evpoco/attachment_dtls_type.lua',
+		["org.tekenlight.evpoco.attachment_dtls_type_2"] = 'org/tekenlight/evpoco/attachment_dtls_type_2.lua',
+		["org.tekenlight.evpoco.inbound_email_message_type"] = 'org/tekenlight/evpoco/inbound_email_message_type.lua',
+		["org.tekenlight.evpoco.inbound_email_message"] = 'org/tekenlight/evpoco/inbound_email_message.lua',
+		["org.tekenlight.evpoco.inbound_email_messages_type"] = 'org/tekenlight/evpoco/inbound_email_messages_type.lua',
+		["org.tekenlight.evpoco.inound_email_messages"] = 'org/tekenlight/evpoco/inound_email_messages.lua',
 
 		['org.tekenlight.evpoco.message_rules.app_info'] = 'org/tekenlight/evpoco/message_rules/app_info.lua',
 		['org.tekenlight.evpoco.message_rules.mappings_type'] = 'org/tekenlight/evpoco/message_rules/mappings_type.lua',

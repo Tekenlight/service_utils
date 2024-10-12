@@ -4,6 +4,7 @@ local cjson = require('cjson.safe');
 local json_parser = cjson.new();
 local core_utils = require("lua_schema.core_utils");
 local properties_funcs = platform.properties_funcs();
+local uri_util = require('uri._util');
 
 local service_client = {};
 
@@ -77,7 +78,7 @@ service_client.core_transcieve = function(context, rest_client, uri, headers, re
     assert(type(uri) == 'string');
     assert(type(request_str) == 'string');
 
-    rest_client:send_request(uri, headers, request_str);
+    --rest_client:send_request(uri, headers, request_str);
 
     local status, response_json, http_status, hdrs =
             service_client.send_and_receive(rest_client, uri, headers, request_str);
@@ -170,6 +171,38 @@ service_client.prepare_headers = function(context, inp, method_properties)
     return headers;
 end
 
+service_client.complete_uri_with_qp = function(uri, query_params, encode)
+    assert(type(uri) == 'string' or uri == nil);
+    if (uri == nil) then
+        uri = "/";
+    end
+
+    assert(query_params == nil or type(query_params) == 'table');
+    if (query_params == nil) then
+        query_params = {};
+    end
+
+    if (encode == nil) then encode = false; end
+    assert(type(encode) == 'boolean');
+
+    local i = 1;
+    local uri_qp = ""
+    for  n,v in pairs(query_params) do
+        if (i == 1) then
+            --uri_qp = uri_qp..'?';
+        else
+            uri_qp = uri_qp..'&';
+        end
+        i = i + 1;
+        uri_qp = uri_qp..n.."="..tostring(v); -- To check if tostring will work for query params
+    end
+    if (encode) then uri_qp = uri_util.uri_encode(uri_qp); end
+
+    uri = uri .. '?'.. uri_qp;
+
+    return uri;
+end
+
 service_client.prepare_uri = function(context, inp)
     assert(type(inp) == 'table');
     assert(inp.module_name ~= nil and type(inp.module_name) == 'string');
@@ -189,16 +222,8 @@ service_client.prepare_uri = function(context, inp)
         uri = "/"..string.gsub(inp.module_name, "%.", "/");
     end
     uri = uri.."/"..inp.class_name.."/"..inp.method_name;
-    local i = 1;
-    for  n,v in pairs(inp.query_params) do
-        if (i == 1) then
-            uri = uri..'?';
-        else
-            uri = uri..'&';
-        end
-        i = i + 1;
-        uri = uri..n.."="..tostring(v); -- To check if tostring will work for query params
-    end
+
+    uri = service_client.complete_uri_with_qp(uri, inp.query_params);
 
     return uri;
 end

@@ -73,5 +73,38 @@ targetNamespace="http://evpoco.tekenlight.org" xmlns:ns="http://evpoco.tekenligh
 
 	<xsd:element name="email_message" type="ns:email_message_type"/>
 
+	<xsd:complexType name="attachment_dtls_type_2">
+		<xsd:sequence>
+			<xsd:element name="file_name" type="xsd:token"/>
+			<xsd:element name="data" type="xsd:hexBinary"/>
+			<xsd:element name="mime_type" type="xsd:token"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+    <xsd:group name="inbound_email_message_elements">
+        <xsd:sequence>
+			<xsd:element name="id" type="xsd:token" />
+            <xsd:element name="date" type="xsd:dateTime" />
+            <xsd:element name="from" type="xsd:token"/>
+            <xsd:element name="return_path" type="ns:email_id_type"/>
+            <xsd:element name="delivered_to" type="ns:email_id_type"/>
+			<xsd:element name="to" type="xsd:token" />
+            <xsd:element name="cc" type="xsd:token"/>
+			<xsd:element name="subject" type="xsd:token"/>
+			<xsd:element name="message_body" type="xsd:string"/>
+			<xsd:element name="attachments" type="ns:attachment_dtls_type_2" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:group>
+
+	<xsd:complexType name="inbound_email_message_type">
+		<xsd:group ref="ns:inbound_email_message_elements"/>
+	</xsd:complexType>
+	<xsd:element name="inbound_email_message" type="ns:inbound_email_message_type"/>
+
+	<xsd:complexType name="inbound_email_messages_type">
+		<xsd:group ref="ns:inbound_email_message_elements" minOccurs="0" maxOccurs="unbounded"/>
+	</xsd:complexType>
+    <xsd:element name="inound_email_messages" type="ns:inbound_email_messages_type" />
+
 
 </xsd:schema>

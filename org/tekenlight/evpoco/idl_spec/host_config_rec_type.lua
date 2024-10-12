@@ -43,10 +43,10 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        top_level_group = true,
-        min_occurs = 1,
         generated_subelement_name = '_sequence_group',
         max_occurs = 1,
+        min_occurs = 1,
+        top_level_group = true,
         group_type = 'S',
         'host',
         'port',
@@ -127,57 +127,6 @@ element_handler.properties.subelement_properties['{}protocol'].type_of_simple = 
         element_handler.properties.subelement_properties['{}protocol'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{}protocol'].particle_properties.min_occurs = 0;
         element_handler.properties.subelement_properties['{}protocol'].particle_properties.max_occurs = 1;
-    end
-
-    element_handler.properties.subelement_properties['{}secure'] = {};
-    do
-element_handler.properties.subelement_properties['{}secure'].super_element_content_type = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
-
-element_handler.properties.subelement_properties['{}secure'].type_of_simple = 'A';
-
-        do
-            element_handler.properties.subelement_properties['{}secure'].properties = {};
-            element_handler.properties.subelement_properties['{}secure'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{}secure'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{}secure'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}boolean';
-            element_handler.properties.subelement_properties['{}secure'].properties.bi_type = {};
-            element_handler.properties.subelement_properties['{}secure'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{}secure'].properties.bi_type.name = 'boolean';
-            element_handler.properties.subelement_properties['{}secure'].properties.bi_type.id = '15';
-            element_handler.properties.subelement_properties['{}secure'].properties.attr = {};
-            element_handler.properties.subelement_properties['{}secure'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{}secure'].properties.attr._generated_attr = {};
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}secure'].particle_properties = {};
-            element_handler.properties.subelement_properties['{}secure'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{}secure'].particle_properties.q_name.ns = '';
-            element_handler.properties.subelement_properties['{}secure'].particle_properties.q_name.local_name = 'secure';
-            element_handler.properties.subelement_properties['{}secure'].particle_properties.generated_name = 'secure';
-        end
-
-        -- Simple type properties
-        do
-            element_handler.properties.subelement_properties['{}secure'].base = {};
-            element_handler.properties.subelement_properties['{}secure'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{}secure'].base.name = 'boolean';
-            element_handler.properties.subelement_properties['{}secure'].local_facets = {};
-            element_handler.properties.subelement_properties['{}secure'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{}secure']);
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}secure'].type_handler = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
-            element_handler.properties.subelement_properties['{}secure'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{}secure'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{}secure'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{}secure'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{}secure'].parse_xml = basic_stuff.parse_xml;
-        end
-
-        element_handler.properties.subelement_properties['{}secure'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{}secure'].particle_properties.min_occurs = 0;
-        element_handler.properties.subelement_properties['{}secure'].particle_properties.max_occurs = 1;
     end
 
     element_handler.properties.subelement_properties['{}host'] = {};
@@ -280,6 +229,57 @@ element_handler.properties.subelement_properties['{}port'].type_of_simple = 'A';
         element_handler.properties.subelement_properties['{}port'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{}port'].particle_properties.min_occurs = 0;
         element_handler.properties.subelement_properties['{}port'].particle_properties.max_occurs = 1;
+    end
+
+    element_handler.properties.subelement_properties['{}secure'] = {};
+    do
+element_handler.properties.subelement_properties['{}secure'].super_element_content_type = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
+
+element_handler.properties.subelement_properties['{}secure'].type_of_simple = 'A';
+
+        do
+            element_handler.properties.subelement_properties['{}secure'].properties = {};
+            element_handler.properties.subelement_properties['{}secure'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{}secure'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{}secure'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}boolean';
+            element_handler.properties.subelement_properties['{}secure'].properties.bi_type = {};
+            element_handler.properties.subelement_properties['{}secure'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{}secure'].properties.bi_type.name = 'boolean';
+            element_handler.properties.subelement_properties['{}secure'].properties.bi_type.id = '15';
+            element_handler.properties.subelement_properties['{}secure'].properties.attr = {};
+            element_handler.properties.subelement_properties['{}secure'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{}secure'].properties.attr._generated_attr = {};
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}secure'].particle_properties = {};
+            element_handler.properties.subelement_properties['{}secure'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{}secure'].particle_properties.q_name.ns = '';
+            element_handler.properties.subelement_properties['{}secure'].particle_properties.q_name.local_name = 'secure';
+            element_handler.properties.subelement_properties['{}secure'].particle_properties.generated_name = 'secure';
+        end
+
+        -- Simple type properties
+        do
+            element_handler.properties.subelement_properties['{}secure'].base = {};
+            element_handler.properties.subelement_properties['{}secure'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{}secure'].base.name = 'boolean';
+            element_handler.properties.subelement_properties['{}secure'].local_facets = {};
+            element_handler.properties.subelement_properties['{}secure'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{}secure']);
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}secure'].type_handler = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
+            element_handler.properties.subelement_properties['{}secure'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{}secure'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{}secure'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{}secure'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{}secure'].parse_xml = basic_stuff.parse_xml;
+        end
+
+        element_handler.properties.subelement_properties['{}secure'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{}secure'].particle_properties.min_occurs = 0;
+        element_handler.properties.subelement_properties['{}secure'].particle_properties.max_occurs = 1;
     end
 
 end
