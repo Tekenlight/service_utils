@@ -1,3 +1,5 @@
+local date = require('date');
+
 local email_client = require('service_utils.gmail.email_client');
 
 local client_sec_json = (function ()
@@ -8,13 +10,17 @@ local client_sec_json = (function ()
 end)();
 
 
+local now = date(true)
+now = now:adddays(-1);
+local crit_date =  now:fmt("%Y/%m/%d");
+
 local email_id = 'sudheer.hr@tekenlight.com';
 
 local connection, token, http_status = email_client.make_connection(client_sec_json, email_id);
 
 local list = email_client.get_email_list(connection, email_id, token,
     {
-        after = '2024/10/11'
+        after = crit_date
     }
 );
 
