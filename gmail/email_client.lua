@@ -8,7 +8,17 @@ local uri_util = require('uri._util');
 local date = require('date');
 local date_utils = require('lua_schema.date_utils');
 local core_utils = require('lua_schema.core_utils');
+local schema_processor = require("schema_processor");
+local stringx = require('pl.stringx');
 
+local INCORRECT_FORMAT_MSG = [[
+Hello,
+
+We are unable to process this message due to unexpected mime type of the message
+Kindly send the mail in correct format
+
+Regards,
+]]
 --[[
 
 The token returned by google authentication contains the following elements
@@ -117,7 +127,7 @@ email_client.get_email_list = function(connection, email_id, token, crit)
         Authorization = "Bearer " .. token.access_token
     };
 
-    local q = 'in:inbox label:INBOX';
+    local q = 'in:inbox label:INBOX -label:SENT';
     for n,v in pairs(crit) do
         q = q .. ' ' .. n..':'..v;
     end
@@ -188,11 +198,117 @@ local get_attachment = function(connection, email_id, token, id, payload)
     return attachment;
 end
 
+local parse_to = function (to)
+    local recipients = {}
+
+    -- Iterate over each recipient, which might be separated by commas
+    for recipient in to:gmatch('([^,]+)') do
+        local name, email
+
+        -- Match "Name" <email@example.com>
+        name, email = recipient:match('^%s*"?([^"]+)"?%s*<([^>]+)>%s*$')
+        if name and email then
+            table.insert(recipients, {real_name = name, address = email})
+        else
+            -- Match Name <email@example.com>
+            name, email = recipient:match('^%s*([^<]+)%s*<([^>]+)>%s*$')
+            if name and email then
+                table.insert(recipients, {real_name = name:match("^%s*(.-)%s*$"), address = email})
+            else
+                -- Match <email@example.com>
+                email = recipient:match('^%s*<([^>]+)>%s*$')
+                if email then
+                    table.insert(recipients, {real_name = nil, address = email})
+                else
+                    -- Match just an email address without a name
+                    email = recipient:match('^%s*([^%s]+@[^%s]+)%s*$')
+                    if email then
+                        table.insert(recipients, {real_name = nil, address = email})
+                    end
+                end
+            end
+        end
+    end
+
+    return recipients
+end
+
+local parse_from = function(from)
+    local name, email
+
+    -- Try to match "Name" <email@example.com>
+    name, email = from:match('^%s*"?([^"]+)"?%s*<([^>]+)>%s*$')
+    if name and email then
+        return name, email
+    end
+
+    -- Try to match Name <email@example.com>
+    name, email = from:match('^%s*([^<]+)%s*<([^>]+)>%s*$')
+    if name and email then
+        return name:match("^%s*(.-)%s*$"), email
+    end
+
+    -- Try to match <email@example.com>
+    email = from:match('^%s*<([^>]+)>%s*$')
+    if email then
+        return nil, email
+    end
+
+    -- Try to match just an email address without name
+    email = from:match('^%s*([^%s]+@[^%s]+)%s*$')
+    if email then
+        return nil, email
+    end
+
+    return nil, nil  -- If it doesn't match any pattern
+end
+
+local send_error_response = function(connection, email_id, token, message_id, message_to_send, orig_message)
+    assert(type(connection) == 'table');
+    assert(type(email_id) == 'string');
+    assert(type(token) == 'table');
+    assert(type(message_id) == 'string');
+    assert(type(message_to_send) == 'string');
+    assert(type(orig_message) == 'table');
+
+
+    local body = "From: "..email_id.."\r\n"..
+        "To: "..orig_message.return_path.."\r\n"..
+        "Subject: Re: "..orig_message.subject.."\r\n"..
+        "\r\n"..
+        message_to_send.."\r\n\r\n"
+        ;
+
+    local b64_body = core_utils.url_base64_encode(body);
+    local stat, rfc_message, err = pcall(json_parser.encode, {
+        raw = b64_body,
+        threadId = message_id
+    });
+
+    local uri = service_client.complete_uri_with_qp('/gmail/v1/users/'..email_id..'/messages/send',
+        {}
+    );
+
+    local headers = {
+        method = "POST",
+        Authorization = "Bearer " .. token.access_token,
+        ["Content-Type"] = "application/json",
+        ["Content-Length"] = #rfc_message
+    };
+
+    local status, response_str, http_status, hdrs = service_client.send_and_receive(connection, uri, headers, rfc_message);
+    assert(status, response_str);
+
+    return;
+
+end
+
 local get_email_message = function(connection, email_id, token, mail_item) 
     local payload = mail_item.payload
     local props = {
         id = mail_item.id,
         attachments = {},
+        fetch_complete = true;
     };
 
     for i,v in ipairs(payload.headers) do
@@ -212,9 +328,15 @@ local get_email_message = function(connection, email_id, token, mail_item)
             end
             props.date = date_utils.date_time_from_dto(date(v.value), tzo);
         elseif (v.name == 'From') then
-            props.from = v.value;
+            props.from = stringx.strip(v.value);
+            local n,e = parse_from(props.from);
+            props.from_s = {
+                real_name = n,
+                address = e
+            };
         elseif (v.name == 'To') then
             props.to = v.value;
+            props.recipients = parse_to(props.to);
         elseif (v.name == 'Delivered-To') then
             props.delivered_to = v.value;
         elseif (v.name == 'Return-Path') then
@@ -225,21 +347,24 @@ local get_email_message = function(connection, email_id, token, mail_item)
             props.content_type = v.value;
         elseif (v.name == 'Cc') then
             props.cc = v.value;
+            props.cc_recipients = parse_to(props.cc);
+        elseif (v.name == 'Message-ID') then
+            props.header_message_id = v.value;
         end
     end
     props.mime_type = payload.mimeType;
 
     if (payload.mimeType == 'text/plain') then
         props.message_body = get_plain_text_mail_body(payload);
-    elseif (payload.mimeType == 'text/html') then
+    elseif (props.message_body == nil and payload.mimeType == 'text/html') then
         props.message_body = get_plain_text_mail_body(payload);
-    elseif (string.sub(payload.mimeType, 1, 4) == 'text') then
+    elseif (props.message_body == nil and string.sub(payload.mimeType, 1, 4) == 'text') then
         props.message_body = get_plain_text_mail_body(payload);
     elseif (payload.mimeType == 'multipart/alternative') then
         for i,v in ipairs(payload.parts) do
             if (v.mimeType == 'text/plain') then
                 props.message_body = get_plain_text_mail_body(v);
-            elseif (string.sub(v.mimeType, 1, 4) == 'text') then
+            elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then
                 props.message_body = get_plain_text_mail_body(v);
             end
         end
@@ -248,7 +373,7 @@ local get_email_message = function(connection, email_id, token, mail_item)
             if (v.filename == "") then
                 if (v.mimeType == 'text/plain') then
                     props.message_body = get_plain_text_mail_body(v);
-                elseif (string.sub(v.mimeType, 1, 4) == 'text') then
+                elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then
                     props.message_body = get_plain_text_mail_body(v);
                 end
             else
@@ -264,7 +389,7 @@ local get_email_message = function(connection, email_id, token, mail_item)
             if (v.filename == "") then
                 if (v.mimeType == 'text/plain') then
                     props.message_body = get_plain_text_mail_body(v);
-                elseif (string.sub(v.mimeType, 1, 4) == 'text') then
+                elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then
                     props.message_body = get_plain_text_mail_body(v);
                 end
             else
@@ -279,7 +404,7 @@ local get_email_message = function(connection, email_id, token, mail_item)
         for i,v in ipairs(payload.parts) do
             if (v.mimeType == 'text/plain') then
                 props.message_body = get_plain_text_mail_body(v);
-            elseif (string.sub(v.mimeType, 1, 4) == 'text') then
+            elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then
                 props.message_body = get_plain_text_mail_body(v);
             end
         end
@@ -287,10 +412,40 @@ local get_email_message = function(connection, email_id, token, mail_item)
         print(debug.getinfo(1).source, debug.getinfo(1).currentline);
         print(payload.mimeType);
         print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-        return nil;
+        --send_error_response(connection, email_id, token, mail_item.id, INCORRECT_FORMAT_MSG, props)
+        props.message_body = "";
+        props.fetch_complete = false;
     end
 
     return props;
+end
+
+email_client.get_message = function(connection, email_id, token, message_id)
+    assert(type(connection) == 'table');
+    assert(type(email_id) == 'string');
+    assert(type(token) == 'table');
+    assert(type(message_id) == 'string');
+
+    local uri = service_client.complete_uri_with_qp('/gmail/v1/users/'..email_id..'/messages/'..message_id,
+        {}
+    );
+
+    local headers = {
+        method = "GET",
+        Authorization = "Bearer " .. token.access_token
+    };
+    local status, response_str, http_status, hdrs = service_client.send_and_receive(connection, uri, headers, nil);
+    assert(status, response_str);
+
+    local stat, mail_item, err = pcall(json_parser.decode, response_str);
+    assert(stat, mail_item);
+
+    local message = get_email_message(connection, email_id, token, mail_item);
+    if (message == nil) then
+        --error("Could not gather parts of message id "..mail_item.id);
+    end
+
+    return message;
 end
 
 --[[
@@ -311,36 +466,65 @@ email_client.get_inbox_emails = function(connection, email_id, token, list)
     local email_messages = {};
     local headers = {};
     for i,v in ipairs(list.messages) do
-        local uri = service_client.complete_uri_with_qp('/gmail/v1/users/'..email_id..'/messages/'..list.messages[i].id,
-            {}
-        );
-
-        headers = {
-            method = "GET",
-            Authorization = "Bearer " .. token.access_token
-        };
-            local status, response_str, http_status, hdrs = service_client.send_and_receive(connection, uri, headers, nil);
-        local stat, mail_item, err = pcall(json_parser.decode, response_str);
-        assert(stat, mail_item);
-
-        if (not_in_inbox(mail_item.labelIds)) then
-            goto continue ;
-        end
-
-        j = j + 1;
-        local message = get_email_message(connection, email_id, token, mail_item);
-        if (message ~= nil) then
-            email_messages[j] = message;
-        else
-            error("Could not gather parts of message id "..mail_item.id);
-        end
-
-        ::continue::
+        email_messages[i] = email_client.get_message (connection, email_id, token, list.messages[i].id);
     end
 
     return email_messages;
 end
 
+--[[
+Sends a plain text reply (without attachments) to a message that has
+been received.
+
+connection: established secure TCP connection to google service
+email_id: email address on behalf of whom the reply is being sent.
+message_id: id of the message
+messafe: The message object (table) compliant with 
+
+]]
+email_client.plain_text_reply = function(connection, email_id, token, message_id, message_to_send)
+    assert(type(connection) == 'table');
+    assert(type(email_id) == 'string');
+    assert(type(token) == 'table');
+    assert(type(message_id) == 'string');
+    assert(type(message_to_send) == 'string');
+
+
+    local message = email_client.get_message(connection, email_id, token, message_id);
+
+    local body = "From: "..email_id.."\r\n"..
+        "To: "..message.return_path.."\r\n"..
+        "Subject: Re: "..message.subject.."\r\n"..
+        "\r\n"..
+        message_to_send.."\r\n\r\n"..
+        "--\r\n"..
+        "Original message: \r\n"..
+        message.message_body.."\r\n"
+        ;
+
+    local b64_body = core_utils.url_base64_encode(body);
+    local stat, rfc_message, err = pcall(json_parser.encode, {
+        raw = b64_body,
+        threadId = message_id
+    });
+
+    local uri = service_client.complete_uri_with_qp('/gmail/v1/users/'..email_id..'/messages/send',
+        {}
+    );
+
+    local headers = {
+        method = "POST",
+        Authorization = "Bearer " .. token.access_token,
+        ["Content-Type"] = "application/json",
+        ["Content-Length"] = #rfc_message
+    };
+
+    local status, response_str, http_status, hdrs = service_client.send_and_receive(connection, uri, headers, rfc_message);
+    assert(status, response_str);
+
+    return;
+
+end
 
 
 

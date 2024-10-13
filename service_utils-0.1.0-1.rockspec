@@ -70,7 +70,6 @@ build = {
 		["org.tekenlight.evpoco.email_message"] = 'org/tekenlight/evpoco/email_message.lua',
 		["org.tekenlight.evpoco.email_id_type"] = 'org/tekenlight/evpoco/email_id_type.lua',
 		["org.tekenlight.evpoco.attachment_dtls_type"] = 'org/tekenlight/evpoco/attachment_dtls_type.lua',
-		["org.tekenlight.evpoco.attachment_dtls_type_2"] = 'org/tekenlight/evpoco/attachment_dtls_type_2.lua',
 		["org.tekenlight.evpoco.inbound_email_message_type"] = 'org/tekenlight/evpoco/inbound_email_message_type.lua',
 		["org.tekenlight.evpoco.inbound_email_message"] = 'org/tekenlight/evpoco/inbound_email_message.lua',
 		["org.tekenlight.evpoco.inbound_email_messages_type"] = 'org/tekenlight/evpoco/inbound_email_messages_type.lua',

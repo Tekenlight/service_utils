@@ -49,9 +49,9 @@ targetNamespace="http://evpoco.tekenlight.org" xmlns:ns="http://evpoco.tekenligh
 
 	<xsd:complexType name="attachment_dtls_type">
 		<xsd:sequence>
-			<xsd:element name="name" type="xsd:token"/>
-			<xsd:element name="data" type="xsd:hexBinary"/>
-			<xsd:element name="content_type" type="xsd:token"/>
+			<xsd:element name="file_name" type="xsd:token"/>
+			<xsd:element name="data" type="xsd:base64Binary"/>
+			<xsd:element name="mime_type" type="xsd:token"/>
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -73,14 +73,6 @@ targetNamespace="http://evpoco.tekenlight.org" xmlns:ns="http://evpoco.tekenligh
 
 	<xsd:element name="email_message" type="ns:email_message_type"/>
 
-	<xsd:complexType name="attachment_dtls_type_2">
-		<xsd:sequence>
-			<xsd:element name="file_name" type="xsd:token"/>
-			<xsd:element name="data" type="xsd:hexBinary"/>
-			<xsd:element name="mime_type" type="xsd:token"/>
-		</xsd:sequence>
-	</xsd:complexType>
-
     <xsd:group name="inbound_email_message_elements">
         <xsd:sequence>
 			<xsd:element name="id" type="xsd:token" />
@@ -92,7 +84,7 @@ targetNamespace="http://evpoco.tekenlight.org" xmlns:ns="http://evpoco.tekenligh
             <xsd:element name="cc" type="xsd:token"/>
 			<xsd:element name="subject" type="xsd:token"/>
 			<xsd:element name="message_body" type="xsd:string"/>
-			<xsd:element name="attachments" type="ns:attachment_dtls_type_2" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="attachments" type="ns:attachment_dtls_type" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
     </xsd:group>
 

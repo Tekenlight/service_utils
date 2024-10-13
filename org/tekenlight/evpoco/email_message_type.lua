@@ -44,10 +44,10 @@ end
 do
     element_handler.properties.content_model = {
         min_occurs = 1,
-        top_level_group = true,
-        group_type = 'S',
         max_occurs = 1,
+        top_level_group = true,
         generated_subelement_name = '_sequence_group',
+        group_type = 'S',
         'from',
         'password',
         'sender_name',
@@ -87,71 +87,6 @@ end
 
 do
     element_handler.properties.subelement_properties = {};
-    do
-        element_handler.properties.subelement_properties['{}attachments'] = 
-            (basic_stuff.get_element_handler('http://evpoco.tekenlight.org', 'attachment_dtls_type'):
-            new_instance_as_local_element({ns = '', local_name = 'attachments', generated_name = 'attachments',
-                    root_element = false, min_occurs = 0, max_occurs = -1}));
-    end
-
-    do
-        element_handler.properties.subelement_properties['{}recipients'] = 
-            (basic_stuff.get_element_handler('http://evpoco.tekenlight.org', 'recipient_dtls_type'):
-            new_instance_as_local_element({ns = '', local_name = 'recipients', generated_name = 'recipients',
-                    root_element = false, min_occurs = 1, max_occurs = -1}));
-    end
-
-    element_handler.properties.subelement_properties['{}password'] = {};
-    do
-element_handler.properties.subelement_properties['{}password'].super_element_content_type = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
-
-element_handler.properties.subelement_properties['{}password'].type_of_simple = 'A';
-
-        do
-            element_handler.properties.subelement_properties['{}password'].properties = {};
-            element_handler.properties.subelement_properties['{}password'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{}password'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{}password'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
-            element_handler.properties.subelement_properties['{}password'].properties.bi_type = {};
-            element_handler.properties.subelement_properties['{}password'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{}password'].properties.bi_type.name = 'string';
-            element_handler.properties.subelement_properties['{}password'].properties.bi_type.id = '1';
-            element_handler.properties.subelement_properties['{}password'].properties.attr = {};
-            element_handler.properties.subelement_properties['{}password'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{}password'].properties.attr._generated_attr = {};
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}password'].particle_properties = {};
-            element_handler.properties.subelement_properties['{}password'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{}password'].particle_properties.q_name.ns = '';
-            element_handler.properties.subelement_properties['{}password'].particle_properties.q_name.local_name = 'password';
-            element_handler.properties.subelement_properties['{}password'].particle_properties.generated_name = 'password';
-        end
-
-        -- Simple type properties
-        do
-            element_handler.properties.subelement_properties['{}password'].base = {};
-            element_handler.properties.subelement_properties['{}password'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{}password'].base.name = 'string';
-            element_handler.properties.subelement_properties['{}password'].local_facets = {};
-            element_handler.properties.subelement_properties['{}password'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{}password']);
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}password'].type_handler = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
-            element_handler.properties.subelement_properties['{}password'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{}password'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{}password'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{}password'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{}password'].parse_xml = basic_stuff.parse_xml;
-        end
-
-        element_handler.properties.subelement_properties['{}password'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{}password'].particle_properties.min_occurs = 1;
-        element_handler.properties.subelement_properties['{}password'].particle_properties.max_occurs = 1;
-    end
-
     element_handler.properties.subelement_properties['{}from'] = {};
     do
 element_handler.properties.subelement_properties['{}from'].super_element_content_type = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
@@ -208,55 +143,62 @@ element_handler.properties.subelement_properties['{}from'].type_of_simple = 'A';
         element_handler.properties.subelement_properties['{}from'].particle_properties.max_occurs = 1;
     end
 
-    element_handler.properties.subelement_properties['{}message_body'] = {};
     do
-element_handler.properties.subelement_properties['{}message_body'].super_element_content_type = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
+        element_handler.properties.subelement_properties['{}attachments'] = 
+            (basic_stuff.get_element_handler('http://evpoco.tekenlight.org', 'attachment_dtls_type'):
+            new_instance_as_local_element({ns = '', local_name = 'attachments', generated_name = 'attachments',
+                    root_element = false, min_occurs = 0, max_occurs = -1}));
+    end
 
-element_handler.properties.subelement_properties['{}message_body'].type_of_simple = 'A';
+    element_handler.properties.subelement_properties['{}password'] = {};
+    do
+element_handler.properties.subelement_properties['{}password'].super_element_content_type = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
+
+element_handler.properties.subelement_properties['{}password'].type_of_simple = 'A';
 
         do
-            element_handler.properties.subelement_properties['{}message_body'].properties = {};
-            element_handler.properties.subelement_properties['{}message_body'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{}message_body'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{}message_body'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
-            element_handler.properties.subelement_properties['{}message_body'].properties.bi_type = {};
-            element_handler.properties.subelement_properties['{}message_body'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{}message_body'].properties.bi_type.name = 'string';
-            element_handler.properties.subelement_properties['{}message_body'].properties.bi_type.id = '1';
-            element_handler.properties.subelement_properties['{}message_body'].properties.attr = {};
-            element_handler.properties.subelement_properties['{}message_body'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{}message_body'].properties.attr._generated_attr = {};
+            element_handler.properties.subelement_properties['{}password'].properties = {};
+            element_handler.properties.subelement_properties['{}password'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{}password'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{}password'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
+            element_handler.properties.subelement_properties['{}password'].properties.bi_type = {};
+            element_handler.properties.subelement_properties['{}password'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{}password'].properties.bi_type.name = 'string';
+            element_handler.properties.subelement_properties['{}password'].properties.bi_type.id = '1';
+            element_handler.properties.subelement_properties['{}password'].properties.attr = {};
+            element_handler.properties.subelement_properties['{}password'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{}password'].properties.attr._generated_attr = {};
         end
 
         do
-            element_handler.properties.subelement_properties['{}message_body'].particle_properties = {};
-            element_handler.properties.subelement_properties['{}message_body'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{}message_body'].particle_properties.q_name.ns = '';
-            element_handler.properties.subelement_properties['{}message_body'].particle_properties.q_name.local_name = 'message_body';
-            element_handler.properties.subelement_properties['{}message_body'].particle_properties.generated_name = 'message_body';
+            element_handler.properties.subelement_properties['{}password'].particle_properties = {};
+            element_handler.properties.subelement_properties['{}password'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{}password'].particle_properties.q_name.ns = '';
+            element_handler.properties.subelement_properties['{}password'].particle_properties.q_name.local_name = 'password';
+            element_handler.properties.subelement_properties['{}password'].particle_properties.generated_name = 'password';
         end
 
         -- Simple type properties
         do
-            element_handler.properties.subelement_properties['{}message_body'].base = {};
-            element_handler.properties.subelement_properties['{}message_body'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{}message_body'].base.name = 'string';
-            element_handler.properties.subelement_properties['{}message_body'].local_facets = {};
-            element_handler.properties.subelement_properties['{}message_body'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{}message_body']);
+            element_handler.properties.subelement_properties['{}password'].base = {};
+            element_handler.properties.subelement_properties['{}password'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{}password'].base.name = 'string';
+            element_handler.properties.subelement_properties['{}password'].local_facets = {};
+            element_handler.properties.subelement_properties['{}password'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{}password']);
         end
 
         do
-            element_handler.properties.subelement_properties['{}message_body'].type_handler = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
-            element_handler.properties.subelement_properties['{}message_body'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{}message_body'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{}message_body'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{}message_body'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{}message_body'].parse_xml = basic_stuff.parse_xml;
+            element_handler.properties.subelement_properties['{}password'].type_handler = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
+            element_handler.properties.subelement_properties['{}password'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{}password'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{}password'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{}password'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{}password'].parse_xml = basic_stuff.parse_xml;
         end
 
-        element_handler.properties.subelement_properties['{}message_body'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{}message_body'].particle_properties.min_occurs = 1;
-        element_handler.properties.subelement_properties['{}message_body'].particle_properties.max_occurs = 1;
+        element_handler.properties.subelement_properties['{}password'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{}password'].particle_properties.min_occurs = 1;
+        element_handler.properties.subelement_properties['{}password'].particle_properties.max_occurs = 1;
     end
 
     element_handler.properties.subelement_properties['{}subject'] = {};
@@ -308,6 +250,64 @@ element_handler.properties.subelement_properties['{}subject'].type_of_simple = '
         element_handler.properties.subelement_properties['{}subject'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{}subject'].particle_properties.min_occurs = 1;
         element_handler.properties.subelement_properties['{}subject'].particle_properties.max_occurs = 1;
+    end
+
+    do
+        element_handler.properties.subelement_properties['{}recipients'] = 
+            (basic_stuff.get_element_handler('http://evpoco.tekenlight.org', 'recipient_dtls_type'):
+            new_instance_as_local_element({ns = '', local_name = 'recipients', generated_name = 'recipients',
+                    root_element = false, min_occurs = 1, max_occurs = -1}));
+    end
+
+    element_handler.properties.subelement_properties['{}message_body'] = {};
+    do
+element_handler.properties.subelement_properties['{}message_body'].super_element_content_type = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
+
+element_handler.properties.subelement_properties['{}message_body'].type_of_simple = 'A';
+
+        do
+            element_handler.properties.subelement_properties['{}message_body'].properties = {};
+            element_handler.properties.subelement_properties['{}message_body'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{}message_body'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{}message_body'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
+            element_handler.properties.subelement_properties['{}message_body'].properties.bi_type = {};
+            element_handler.properties.subelement_properties['{}message_body'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{}message_body'].properties.bi_type.name = 'string';
+            element_handler.properties.subelement_properties['{}message_body'].properties.bi_type.id = '1';
+            element_handler.properties.subelement_properties['{}message_body'].properties.attr = {};
+            element_handler.properties.subelement_properties['{}message_body'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{}message_body'].properties.attr._generated_attr = {};
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}message_body'].particle_properties = {};
+            element_handler.properties.subelement_properties['{}message_body'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{}message_body'].particle_properties.q_name.ns = '';
+            element_handler.properties.subelement_properties['{}message_body'].particle_properties.q_name.local_name = 'message_body';
+            element_handler.properties.subelement_properties['{}message_body'].particle_properties.generated_name = 'message_body';
+        end
+
+        -- Simple type properties
+        do
+            element_handler.properties.subelement_properties['{}message_body'].base = {};
+            element_handler.properties.subelement_properties['{}message_body'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{}message_body'].base.name = 'string';
+            element_handler.properties.subelement_properties['{}message_body'].local_facets = {};
+            element_handler.properties.subelement_properties['{}message_body'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{}message_body']);
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}message_body'].type_handler = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
+            element_handler.properties.subelement_properties['{}message_body'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{}message_body'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{}message_body'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{}message_body'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{}message_body'].parse_xml = basic_stuff.parse_xml;
+        end
+
+        element_handler.properties.subelement_properties['{}message_body'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{}message_body'].particle_properties.min_occurs = 1;
+        element_handler.properties.subelement_properties['{}message_body'].particle_properties.max_occurs = 1;
     end
 
     element_handler.properties.subelement_properties['{}sender_name'] = {};

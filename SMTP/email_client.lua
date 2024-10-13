@@ -128,7 +128,7 @@ email_client.sendmail = function(self, email_service, email_message)
 
     if (email_message.attachments ~= nil) then
         for i,v in ipairs(email_message.attachments) do
-            mmf.add_attachment(mm, ffi.getptr(v.data.value), tonumber(v.data.size), v.name, v.content_type);
+            mmf.add_attachment(mm, ffi.getptr(v.data.value), tonumber(v.data.size), v.file_name, v.mime_type);
         end
     end
 
