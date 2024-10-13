@@ -11,7 +11,7 @@ end)();
 
 
 local now = date(true)
-now = now:adddays(-1);
+now = now:adddays(-2);
 local crit_date =  now:fmt("%Y/%m/%d");
 
 local email_id = 'sudheer.hr@tekenlight.com';
@@ -28,6 +28,6 @@ local list = email_client.get_email_list(connection, email_id, token,
 local emails = email_client.get_inbox_emails(connection, email_id, token, list);
 
 print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-print(#emails);
---require 'pl.pretty'.dump(emails);
+print(#list.messages);
+require 'pl.pretty'.dump(emails);
 print(debug.getinfo(1).source, debug.getinfo(1).currentline);

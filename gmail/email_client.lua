@@ -88,6 +88,21 @@ email_client.make_connection = function (client_security_json, email_id)
     return connection, auth, http_status;
 end
 
+local tablecat = function(t2, t1)
+    assert(type(t2) == 'table');
+    assert(type(t1) == 'table');
+
+    --[[
+    for _,v in ipairs(t1) do
+        table.inser(t2, v);
+    end
+    ]]
+
+    table.move(t1, 1, #t1, #t2 + 1, t2);
+
+    return t2;
+end
+
 --[[
 return  list
 ]]
@@ -108,18 +123,37 @@ email_client.get_email_list = function(connection, email_id, token, crit)
     end
 
     local uri_util = require('uri._util');
-    local uri = service_client.complete_uri_with_qp('/gmail/v1/users/'..email_id..'/messages',
-        {
-            q = q,
-        }, true
-    );
+    local base_uri = '/gmail/v1/users/'..email_id..'/messages';
+    local qp = {
+        q = q,
+    };
+    local q_uri = service_client.complete_uri_with_qp(nil, qp, true);
+
+    local uri = base_uri..q_uri;
 
     local status, response_str, http_status, hdrs = service_client.send_and_receive(connection, uri, headers, nil);
     assert(status, response_str);
 
-    local stat, list, err = pcall(json_parser.decode, response_str);
-    assert(stat, list);
+    local messages = {};
+    local stat, inc_list, err = pcall(json_parser.decode, response_str);
+    assert(stat, inc_list);
 
+    if (type(inc_list.messages) == 'table') then tablecat(messages, inc_list.messages); end
+
+    while (inc_list.nextPageToken ~= nil and inc_list.nextPageToken ~= "") do
+
+        uri = base_uri..q_uri..'&pageToken='..inc_list.nextPageToken;
+        status, response_str, http_status, hdrs = service_client.send_and_receive(connection, uri, headers, nil);
+        assert(status, response_str);
+
+        inc_list = nil;
+        stat, inc_list, err = pcall(json_parser.decode, response_str);
+        assert(stat, inc_list);
+
+        if (type(inc_list.messages) == 'table') then tablecat(messages, inc_list.messages); end
+    end
+
+    local list = { messages = messages };
     return list;
 end
 

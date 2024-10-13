@@ -174,7 +174,7 @@ end
 service_client.complete_uri_with_qp = function(uri, query_params, encode)
     assert(type(uri) == 'string' or uri == nil);
     if (uri == nil) then
-        uri = "/";
+        uri = "";
     end
 
     assert(query_params == nil or type(query_params) == 'table');
@@ -182,7 +182,7 @@ service_client.complete_uri_with_qp = function(uri, query_params, encode)
         query_params = {};
     end
 
-    if (encode == nil) then encode = false; end
+    if (encode == nil) then encode = true; end
     assert(type(encode) == 'boolean');
 
     local i = 1;
@@ -194,9 +194,12 @@ service_client.complete_uri_with_qp = function(uri, query_params, encode)
             uri_qp = uri_qp..'&';
         end
         i = i + 1;
-        uri_qp = uri_qp..n.."="..tostring(v); -- To check if tostring will work for query params
+        if (encode) then
+            uri_qp = uri_qp..n.."="..uri_util.uri_encode(tostring(v));
+        else
+            uri_qp = uri_qp..n.."="..tostring(v);
+        end
     end
-    if (encode) then uri_qp = uri_util.uri_encode(uri_qp); end
 
     uri = uri .. '?'.. uri_qp;
 
