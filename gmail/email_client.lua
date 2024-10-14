@@ -353,7 +353,7 @@ local get_email_message = function(connection, email_id, token, mail_item)
             };
         elseif (v.name == 'To') then
             props.to = v.value;
-            props.recipients = parse_to(props.to);
+            props.to_s = parse_to(props.to);
         elseif (v.name == 'Delivered-To') then
             props.delivered_to = v.value;
         elseif (v.name == 'Return-Path') then
