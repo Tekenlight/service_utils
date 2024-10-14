@@ -637,7 +637,10 @@ email_client.send_mail = function(connection, email_id, token, email_message)
 
     local uri;
     local headers;
-    if (email_message.attachments ~= nil and #(email_message.attachments) > 0) then
+    --[[
+    So far it has not become possible to establish which endpoint is suited for which situation.
+    ]]
+    if (false and email_message.attachments ~= nil and #(email_message.attachments) > 0) then
         uri = '/upload/gmail/v1/users/'..email_id..'/messages/send';
         headers = {
             method = "POST",

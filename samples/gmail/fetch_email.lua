@@ -11,7 +11,7 @@ end)();
 
 
 local now = date(true)
-now = now:adddays(-2);
+now = now:adddays(-3);
 local crit_date =  now:fmt("%Y/%m/%d");
 
 local email_id = 'sudheer.hr@tekenlight.com';
@@ -29,5 +29,24 @@ local emails = email_client.get_inbox_emails(connection, email_id, token, list);
 
 print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 print(#list.messages);
-require 'pl.pretty'.dump(emails);
+emails[2].attachments = nil;
+require 'pl.pretty'.dump(emails[2]);
 print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+
+local msg = [[Hi,
+
+We are unable to process this message
+
+please send the same in the correct format
+
+Kindly contact support for any help.
+
+Best,
+SVS
+]]
+
+--[[
+if (emails[1] ~= nil and emails[1].return_path == '<hrsudeer@yahoo.com>') then
+    email_client.plain_text_reply(connection, email_id, token, emails[1].id, msg);
+end
+]]
