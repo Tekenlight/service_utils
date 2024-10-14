@@ -1,6 +1,6 @@
 local external_service_client = require('service_utils.REST.external_service_client');
 local service_client = require('service_utils.REST.service_client');
-local messages = require('service_common.literals');
+local msf = require('common.msg_literal');
 local cjson = require("cjson.safe");
 local json_parser = cjson.new();
 local jwt = require("service_utils.jwt.luajwt");
@@ -11,10 +11,10 @@ local core_utils = require('lua_schema.core_utils');
 local schema_processor = require("schema_processor");
 local stringx = require('pl.stringx');
 
-local INCORRECT_FORMAT_MSG = [[
+local INCORRECT_MAIL_FORMAT_MSG = [[
 Hello,
 
-We are unable to process this message due to unexpected mime type of the message
+We are unable to process this message due to unexpected mime type of the message [%s]
 Kindly send the mail in correct format
 
 Regards,
@@ -198,6 +198,23 @@ local get_attachment = function(connection, email_id, token, id, payload)
     return attachment;
 end
 
+local parse_return_path = function(rp)
+    local email;
+    local details = {};
+    email = rp:match('^%s*<([^>]+)>%s*$')
+    if email then
+        return email;
+    else
+        -- Match just an email address without a name
+        email = rp:match('^%s*([^%s]+@[^%s]+)%s*$')
+        if email then
+            return email;
+        end
+    end
+
+    return nil;
+end
+
 local parse_to = function (to)
     local recipients = {}
 
@@ -341,6 +358,7 @@ local get_email_message = function(connection, email_id, token, mail_item)
             props.delivered_to = v.value;
         elseif (v.name == 'Return-Path') then
             props.return_path = v.value;
+            props.return_path_address = parse_return_path(v.value);
         elseif (v.name == 'Subject') then
             props.subject = v.value;
         elseif (v.name == 'Content-Type') then
@@ -380,7 +398,7 @@ local get_email_message = function(connection, email_id, token, mail_item)
                 local attachment = get_attachment(connection, email_id, token, mail_item.id, v);
                 attachment.file_name = v.filename;
                 attachment.mime_type = v.mimeType;
-                attachment.size_as_in_mail = v.body.size;
+                --attachment.size_as_in_mail = v.body.size;
                 props.attachments[#(props.attachments)+1] = attachment;
             end
         end
@@ -396,7 +414,7 @@ local get_email_message = function(connection, email_id, token, mail_item)
                 local attachment = get_attachment(connection, email_id, mail_item.id, v);
                 attachment.file_name = v.filename;
                 attachment.mime_type = v.mimetype;
-                attachment.size_as_in_mail = v.body.size;
+                --attachment.size_as_in_mail = v.body.size;
                 props.attachments[#(props.attachments)+1] = attachment;
             end
         end
@@ -412,7 +430,8 @@ local get_email_message = function(connection, email_id, token, mail_item)
         print(debug.getinfo(1).source, debug.getinfo(1).currentline);
         print(payload.mimeType);
         print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-        --send_error_response(connection, email_id, token, mail_item.id, INCORRECT_FORMAT_MSG, props)
+        --local msg = msf:format_with_string(INCORRECT_MAIL_FORMAT_MSG, payload.mimeType);
+        --send_error_response(connection, email_id, token, mail_item.id, msg, props)
         props.message_body = "";
         props.fetch_complete = false;
     end
