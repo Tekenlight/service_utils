@@ -44,10 +44,10 @@ end
 do
     element_handler.properties.content_model = {
         min_occurs = 1,
-        max_occurs = 1,
         generated_subelement_name = '_sequence_group',
         group_type = 'S',
         top_level_group = true,
+        max_occurs = 1,
         'file_name',
         'data',
         'mime_type',
@@ -75,57 +75,6 @@ end
 
 do
     element_handler.properties.subelement_properties = {};
-    element_handler.properties.subelement_properties['{}data'] = {};
-    do
-element_handler.properties.subelement_properties['{}data'].super_element_content_type = require('org.w3.2001.XMLSchema.base64Binary_handler'):instantiate();
-
-element_handler.properties.subelement_properties['{}data'].type_of_simple = 'A';
-
-        do
-            element_handler.properties.subelement_properties['{}data'].properties = {};
-            element_handler.properties.subelement_properties['{}data'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{}data'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{}data'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}base64Binary';
-            element_handler.properties.subelement_properties['{}data'].properties.bi_type = {};
-            element_handler.properties.subelement_properties['{}data'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{}data'].properties.bi_type.name = 'base64Binary';
-            element_handler.properties.subelement_properties['{}data'].properties.bi_type.id = '44';
-            element_handler.properties.subelement_properties['{}data'].properties.attr = {};
-            element_handler.properties.subelement_properties['{}data'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{}data'].properties.attr._generated_attr = {};
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}data'].particle_properties = {};
-            element_handler.properties.subelement_properties['{}data'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{}data'].particle_properties.q_name.ns = '';
-            element_handler.properties.subelement_properties['{}data'].particle_properties.q_name.local_name = 'data';
-            element_handler.properties.subelement_properties['{}data'].particle_properties.generated_name = 'data';
-        end
-
-        -- Simple type properties
-        do
-            element_handler.properties.subelement_properties['{}data'].base = {};
-            element_handler.properties.subelement_properties['{}data'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{}data'].base.name = 'base64Binary';
-            element_handler.properties.subelement_properties['{}data'].local_facets = {};
-            element_handler.properties.subelement_properties['{}data'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{}data']);
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}data'].type_handler = require('org.w3.2001.XMLSchema.base64Binary_handler'):instantiate();
-            element_handler.properties.subelement_properties['{}data'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{}data'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{}data'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{}data'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{}data'].parse_xml = basic_stuff.parse_xml;
-        end
-
-        element_handler.properties.subelement_properties['{}data'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{}data'].particle_properties.min_occurs = 1;
-        element_handler.properties.subelement_properties['{}data'].particle_properties.max_occurs = 1;
-    end
-
     element_handler.properties.subelement_properties['{}file_name'] = {};
     do
 element_handler.properties.subelement_properties['{}file_name'].super_element_content_type = require('org.w3.2001.XMLSchema.token_handler'):instantiate();
@@ -175,6 +124,57 @@ element_handler.properties.subelement_properties['{}file_name'].type_of_simple =
         element_handler.properties.subelement_properties['{}file_name'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{}file_name'].particle_properties.min_occurs = 1;
         element_handler.properties.subelement_properties['{}file_name'].particle_properties.max_occurs = 1;
+    end
+
+    element_handler.properties.subelement_properties['{}data'] = {};
+    do
+element_handler.properties.subelement_properties['{}data'].super_element_content_type = require('org.w3.2001.XMLSchema.base64Binary_handler'):instantiate();
+
+element_handler.properties.subelement_properties['{}data'].type_of_simple = 'A';
+
+        do
+            element_handler.properties.subelement_properties['{}data'].properties = {};
+            element_handler.properties.subelement_properties['{}data'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{}data'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{}data'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}base64Binary';
+            element_handler.properties.subelement_properties['{}data'].properties.bi_type = {};
+            element_handler.properties.subelement_properties['{}data'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{}data'].properties.bi_type.name = 'base64Binary';
+            element_handler.properties.subelement_properties['{}data'].properties.bi_type.id = '44';
+            element_handler.properties.subelement_properties['{}data'].properties.attr = {};
+            element_handler.properties.subelement_properties['{}data'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{}data'].properties.attr._generated_attr = {};
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}data'].particle_properties = {};
+            element_handler.properties.subelement_properties['{}data'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{}data'].particle_properties.q_name.ns = '';
+            element_handler.properties.subelement_properties['{}data'].particle_properties.q_name.local_name = 'data';
+            element_handler.properties.subelement_properties['{}data'].particle_properties.generated_name = 'data';
+        end
+
+        -- Simple type properties
+        do
+            element_handler.properties.subelement_properties['{}data'].base = {};
+            element_handler.properties.subelement_properties['{}data'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{}data'].base.name = 'base64Binary';
+            element_handler.properties.subelement_properties['{}data'].local_facets = {};
+            element_handler.properties.subelement_properties['{}data'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{}data']);
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}data'].type_handler = require('org.w3.2001.XMLSchema.base64Binary_handler'):instantiate();
+            element_handler.properties.subelement_properties['{}data'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{}data'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{}data'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{}data'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{}data'].parse_xml = basic_stuff.parse_xml;
+        end
+
+        element_handler.properties.subelement_properties['{}data'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{}data'].particle_properties.min_occurs = 1;
+        element_handler.properties.subelement_properties['{}data'].particle_properties.max_occurs = 1;
     end
 
     element_handler.properties.subelement_properties['{}mime_type'] = {};

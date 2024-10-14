@@ -111,7 +111,7 @@ email_client.sendmail = function(self, email_service, email_message)
     local mm = mmf.new();
     local sender = nil;
     if (email_message.sender_name ~= nil) then
-        sender = email_message.sender_name .. '<'.. email_message.from .. '>';
+        sender = email_message.sender_name .. ' <'.. email_message.from .. '>';
     else
         sender = email_message.from;
     end

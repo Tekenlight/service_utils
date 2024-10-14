@@ -1,3 +1,4 @@
+local ffi = require('ffi');
 local external_service_client = require('service_utils.REST.external_service_client');
 local service_client = require('service_utils.REST.service_client');
 local msf = require('common.msg_literal');
@@ -6,6 +7,7 @@ local json_parser = cjson.new();
 local jwt = require("service_utils.jwt.luajwt");
 local uri_util = require('uri._util');
 local date = require('date');
+local error_handler = require('lua_schema.error_handler');
 local date_utils = require('lua_schema.date_utils');
 local core_utils = require('lua_schema.core_utils');
 local schema_processor = require("schema_processor");
@@ -320,11 +322,31 @@ local send_error_response = function(connection, email_id, token, message_id, me
 
 end
 
+local function find_body_text(parts)
+    local plain_text = nil;
+    for i,v in ipairs(parts) do
+        if (v.filename == "") then
+            if (v.parts ~= nil) then
+                return find_body_text(v.parts);
+            else
+                if (v.mimeType == 'text/plain') then
+                    plain_text = get_plain_text_mail_body(v);
+                elseif (plain_text == nil and string.sub(v.mimeType, 1, 4) == 'text') then
+                    plain_text = get_plain_text_mail_body(v);
+                end
+            end
+        end
+    end
+
+    return plain_text;
+end
+
 local get_email_message = function(connection, email_id, token, mail_item) 
     local payload = mail_item.payload
     local props = {
         id = mail_item.id,
         attachments = {},
+        parts = {};
         fetch_complete = true;
     };
 
@@ -374,12 +396,13 @@ local get_email_message = function(connection, email_id, token, mail_item)
 
     if (payload.mimeType == 'text/plain') then
         props.message_body = get_plain_text_mail_body(payload);
-    elseif (props.message_body == nil and payload.mimeType == 'text/html') then
+    elseif (payload.mimeType == 'text/html') then
         props.message_body = get_plain_text_mail_body(payload);
-    elseif (props.message_body == nil and string.sub(payload.mimeType, 1, 4) == 'text') then
+    elseif (string.sub(payload.mimeType, 1, 4) == 'text') then
         props.message_body = get_plain_text_mail_body(payload);
     elseif (payload.mimeType == 'multipart/alternative') then
         for i,v in ipairs(payload.parts) do
+            props.parts[#(props.parts)+1] = get_plain_text_mail_body(v);
             if (v.mimeType == 'text/plain') then
                 props.message_body = get_plain_text_mail_body(v);
             elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then
@@ -389,10 +412,14 @@ local get_email_message = function(connection, email_id, token, mail_item)
     elseif (payload.mimeType == 'multipart/mixed') then
         for i,v in ipairs(payload.parts) do
             if (v.filename == "") then
-                if (v.mimeType == 'text/plain') then
-                    props.message_body = get_plain_text_mail_body(v);
-                elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then
-                    props.message_body = get_plain_text_mail_body(v);
+                if (string.sub(v.mimeType, 1, 9) == 'multipart') then
+                    props.message_body = find_body_text(v.parts);
+                else
+                    if (v.mimeType == 'text/plain') then
+                        props.message_body = get_plain_text_mail_body(v);
+                    elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then
+                        props.message_body = get_plain_text_mail_body(v);
+                    end
                 end
             else
                 local attachment = get_attachment(connection, email_id, token, mail_item.id, v);
@@ -405,10 +432,14 @@ local get_email_message = function(connection, email_id, token, mail_item)
     elseif (payload.mimeType == 'multipart/parallel') then
         for i,v in ipairs(payload.parts) do
             if (v.filename == "") then
-                if (v.mimeType == 'text/plain') then
-                    props.message_body = get_plain_text_mail_body(v);
-                elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then
-                    props.message_body = get_plain_text_mail_body(v);
+                if (string.sub(v.mimeType, 1, 9) == 'multipart') then
+                    props.message_body = find_body_text(v.parts);
+                else
+                    if (v.mimeType == 'text/plain') then
+                        props.message_body = get_plain_text_mail_body(v);
+                    elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then
+                        props.message_body = get_plain_text_mail_body(v);
+                    end
                 end
             else
                 local attachment = get_attachment(connection, email_id, mail_item.id, v);
@@ -420,10 +451,18 @@ local get_email_message = function(connection, email_id, token, mail_item)
         end
     elseif (payload.mimeType == 'multipart/related') then
         for i,v in ipairs(payload.parts) do
-            if (v.mimeType == 'text/plain') then
-                props.message_body = get_plain_text_mail_body(v);
-            elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then
-                props.message_body = get_plain_text_mail_body(v);
+            if (v.filename == "") then
+                if (string.sub(v.mimeType, 1, 9) == 'multipart') then
+                    props.message_body = find_body_text(v.parts);
+                else
+                    if (v.mimeType == 'text/plain') then
+                        props.message_body = get_plain_text_mail_body(v);
+                    elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then
+                        props.message_body = get_plain_text_mail_body(v);
+                    end
+                end
+            else
+                --[[Attachments here are not interesting ]]
             end
         end
     else
@@ -545,6 +584,88 @@ email_client.plain_text_reply = function(connection, email_id, token, message_id
 
 end
 
+--[[
+Send an email to a specified address
+connection: Pre established connection to google service
+email_id: Google email_account
+token: Access token received from auth
+email_message: Message compliant with { ns="http://evpoco.tekenlight.org", name="email_message"}
+
+]]
+email_client.send_mail = function(connection, email_id, token, email_message)
+    assert(type(connection) == 'table');
+    assert(type(email_id) == 'string');
+    assert(type(token) == 'table');
+    assert(type(email_message) == 'table');
+
+    local msg_handler = schema_processor:get_message_handler('email_message', 'http://evpoco.tekenlight.org');
+    assert(msg_handler ~= nil, "Could not find schema element eail_message");
+    local stat, status = pcall(msg_handler.is_valid, msg_handler, email_message);
+    assert(stat, status);
+    assert(status, error_handler.get_error_message());
+
+    local mmf = platform.mail_message_funcs();
+    local mm = mmf.new();
+    local sender = nil;
+    if (email_message.sender_name ~= nil) then
+        sender = email_message.sender_name .. ' <'.. email_message.from .. '>';
+    else
+        sender = email_message.from;
+    end
+    mmf.set_sender(mm, sender);
+    for i,v in ipairs(email_message.recipients) do
+        if (v.real_name == nil) then
+            mmf.add_recipient(mm, v.address, v.recipient_type);
+        else
+            mmf.add_recipient(mm, v.address, v.recipient_type, v.real_name);
+        end
+    end
+    mmf.set_subject(mm, email_message.subject);
+    mmf.add_content(mm, email_message.message_body);
+    if (email_message.content_type ~= nil) then
+        mmf.set_content_type(mm, email_message.content_type);
+    end
+
+    if (email_message.attachments ~= nil) then
+        mmf.set_content_type(mm, "multipart/mixed");
+        for i,v in ipairs(email_message.attachments) do
+            mmf.add_attachment(mm, ffi.getptr(v.data.value), tonumber(v.data.size), v.file_name, v.mime_type);
+        end
+    end
+
+    local mail_message = mmf.write_to_text(mm);
+
+    local uri;
+    local headers;
+    if (email_message.attachments ~= nil and #(email_message.attachments) > 0) then
+        uri = '/upload/gmail/v1/users/'..email_id..'/messages/send';
+        headers = {
+            method = "POST",
+            Authorization = "Bearer " .. token.access_token,
+            ["Content-Type"] = "message/rfc2822",
+            ["Content-Length"] = #mail_message
+        };
+        local status, response_str, http_status, hdrs = service_client.send_and_receive(connection, uri, headers, mail_message);
+        assert(status, response_str);
+    else
+        local b64_message = core_utils.url_base64_encode(mail_message);
+        local stat, rfc_message, err = pcall(json_parser.encode, {
+            raw = b64_message
+        });
+
+        uri = '/gmail/v1/users/'..email_id..'/messages/send';
+        headers = {
+            method = "POST",
+            Authorization = "Bearer " .. token.access_token,
+            ["Content-Type"] = "application/json",
+            ["Content-Length"] = #rfc_message
+        };
+        local status, response_str, http_status, hdrs = service_client.send_and_receive(connection, uri, headers, rfc_message);
+        assert(status, response_str);
+    end
+
+    return;
+end
 
 
 return email_client;
