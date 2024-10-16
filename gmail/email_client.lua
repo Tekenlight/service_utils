@@ -341,7 +341,7 @@ local function find_body_text(parts)
     return plain_text;
 end
 
-local get_email_message = function(connection, email_id, token, mail_item) 
+local get_email_message = function(connection, email_id, token, mail_item, including_attachments) 
     local payload = mail_item.payload
     local props = {
         id = mail_item.id,
@@ -422,7 +422,13 @@ local get_email_message = function(connection, email_id, token, mail_item)
                     end
                 end
             else
-                local attachment = get_attachment(connection, email_id, token, mail_item.id, v);
+                local attachment = {}
+                if (including_attachments) then
+                    attachment = get_attachment(connection, email_id, token, mail_item.id, v, including_attachments);
+                else
+                    attachment.attachmentId = v.body.attachmentId;
+                    attachment.attachment_id = v.body.attachmentId;
+                end
                 attachment.file_name = v.filename;
                 attachment.mime_type = v.mimeType;
                 --attachment.size_as_in_mail = v.body.size;
@@ -478,11 +484,15 @@ local get_email_message = function(connection, email_id, token, mail_item)
     return props;
 end
 
-email_client.get_message = function(connection, email_id, token, message_id)
+email_client.get_message = function(connection, email_id, token, message_id, including_attachments)
     assert(type(connection) == 'table');
     assert(type(email_id) == 'string');
     assert(type(token) == 'table');
     assert(type(message_id) == 'string');
+    assert(including_attachments == nil or type(including_attachments) == 'boolean')
+    if (including_attachments == nil) then
+        including_attachments = true;
+    end
 
     local uri = service_client.complete_uri_with_qp('/gmail/v1/users/'..email_id..'/messages/'..message_id,
         {}
@@ -498,7 +508,7 @@ email_client.get_message = function(connection, email_id, token, message_id)
     local stat, mail_item, err = pcall(json_parser.decode, response_str);
     assert(stat, mail_item);
 
-    local message = get_email_message(connection, email_id, token, mail_item);
+    local message = get_email_message(connection, email_id, token, mail_item, including_attachments);
     if (message == nil) then
         --error("Could not gather parts of message id "..mail_item.id);
     end
@@ -515,16 +525,21 @@ be retrieved.
 
 return email_messages;
 ]]
-email_client.get_inbox_emails = function(connection, email_id, token, list)
+email_client.get_inbox_emails = function(connection, email_id, token, list, including_attachments)
     assert(type(connection) == 'table');
+    assert(type(email_id) == 'string');
     assert(type(token) == 'table');
     assert(type(list) == 'table');
+    assert(including_attachments == nil or type(including_attachments) == 'boolean')
+    if (including_attachments == nil) then
+        including_attachments = true;
+    end
 
     local j = 0;
     local email_messages = {};
     local headers = {};
     for i,v in ipairs(list.messages) do
-        email_messages[i] = email_client.get_message (connection, email_id, token, list.messages[i].id);
+        email_messages[i] = email_client.get_message (connection, email_id, token, list.messages[i].id, including_attachments);
     end
 
     return email_messages;
