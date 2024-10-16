@@ -425,11 +425,8 @@ local get_email_message = function(connection, email_id, token, mail_item, inclu
                 local attachment = {}
                 if (including_attachments) then
                     attachment = get_attachment(connection, email_id, token, mail_item.id, v, including_attachments);
-                    attachment.attachment_id = v.body.attachmentId;
-                else
-                    attachment.attachmentId = v.body.attachmentId;
-                    attachment.attachment_id = v.body.attachmentId;
                 end
+                attachment.attachment_id = v.body.attachmentId;
                 attachment.file_name = v.filename;
                 attachment.mime_type = v.mimeType;
                 --attachment.size_as_in_mail = v.body.size;
