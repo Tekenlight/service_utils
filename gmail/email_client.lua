@@ -425,6 +425,7 @@ local get_email_message = function(connection, email_id, token, mail_item, inclu
                 local attachment = {}
                 if (including_attachments) then
                     attachment = get_attachment(connection, email_id, token, mail_item.id, v, including_attachments);
+                    attachment.attachment_id = v.body.attachmentId;
                 else
                     attachment.attachmentId = v.body.attachmentId;
                     attachment.attachment_id = v.body.attachmentId;
@@ -563,7 +564,7 @@ email_client.plain_text_reply = function(connection, email_id, token, message_id
     assert(type(message_to_send) == 'string');
 
 
-    local message = email_client.get_message(connection, email_id, token, message_id);
+    local message = email_client.get_message(connection, email_id, token, message_id, false);
 
     local body = "From: "..email_id.."\r\n"..
         "To: "..message.return_path.."\r\n"..
