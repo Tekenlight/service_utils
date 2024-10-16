@@ -625,6 +625,9 @@ rest_controller.handle_service_request = function (request, response)
                 else
                     -- OOPS function returned outut in an unexpected format
                     local msg = [=[Invalid output from function {]=]..class_name.."."..func..[=[}]=];
+                    print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                    print(msg);
+                    print(debug.getinfo(1).source, debug.getinfo(1).currentline);
                     output_obj.error_message = msg;
                     msg = nil;
                     flg, json_output, msg = pcall(json_parser.encode, output_obj);
