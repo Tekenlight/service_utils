@@ -12,6 +12,7 @@ local date_utils = require('lua_schema.date_utils');
 local core_utils = require('lua_schema.core_utils');
 local schema_processor = require("schema_processor");
 local stringx = require('pl.stringx');
+local utils = require('service_utils.common.utils');
 
 local INCORRECT_MAIL_FORMAT_MSG = [[
 Hello,
@@ -85,6 +86,7 @@ email_client.make_connection = function (client_security_json, email_id)
     end
     local stat, auth, err = pcall(json_parser.decode, response_str);
     assert(stat, auth);
+    assert(auth ~= nil, err);
 
     local connection = external_service_client.make_connection({
         --url = "https://oauth2.googleapis.com/token",
@@ -98,21 +100,6 @@ email_client.make_connection = function (client_security_json, email_id)
     end
 
     return connection, auth, http_status;
-end
-
-local tablecat = function(t2, t1)
-    assert(type(t2) == 'table');
-    assert(type(t1) == 'table');
-
-    --[[
-    for _,v in ipairs(t1) do
-        table.inser(t2, v);
-    end
-    ]]
-
-    table.move(t1, 1, #t1, #t2 + 1, t2);
-
-    return t2;
 end
 
 --[[
@@ -150,7 +137,7 @@ email_client.get_email_list = function(connection, email_id, token, crit)
     local stat, inc_list, err = pcall(json_parser.decode, response_str);
     assert(stat, inc_list);
 
-    if (type(inc_list.messages) == 'table') then tablecat(messages, inc_list.messages); end
+    if (type(inc_list.messages) == 'table') then utils.tablecat(messages, inc_list.messages); end
 
     while (inc_list.nextPageToken ~= nil and inc_list.nextPageToken ~= "") do
 

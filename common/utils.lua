@@ -87,4 +87,13 @@ function utils.string_similarity(s1, s2)
     return tonumber(ffi.C.str_cosine_similarity(s1, s2));
 end
 
+utils.tablecat = function(t2, t1)
+    assert(type(t2) == 'table');
+    assert(type(t1) == 'table');
+
+    table.move(t1, 1, #t1, #t2 + 1, t2);
+
+    return t2;
+end
+
 return utils;
