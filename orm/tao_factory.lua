@@ -1013,8 +1013,8 @@ tao.generic_select_query = function (self, context, order_by, where_statement, .
 	local rec = stmt:fetch_result();
 	while (rec ~= nil) do -- {
 		local row = stmt.map(rec, tbl_def.selected_col_names);
-		data[count] = row;
 		count = count + 1;
+		data[count] = row;
 		rec = stmt:fetch_result();
 	end --}
 

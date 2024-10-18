@@ -44,6 +44,8 @@ email_client.make_connection = function (client_security_json, email_id)
     assert(type(email_id) == 'string');
 
     local stat, key_data, err = pcall(json_parser.decode, client_security_json);
+    assert(stat, key_data);
+    assert(key_data ~= nil, err);
 
     local private_key = key_data.private_key
     local client_email = key_data.client_email
@@ -96,7 +98,7 @@ email_client.make_connection = function (client_security_json, email_id)
         peer_name = "gmail.googleapis.com"
     });
     if (connection == nil) then
-        return false, nil, 500;
+        return nil, nil, nil;
     end
 
     return connection, auth, http_status;
@@ -136,6 +138,7 @@ email_client.get_email_list = function(connection, email_id, token, crit)
     local messages = {};
     local stat, inc_list, err = pcall(json_parser.decode, response_str);
     assert(stat, inc_list);
+    assert(inc_list ~= nil, err);
 
     if (type(inc_list.messages) == 'table') then utils.tablecat(messages, inc_list.messages); end
 
@@ -148,6 +151,7 @@ email_client.get_email_list = function(connection, email_id, token, crit)
         inc_list = nil;
         stat, inc_list, err = pcall(json_parser.decode, response_str);
         assert(stat, inc_list);
+        assert(inc_list ~= nil, err);
 
         if (type(inc_list.messages) == 'table') then tablecat(messages, inc_list.messages); end
     end
@@ -183,6 +187,7 @@ local get_attachment = function(connection, email_id, token, id, payload)
 
     local stat, attachment, err = pcall(json_parser.decode, response_str);
     assert(stat, attachment);
+    assert(attachment ~= nil, err);
 
     return attachment;
 end
@@ -492,6 +497,7 @@ email_client.get_message = function(connection, email_id, token, message_id, inc
 
     local stat, mail_item, err = pcall(json_parser.decode, response_str);
     assert(stat, mail_item);
+    assert(mail_item ~= nil, err);
 
     local message = get_email_message(connection, email_id, token, mail_item, including_attachments);
     if (message == nil) then
