@@ -28,8 +28,8 @@ local function make_new_http_client(hostname, port, secure, external, timeout, p
     new_client._http_conn = http_conn;
     new_client._ss = ss;
     new_client._host = tostring(hostname)..':'..tostring(port);
-    new_client._send_timeout = -1;
-    new_client._recv_timeout = -1;
+    new_client._send_timeout = timeout;
+    new_client._recv_timeout = timeout;
     new_client._ev_conn_stream_sock = cn;
 
     if (secure) then
