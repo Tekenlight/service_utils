@@ -400,14 +400,22 @@ local get_email_message = function(connection, email_id, token, mail_item, inclu
         props[string.sub(v.mimeType, 5).."_body"] = get_plain_text_mail_body(v);
     elseif (payload.mimeType == 'multipart/alternative') then
         for i,v in ipairs(payload.parts) do
-            props.parts[#(props.parts)+1] = get_plain_text_mail_body(v);
-            if (v.mimeType == 'text/plain') then
-                props.message_body = get_plain_text_mail_body(v);
-            elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then
-                props.message_body = get_plain_text_mail_body(v);
+            if (v.filename == "") then
+                props.parts[#(props.parts)+1] = get_plain_text_mail_body(v);
+                if (v.mimeType == 'text/plain') then
+                    props.message_body = get_plain_text_mail_body(v);
+                elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then
+                    props.message_body = get_plain_text_mail_body(v);
+                end
+                if (string.sub(v.mimeType, 1, 4) == 'text') then
+                    props[string.sub(v.mimeType, 5).."_body"] = get_plain_text_mail_body(v);
+                end
             end
-            if (string.sub(v.mimeType, 1, 4) == 'text') then
-                props[string.sub(v.mimeType, 5).."_body"] = get_plain_text_mail_body(v);
+            if (props.message_body == nil) then
+                print("=====================");
+                print("Could not locate message body for this email");
+                print("=====================");
+                props.message_body = "Could not locate message body for this email";
             end
         end
     elseif (payload.mimeType == 'multipart/mixed') then
