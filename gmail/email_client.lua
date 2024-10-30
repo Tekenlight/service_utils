@@ -411,12 +411,12 @@ local get_email_message = function(connection, email_id, token, mail_item, inclu
                     props[string.sub(v.mimeType, 5).."_body"] = get_plain_text_mail_body(v);
                 end
             end
-            if (props.message_body == nil) then
-                print("=====================");
-                print("Could not locate message body for this email");
-                print("=====================");
-                props.message_body = "Could not locate message body for this email";
-            end
+        end
+        if (props.message_body == nil) then
+            print("=====================");
+            print("Could not locate message body for this email");
+            print("=====================");
+            props.message_body = "Could not locate message body for this email";
         end
     elseif (payload.mimeType == 'multipart/mixed') then
         for i,v in ipairs(payload.parts) do
