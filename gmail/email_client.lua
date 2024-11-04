@@ -401,14 +401,18 @@ local get_email_message = function(connection, email_id, token, mail_item, inclu
     elseif (payload.mimeType == 'multipart/alternative') then
         for i,v in ipairs(payload.parts) do
             if (v.filename == "") then
-                props.parts[#(props.parts)+1] = get_plain_text_mail_body(v);
-                if (v.mimeType == 'text/plain') then
-                    props.message_body = get_plain_text_mail_body(v);
-                elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then
-                    props.message_body = get_plain_text_mail_body(v);
-                end
-                if (string.sub(v.mimeType, 1, 4) == 'text') then
-                    props[string.sub(v.mimeType, 5).."_body"] = get_plain_text_mail_body(v);
+                if (string.sub(v.mimeType, 1, 9) == 'multipart') then
+                    props.message_body, props.html_body = find_body_text(v.parts);
+                else
+                    props.parts[#(props.parts)+1] = v;
+                    if (v.mimeType == 'text/plain') then
+                        props.message_body = get_plain_text_mail_body(v);
+                    elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then
+                        props.message_body = get_plain_text_mail_body(v);
+                    end
+                    if (string.sub(v.mimeType, 1, 4) == 'text') then
+                        props[string.sub(v.mimeType, 5).."_body"] = get_plain_text_mail_body(v);
+                    end
                 end
             end
         end
