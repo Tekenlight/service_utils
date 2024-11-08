@@ -170,6 +170,9 @@ local not_in_inbox = function (arr)
 end
 
 local get_plain_text_mail_body = function(payload)
+    if (payload.body.data == "") then
+        return "";
+    end
     return core_utils.str_url_base64_decode(payload.body.data);
 end
 
