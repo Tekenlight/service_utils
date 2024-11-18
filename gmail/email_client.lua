@@ -344,6 +344,7 @@ local get_email_message = function(connection, email_id, token, mail_item, inclu
     local payload = mail_item.payload
     local props = {
         id = mail_item.id,
+        thread_id = mail_item.threadId,
         attachments = {},
         parts = {};
         fetch_complete = true;
@@ -606,7 +607,7 @@ email_client.plain_text_reply = function(connection, email_id, token, message_id
     local b64_body = core_utils.url_base64_encode(body);
     local stat, rfc_message, err = pcall(json_parser.encode, {
         raw = b64_body,
-        threadId = message_id
+        threadId = message.thread_id
     });
 
     local uri = service_client.complete_uri_with_qp('/gmail/v1/users/'..email_id..'/messages/send',
