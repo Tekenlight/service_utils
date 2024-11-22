@@ -67,6 +67,7 @@ end
 local function write_rockspec(basic_file, filename)
 	local file = io.open(filename,"w+");
 	--Write rockspec file with basic info
+	file:write("rockspec_format = \"3.0\"\n");
 	file:write("package = \""..basic_file.package.."\"\n");
 	file:write("version = \""..basic_file.version.."\"\n");
 	file:write("\ndescription = {\n");
@@ -81,6 +82,27 @@ local function write_rockspec(basic_file, filename)
 		else
 			file:write("\t,\""..v.."\"\n");
 		end
+	end
+	file:write("}\n\n");
+	file:write("external_dependencies = {\n");
+    local __i__ = 1;
+	for n,v in pairs(basic_file.external_dependencies) do
+		if (__i__ == 1) then
+            __i__ = __i__ + 1;
+			file:write("\t[\""..n.."\"] = {\n");
+		else
+			file:write("\t,[\""..n.."\"] = {\n");
+		end
+        local __ii__ = 1;
+        for nn,vv in pairs(v) do
+            if (__ii__ == 1) then
+                __ii__ = __ii__ + 1;
+                file:write("\t\t[\""..nn.."\"] = \""..vv.."\"\n");
+            else
+                file:write("\t\t,[\""..nn.."\"] = \""..vv.."\"\n");
+            end
+        end
+        file:write("\t}\n"); -- }
 	end
 	file:write("}\n\n");
 	file:write("source = {\n\turl = \""..basic_file.source.url.."\",\n");
