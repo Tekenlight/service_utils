@@ -67,7 +67,7 @@ end
 local function write_rockspec(basic_file, filename)
 	local file = io.open(filename,"w+");
 	--Write rockspec file with basic info
-	file:write("rockspec_format = \"3.0\"\n");
+	--file:write("rockspec_format = \"3.0\"\n");
 	file:write("package = \""..basic_file.package.."\"\n");
 	file:write("version = \""..basic_file.version.."\"\n");
 	file:write("\ndescription = {\n");
