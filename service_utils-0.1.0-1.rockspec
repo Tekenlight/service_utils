@@ -26,6 +26,12 @@ dependencies = {
    "lua-resty-template",
 }
 
+external_dependencies = {
+	["google-chrome"] = {
+		["program"] = "google-chrome"
+	}
+}
+
 source = {
    url = "git+https://github.com/Tekenlight/service_utils",
    --tag = "version_0.1",
