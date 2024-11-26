@@ -22,6 +22,11 @@ if (app_base_path_not_to_be_used == nil) then
 end
 local app_base_path = properties_funcs.get_string_property("service_utils.REST.controller.appBasePath");
 
+local decode_plus_as_space = properties_funcs.get_bool_property("service_utils.REST.controller.queryPamrams.decodePlusAsSpace");
+if (decode_plus_as_space == nil) then
+    decode_plus_as_space = false;
+end
+
 local function isempty(s)
     return s == nil or s == '';
 end
@@ -367,14 +372,20 @@ local invoke_func = function(request, req_processor_interface, req_processor, fu
     return status, out_obj, ret;
 end
 
-local get_query_params = function(query)
+local get_query_params = function(inp_query)
     local qp = {};
     local i = 0;
 
-    if (query == nil) then
+    if (inp_query == nil) then
         return qp;
     end
 
+    local query;
+    if (decode_plus_as_space) then
+        query = string.gsub(inp_query, '+', '%%20');
+    else
+        query = inp_query;
+    end
     local q = util.uri_decode(query);
 
     for i,v in ipairs((require "pl.stringx".split(q, '&'))) do
