@@ -84,27 +84,29 @@ local function write_rockspec(basic_file, filename)
 		end
 	end
 	file:write("}\n\n");
-	file:write("external_dependencies = {\n");
-    local __i__ = 1;
-	for n,v in pairs(basic_file.external_dependencies) do
-		if (__i__ == 1) then
-            __i__ = __i__ + 1;
-			file:write("\t[\""..n.."\"] = {\n");
-		else
-			file:write("\t,[\""..n.."\"] = {\n");
-		end
-        local __ii__ = 1;
-        for nn,vv in pairs(v) do
-            if (__ii__ == 1) then
-                __ii__ = __ii__ + 1;
-                file:write("\t\t[\""..nn.."\"] = \""..vv.."\"\n");
+    if (basic_file.external_dependencies ~= nil) then
+        file:write("external_dependencies = {\n");
+        local __i__ = 1;
+        for n,v in pairs(basic_file.external_dependencies) do
+            if (__i__ == 1) then
+                __i__ = __i__ + 1;
+                file:write("\t[\""..n.."\"] = {\n");
             else
-                file:write("\t\t,[\""..nn.."\"] = \""..vv.."\"\n");
+                file:write("\t,[\""..n.."\"] = {\n");
             end
+            local __ii__ = 1;
+            for nn,vv in pairs(v) do
+                if (__ii__ == 1) then
+                    __ii__ = __ii__ + 1;
+                    file:write("\t\t[\""..nn.."\"] = \""..vv.."\"\n");
+                else
+                    file:write("\t\t,[\""..nn.."\"] = \""..vv.."\"\n");
+                end
+            end
+            file:write("\t}\n"); -- }
         end
-        file:write("\t}\n"); -- }
-	end
-	file:write("}\n\n");
+        file:write("}\n\n");
+    end
 	file:write("source = {\n\turl = \""..basic_file.source.url.."\",\n");
 	file:write("\ttag = \""..basic_file.source.tag.."\",\n}\n\n");
 	file:write("build = {\n");
