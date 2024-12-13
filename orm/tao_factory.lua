@@ -819,7 +819,7 @@ tao.delete = function(self, context, obj)
 	return true, nil, ret;
 end
 
-local function logical_del_or_undel(context, conn, action, tbl_def, obj, name)
+local function logical_del_or_undel(context, conn, action, tbl_def, obj, name, self)
 	assert(context ~= nil and type(context) == 'table');
 	assert(conn ~= nil);
 	assert(obj ~= nil and type(obj) == 'table');
@@ -943,7 +943,7 @@ tao.logdel = function(self, context, obj)
 	local conn = context:get_connection(self.db_name);
 	assert(conn ~= nil);
 
-	return logical_del_or_undel(context, conn, 'D', tbl_def, obj, self.db_name);
+	return logical_del_or_undel(context, conn, 'D', tbl_def, obj, self.db_name, self);
 end
 
 tao.undelete = function(self, context, obj)
@@ -959,7 +959,7 @@ tao.undelete = function(self, context, obj)
 	local conn = context:get_connection(self.db_name);
 	assert(conn ~= nil);
 
-	return logical_del_or_undel(context, conn, 'U', tbl_def, obj, self.db_name);
+	return logical_del_or_undel(context, conn, 'U', tbl_def, obj, self.db_name, self);
 end
 
 tao.get_list = function(self, context, query_params)
