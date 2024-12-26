@@ -534,6 +534,7 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 	if (col_map ~= nil) then
 		assert(type(col_map) == 'table');
 	end
+
 	local inputs = {};
 	-- data will hold the data to be updated
 	local data = {};
@@ -548,6 +549,8 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 	for i, col in ipairs(tbl_def.key_col_names) do
 		if (obj[col] ~= nil) then
 			local elemet_val = get_element_val_from_obj(obj, col, col_map, tbl_def)
+			key_columns[col] = elemet_val;
+			data[col] = elemet_val;
 		end
 	end
 
@@ -564,6 +567,7 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 				stmt = stmt..col .. "=?";
 			end
 		end
+
 	else
 		-- Update mapped non-key columns
 		for i, col in ipairs(tbl_def.non_key_col_names) do
@@ -581,6 +585,7 @@ local function prepare_update_stmt(context, conn, tbl_def, obj, col_map)
 				end
 			end
 		end
+
 	end
 	j = nil;
 
