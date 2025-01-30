@@ -9,6 +9,7 @@ declare("MD_TOTAL_HITS", 0);
 local master_db_cache = {}
 
 local make_config_conn = function()
+	--local config_conn = context.db_connections['CONFIG'].conn;
 	local config_db_name = properties_funcs.get_string_property("service_utils.config_db_name");
 	local config_params = require('db_params'):get_db_params(config_db_name);
 	local db_access = require(config_params.handler);
@@ -60,7 +61,9 @@ local low_prepare_str_key = function(db_name, tbl_def, rec)
     for k, v in pairs(key) do
         str = str .. k .. "~" .. v .. "~~"
     end
-    return string.sub(str, 1, -3); 
+
+    local out_str = string.gsub(string.gsub(string.sub(str, 1, -3), ' ', '<SPACE>'), '\t', '<TAB>');
+    return out_str;
 end
 
 master_db_cache.form_key = function(context , tao, key)
@@ -78,7 +81,7 @@ master_db_cache.add = function (context, tao, record)
 	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, "ADD");
 
 	--local config_conn = context.db_connections['CONFIG'].conn;
-	local config_conn = make_config_conn();
+	local config_conn = make_config_conn(context);
 
 	local key_str = master_db_cache.form_key(context, tao, record);
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, "CACHE ADD");
@@ -111,7 +114,7 @@ master_db_cache.fetch = function (context, tao, key)
 	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, "FETCH");
 
 	--local config_conn = context.db_connections['CONFIG'].conn;
-	local config_conn = make_config_conn();
+	local config_conn = make_config_conn(context);
 
 	local key_str = master_db_cache.form_key(context, tao, key);
 	local status, response, msg = config_conn:get(key_str);
@@ -147,7 +150,7 @@ master_db_cache.remove = function (context, tao, key)
 	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, "REMOVE");
 
 	--local config_conn = context.db_connections['CONFIG'].conn;
-	local config_conn = make_config_conn();
+	local config_conn = make_config_conn(context);
 
 	local key_str = master_db_cache.form_key(context, tao, key);
 	local status, response, msg = config_conn:del(key_str);
