@@ -319,7 +319,7 @@ local invoke_func = function(request, req_processor_interface, req_processor, fu
         end
         assert((func ~= nil));
         assert((type(req_processor) == 'table'));
-        assert((req_processor[func] ~= nil));
+        assert((req_processor[func] ~= nil), "function not found ["..func.."]");
         if (obj == nil) then
             proc_stat, status, out_obj = xpcall(req_processor[func], error_msg_handler, req_processor, uc, qp);
         else
@@ -521,8 +521,22 @@ rest_controller.handle_service_request = function (request, response)
                             require 'pl.pretty'.dump(t);
                             print(debug.getinfo(1).source, debug.getinfo(1).currentline);
                         else
+                            local stat = true;
                             flg = true;
+                            --stat, obj, msg = pcall(msg_handler.from_json, msg_handler, json_input);
                             obj, msg = msg_handler:from_json(json_input);
+                            if (not stat) then
+                                flg = false;
+                                error_cond = 6;
+                                print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                                print(interface_class_name);
+                                print(func)
+                                print(json_input);
+                                print(msg);
+                                require 'pl.pretty'.dump(t);
+                                print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                                error(obj);
+                            end
                             if (obj == nil) then
                                 flg = false;
                                 error_cond = 6;
@@ -574,6 +588,7 @@ rest_controller.handle_service_request = function (request, response)
     local successfully_processed = false;
     if (not flg) then
         print(debug.getinfo(1).source, debug.getinfo(1).currentline, "deserialization of json request failed");
+        print("error_cond = "..error_cond);
         require 'pl.pretty'.dump(output_obj);
         print(debug.getinfo(1).source, debug.getinfo(1).currentline);
         output_obj.error_message = msg;
