@@ -10,6 +10,16 @@ decimal.new = function(x)
     return bc.new(x);
 end
 
+decimal.tonumber = function(x)
+    assert(is_type(x), "Invalid decimal input");
+    return tonumber(tostring(x));
+end
+
+decimal.tostring = function(x)
+    assert(is_type(x), "Invalid decimal input");
+    return tostring(x);
+end
+
 decimal.ceil = function(x)
     assert(is_type(x), "Invalid decimal input");
     local digits = bc.digits();
