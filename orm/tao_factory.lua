@@ -105,6 +105,19 @@ local function val_of_elem_in_obj(obj, name)
 
 end
 
+local prepare_col_map = function(col_map)
+    local new_col_map = {};
+    for n, v in pairs(col_map) do
+        if (type(n) == 'string') then
+            return col_map;
+        else
+            assert(type(n) == 'number', "INVALID COLMAP INPUT");
+            new_col_map[v] = v;
+        end
+    end
+    return new_col_map;
+end
+
 local function get_element_val_from_obj(obj, name, col_map, tbl_def)
 	if (col_map == nil) then
 		return obj[name];
@@ -334,6 +347,9 @@ tao.insert = function(self, context, obj, col_map)
 	assert(context ~= nil and type(context) == 'table');
 	assert(obj ~= nil and type(obj) == 'table');
 	local tbl_def = self.tbl_def;
+    if (col_map ~= nil) then
+        col_map = prepare_col_map(col_map);
+    end
 	assert_key_columns_present(context, tbl_def, obj, col_map);
 
 	local conn = context:get_connection(self.db_name);
@@ -729,6 +745,15 @@ end
 
 tao.update = function(self, context, obj, col_map)
 	assert(col_map ~= nil and type(col_map) == 'table');
+    col_map = prepare_col_map(col_map);
+	return self:raw_update(context, obj, col_map);
+end
+
+tao.update_all_columns = function(self, context, obj)
+    local col_map =  {};
+    for i,v in ipairs(tbl_def.declared_col_names) do
+        col_map[v] = v;
+    end
 	return self:raw_update(context, obj, col_map);
 end
 

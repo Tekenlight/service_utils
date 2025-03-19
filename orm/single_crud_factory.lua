@@ -195,9 +195,25 @@ single_crud.modify = function (self, context, obj, extra_columns)
 end
 
 single_crud.phydel = function (self, context, obj, extra_columns)
+    if (extra_columns == nil) then
+        extra_columns = {};
+    end
     local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 
-    local flg, msg, ret = tao:delete(context, obj);
+    local colmap = tao_factory.get_column_map_from_obj_meta(context, tao.tbl_def, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+    for n,v in pairs(extra_columns) do
+        colmap[n] = n;
+    end
+
+    local upd_obj = {};
+    for n,v in pairs(obj) do
+        upd_obj[n] = v;
+    end
+    for n,v in pairs(extra_columns) do
+        upd_obj[n] = v;
+    end
+
+    local flg, msg, ret = tao:delete(context, upd_obj);
     if (not flg) then
         if (ret == 0) then
             local key_params_str = get_key_params_str(tao, obj);
@@ -209,14 +225,33 @@ single_crud.phydel = function (self, context, obj, extra_columns)
             return false, msg, ret;
         end
     end
+
+    local new_colmap = tao_factory.get_column_map_from_obj_meta(context, tao.tbl_def, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+    upd_auto_columns(context, tao.tbl_def, obj, upd_obj, new_colmap);
 
     return true, nil, ret;
 end
 
 single_crud.logdel = function (self, context, obj, extra_columns)
+    if (extra_columns == nil) then
+        extra_columns = {};
+    end
     local tao = tao_factory.open(context, self.db_name, self.tbl_name);
 
-    local flg, msg, ret = tao:logdel(context, obj);
+    local colmap = tao_factory.get_column_map_from_obj_meta(context, tao.tbl_def, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+    for n,v in pairs(extra_columns) do
+        colmap[n] = n;
+    end
+
+    local upd_obj = {};
+    for n,v in pairs(obj) do
+        upd_obj[n] = v;
+    end
+    for n,v in pairs(extra_columns) do
+        upd_obj[n] = v;
+    end
+
+    local flg, msg, ret = tao:logdel(context, upd_obj);
     if (not flg) then
         if (ret == 0) then
             local key_params_str = get_key_params_str(tao, obj);
@@ -228,6 +263,9 @@ single_crud.logdel = function (self, context, obj, extra_columns)
             return false, msg, ret;
         end
     end
+
+    local new_colmap = tao_factory.get_column_map_from_obj_meta(context, tao.tbl_def, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
+    upd_auto_columns(context, tao.tbl_def, obj, upd_obj, new_colmap);
 
     return true, nil, ret;
 end
@@ -378,6 +416,10 @@ single_crud.approve = function (self, context, obj, extra_columns)
             error_handler.raise_error(404, msg);
             return false, msg, ret;
         else
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+            require 'pl.pretty'.dump(upd_obj);
+            require 'pl.pretty'.dump(colmap);
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
             error_handler.raise_error(500, msg);
             return false, msg, ret;
         end
