@@ -751,7 +751,10 @@ end
 
 tao.update_all_columns = function(self, context, obj)
     local col_map =  {};
-    for i,v in ipairs(tbl_def.declared_col_names) do
+    for i,v in ipairs(self.tbl_def.declared_col_names) do
+        col_map[v] = v;
+    end
+    for i,v in ipairs(self.tbl_def.auto_col_names) do
         col_map[v] = v;
     end
 	return self:raw_update(context, obj, col_map);
