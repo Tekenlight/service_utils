@@ -96,4 +96,30 @@ utils.tablecat = function(t2, t1)
     return t2;
 end
 
+utils.table_splice = function(tbl, start, deleteCount, ...)
+    local removed = {}
+
+    -- Handle negative start index
+    if start < 0 then
+        start = #tbl + start + 1
+    else
+        start = math.max(1, start)
+    end
+
+    -- Remove elements
+    for i = 1, deleteCount do
+        table.insert(removed, tbl[start])
+        table.remove(tbl, start)
+    end
+
+    -- Insert new elements
+    local items = {...}
+    for i = #items, 1, -1 do
+        table.insert(tbl, start, items[i])
+    end
+
+    return removed
+end
+
+
 return utils;
