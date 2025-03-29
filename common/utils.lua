@@ -121,5 +121,11 @@ utils.table_splice = function(tbl, start, deleteCount, ...)
     return removed
 end
 
+utils.starts_with = function(str, prefix)
+    assert(type(str) == 'string');
+    assert(type(prefix) == 'string');
+    return (string.sub(str, 1, #prefix) == prefix)
+end
+
 
 return utils;
