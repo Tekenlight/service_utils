@@ -23,7 +23,7 @@ local low_prepare_str_key = function(tbl_def, rec)
     end
     local str = ""
     for k, v in pairs(key) do
-        str = str .. k .. "~" .. v .. "~~"
+        str = str .. k .. "~" .. tostring(v) .. "~~"
     end
     return string.sub(str, 1, -3);
 end
@@ -257,7 +257,7 @@ tao.select = function(self, context, ...)
                 params_string = params_string .. ", ";
             end
             v = select(i, table.unpack(inp_args));
-            params_string = params_string ..  col.."="..v;
+            params_string = params_string ..  col.."="..tostring(v);
         end
         params_string = params_string .. "]";
         local msg = "Record not found for "..params_string;
