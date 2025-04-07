@@ -84,7 +84,8 @@ single_crud.fetch = function (self, context, query_params)
     return true, obj, out;
 end
 
-local upd_auto_columns = function(context, tbl_def, obj, data, col_map)
+local upd_auto_columns = function(context, tbl_def, obj, data, col_map, creation_fields)
+    if (creation_fields == nil) then creation_fields = false; end
     if (tbl_def.col_props.update_fields) then
         local element_name = tao_factory.get_element_name_in_obj("version", col_map);
         if (element_name) then
@@ -97,6 +98,18 @@ local upd_auto_columns = function(context, tbl_def, obj, data, col_map)
         end
 
         element_name = tao_factory.get_element_name_in_obj("update_time", col_map);
+        if (element_name) then
+            obj[element_name] = data[element_name]
+        end
+    end
+
+    if (creation_fields and tbl_def.col_props.creation_fields) then
+        local element_name = tao_factory.get_element_name_in_obj("creation_uid", col_map);
+        if (element_name) then
+            obj[element_name] = data[element_name]
+        end
+
+        element_name = tao_factory.get_element_name_in_obj("creation_time", col_map);
         if (element_name) then
             obj[element_name] = data[element_name]
         end
@@ -143,7 +156,7 @@ single_crud.add = function (self, context, obj, extra_columns)
         end
     end
     local new_colmap = tao_factory.get_column_map_from_obj_meta(context, tao.tbl_def, {elem = self.msg_elem_name, elem_ns = self.msg_ns});
-    upd_auto_columns(context, tao.tbl_def, obj, upd_obj, new_colmap);
+    upd_auto_columns(context, tao.tbl_def, obj, upd_obj, new_colmap, true);
 
     return true, nil, ret;
 end
