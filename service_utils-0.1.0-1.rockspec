@@ -127,6 +127,7 @@ build = {
 		["service_utils.db.ev_redis"] = 'db/ev_redis.lua',
 		["service_utils.db.ev_types"] = 'db/ev_types.lua',
 		["service_utils.db.rdbms_interface"] = 'db/rdbms_interface.lua',
+		["service_utils.db.type_utils"] = 'db/type_utils.lua',
 
 		["service_utils.validation.validate_map"] = 'schemarules/validate_map.lua',
 
