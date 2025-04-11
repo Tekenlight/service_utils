@@ -756,7 +756,13 @@ tao.raw_update = function(self, context, obj, col_map, all_columns)
     tao_factory.set_auto_columns(context, tbl_def, obj, data, col_map);
 
     -- insert data into the dml ops map
-    transaction.append_to_ops_list(context, tbl_def.tbl_props.name, 1, data, key_columns, self.db_name);
+    do
+        local action = 1;
+        if (all_columns) then
+            action = 5;
+        end
+        transaction.append_to_ops_list(context, tbl_def.tbl_props.name, action, data, key_columns, self.db_name);
+    end
 
     return true, nil, ret;
 end
