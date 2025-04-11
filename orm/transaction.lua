@@ -87,6 +87,7 @@ transaction.append_to_ops_list = function(context, table_name, operation, data, 
 	--	2: Delete
 	--  3: logdel
 	--  4: undelete
+	--  5: All columns update
 	-- }
 	if (context.dml_ops == nil) then
 		return ;
