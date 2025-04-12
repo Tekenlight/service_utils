@@ -105,6 +105,8 @@ local function val_of_elem_in_obj(obj, name)
 
 end
 
+--[[Ensures that atleast one (name, value) exists
+]]
 local prepare_col_map = function(col_map)
     local new_col_map = {};
     for n, v in pairs(col_map) do
@@ -770,7 +772,34 @@ end
 tao.update = function(self, context, obj, col_map)
     assert(col_map ~= nil and type(col_map) == 'table');
     col_map = prepare_col_map(col_map);
-    return self:raw_update(context, obj, col_map);
+
+    local tbl_def = self.tbl_def;
+    local key = {}
+    for i, col in ipairs(tbl_def.key_col_names) do
+        if (obj[col] == nil) then
+            error("Key column ["..col.."] must be present in the input object");
+        else
+            key[#key+1] = obj[col];
+        end
+    end
+    local db_obj = self:select(context, table.unpack(key));
+    if (db_obj == nil) then
+        return false, get_db_table_name(tbl_def)..":Record does not exist, ["..table.concat(key, ", ").."]", 0;
+    end
+    local val;
+    for n,v in pairs(col_map) do
+        val = val_of_elem_in_obj(obj, v);
+        db_obj[n] = val;
+    end
+
+    --return self:raw_update(context, obj, col_map);
+    local flg, msg, ret = self:update_all_columns(context, db_obj);
+    if (not flg) then
+        return flg, msg, ret;
+    end
+    tao_factory.set_auto_columns(context, tbl_def, obj, db_obj, col_map);
+
+    return flg, msg, ret;
 end
 
 tao.update_all_columns = function(self, context, obj)
