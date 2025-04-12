@@ -791,6 +791,12 @@ tao.update = function(self, context, obj, col_map)
         val = val_of_elem_in_obj(obj, v);
         db_obj[n] = val;
     end
+    if (tbl_def.col_props.update_fields == true) then
+        db_obj.version = val_of_elem_in_obj(obj, col_map.vrsion);
+    end
+    if (tbl_def.col_props.entity_state_field == true) then
+        db_obj.entity_state = obj.entity_state;
+    end
 
     --return self:raw_update(context, obj, col_map);
     local flg, msg, ret = self:update_all_columns(context, db_obj);
