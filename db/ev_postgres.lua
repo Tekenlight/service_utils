@@ -63,6 +63,8 @@ ev_postgres_db.open_connection = function(host, port, dbname, user, password)
 	return conn;
 end
 
+ev_postgres_stmt.NULL = ffi.NULL;
+
 ev_postgres_stmt.close = function(self)
 	self._stmt.close(self._stmt);
 end
