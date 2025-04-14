@@ -792,7 +792,7 @@ tao.update = function(self, context, obj, col_map)
         db_obj[n] = val;
     end
     if (tbl_def.col_props.update_fields == true) then
-        db_obj.version = val_of_elem_in_obj(obj, col_map.vrsion);
+        db_obj.version = val_of_elem_in_obj(obj, col_map.version);
     end
     if (tbl_def.col_props.entity_state_field == true) then
         db_obj.entity_state = obj.entity_state;
