@@ -80,6 +80,8 @@ decimal.round = function(x, n)
     return out;
 end
 
+decimal.zero = decimal.new(0);
+
 --[[
 bc.digits(4);
 print("ceil(5.7)", decimal.ceil(bc.new("5.7")));
