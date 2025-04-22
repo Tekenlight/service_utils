@@ -11,6 +11,9 @@ primitives.new_numeric = function (type_name, default)
 	return atom:new(default);
 end
 
-
+primitives.int_0 = primitives.new_numeric("int", "0");
+primitives.uint_0 = primitives.new_numeric("unsignedInt", "0");
+primitives.long_0 = primitives.new_numeric("long", "0");
+primitives.ulong_0 = primitives.new_numeric("unsignedLong", "0");
 
 return primitives;
