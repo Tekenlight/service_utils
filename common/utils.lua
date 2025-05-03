@@ -1,5 +1,6 @@
 local ffi = require("ffi");
 local core_utils = require('lua_schema.core_utils');
+local List = require('pl.List');
 local utils = {}
 
 ffi.cdef[[
@@ -119,6 +120,14 @@ utils.table_splice = function(tbl, start, deleteCount, ...)
     end
 
     return removed
+end
+
+--[[
+    Slices the input table (array) from first to last, both indices inclusive
+    First element of an array is assumed to be 1
+]]
+utils.table_slice = function(tbl, first, last)
+    return List(tbl):slice(first, last);
 end
 
 utils.starts_with = function(str, prefix)
