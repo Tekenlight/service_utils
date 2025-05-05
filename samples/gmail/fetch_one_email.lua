@@ -3,6 +3,7 @@ local date = require('date');
 local email_client = require('service_utils.gmail.email_client');
 
 local client_sec_json = (function ()
+    local file = io.open("/home/ubuntu/product/service_common/test/rest_gmail/gmail-rest-api-integration-34db9244c527.json", "r")
     --local file = io.open("<path to the JSON file downloaded during service client setup in google cloud console>", "r")
     local content = file:read("*all");
     file:close();

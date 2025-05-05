@@ -3,6 +3,7 @@ local date = require('date');
 local email_client = require('outlook.email_client');
 
 local client_sec_json = (function ()
+    local file = io.open("/home/ubuntu/product/service_common/test/outlook/azure_details.json", "r")
     --local file = io.open("<path to the JSON file containing microsoft credentials>", "r")
     local content = file:read("*all");
     file:close();
