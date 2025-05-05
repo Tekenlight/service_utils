@@ -151,6 +151,8 @@ build = {
 
 		["service_utils.os"] = 'os/os.lua',
 
+		["service_utils.chrome_pdf"] = 'chrome_pdf/chrome_pdf.lua',
+
    },
    install = {
 		bin = {
