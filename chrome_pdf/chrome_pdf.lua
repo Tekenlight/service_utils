@@ -169,6 +169,7 @@ chrome_pdf.generate = function(s_html, i_params)
         {'scale', 'scale'},
         {'landscape', 'landscape'},
         {'pageRanges', 'page_ranges'},
+        {'omitBackground', 'omit_background'},
     }) do
         if (i_params[v[2]] ~= nil) then
             params[v[1]] = i_params[v[2]];
