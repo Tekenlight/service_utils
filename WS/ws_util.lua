@@ -41,6 +41,8 @@ ws_util.recv_bytes = function(ss, n, mode)
 	assert(type(mode) == 'number');
 	assert(n ~= nil and type(n) == 'number' and n > 0);
 	if (not platform.socket_active(ss)) then
+        print(ss);
+        print(debug.traceback());
 		error("SOCKET INACTIVE");
 	end
 
@@ -84,14 +86,20 @@ ws_util.recv_bytes = function(ss, n, mode)
 
 end
 
-ws_util.send_bytes = function(ss, buf, n)
+ws_util.send_bytes = function(ss, buf, n, acc_sock)
 	assert(n ~= nil and type(n) == 'number' and n > 0);
 	assert(buf ~= nil and type(buf) == 'cdata');
+    assert(acc_sock ~= nil and type(acc_sock) == 'boolean');
 
 	if (not platform.socket_active(ss)) then
 		error("SOCKET INACTIVE");
 	end
-	local status, ret = pcall(platform.send_data_on_acc_socket, ss, ffi.getptr(buf), n);
+	local status, ret;
+    if (acc_sock) then
+        status, ret = pcall(platform.send_data_on_acc_socket, ss, ffi.getptr(buf), n);
+    else
+        status, ret = pcall(platform.send_data_on_socket, ss, ffi.getptr(buf), n, constants.SEND_TIMEOUT_SMTP_SOCKETS);
+    end
 	if (not status) then
 		error(ret);
 	end
@@ -258,12 +266,12 @@ ws_util.send_frame = function(inp)
 	local buf = ffi.new("unsigned char [?]", (inp.size + ws_const.MAX_HEADER_LENGTH));
 	ws_util.form_header(inp, buf);
 	ws_util.form_payload(inp, buf);
-	ws_util.send_bytes(inp.ss, buf, inp.total_len);
+	ws_util.send_bytes(inp.ss, buf, inp.total_len, inp.acc_sock);
 
 	return inp;
 end
 
-ws_util.send_msg = function(conn, msg)
+ws_util.send_msg = function(conn, msg, options)
 	local ss;
 	do
 		assert(conn ~= nil and type(conn) == 'table');
@@ -272,11 +280,24 @@ ws_util.send_msg = function(conn, msg)
 		local s = (require("pl.stringx")).split(tostring(ss), ":");
 		assert(s[1] ~= nil and s[1] == 'streamsocket');
 		assert(msg ~= nil and type(msg) == 'string');
+        if (options == nil) then
+            options = {
+                msg_type = "BINARY";
+            };
+        end
+        assert(type(options) == 'table');
 	end
 	local buf = ffi.new("unsigned char[?]", string.len(msg));
 	ffi.C.strncpy(buf, msg, string.len(msg));
 
-	return ws_util.send_frame({ss = ss, size = string.len(msg), flags = 0, buf = buf, use_mask = true});
+	return ws_util.send_frame({
+        ss = ss,
+        size = string.len(msg),
+        flags = (options.msg_type == "TEXT") and ws_const.FRAME_TEXT or ws_const.FRAME_BINARY,
+        buf = buf,
+        use_mask = true,
+        acc_sock = (conn.msg_handler ~= nil),
+    });
 end
 
 ws_util.close = function(conn)
@@ -285,9 +306,18 @@ ws_util.close = function(conn)
 	end
 	local lbuf = "CLOSING WEBSOCKET";
 	local buf = ffi.cast("unsigned char *", lbuf);
-	local send_meta =  ws_util.send_frame({ss = conn._ss, size = string.len(lbuf),
-                    flags = ws_const.FRAME_OP_CLOSE, buf = buf, use_mask = true});
-	platform.shutdown_websocket(conn._ss, 1);
+	local send_meta =  ws_util.send_frame({
+        ss = conn._ss,
+        size = string.len(lbuf),
+        flags = ws_const.FRAME_OP_CLOSE,
+        buf = buf, use_mask = true,
+        acc_sock = (conn.msg_handler ~= nil),
+    });
+    if (conn.msg_handler ~= nil) then
+        platform.shutdown_websocket(conn._ss, 1);
+    else
+        platform.close_tcp_connection(conn._ss);
+    end
 	return send_meta;
 end
 
@@ -300,8 +330,13 @@ ws_util.ping = function(conn, payload)
 		payload = 'PING';
 	end
 	local buf = ffi.cast("unsigned char *", payload);
-	return ws_util.send_frame({ss = conn._ss, size = string.len(payload),
-                    flags = ws_const.FRAME_OP_PING, buf = buf, use_mask = true});
+	return ws_util.send_frame({
+        ss = conn._ss,
+        size = string.len(payload),
+        flags = ws_const.FRAME_OP_PING,
+        buf = buf, use_mask = true,
+        acc_sock = (conn.msg_handler ~= nil),
+    });
 end
 
 ws_util.get_ws_from_pool = function(wsname)

@@ -15,7 +15,24 @@ char* tempnam(const char *dir, const char *pfx);
 void free(void *ptr);
 ]]
 
+local os_funcs = {
+    clock = os.clock,
+    difftime = os.difftime,
+    execute = os.execute,
+    exit = os.exit,
+    getenv = os.getenv,
+    remove = os.remove,
+    rename = os.rename,
+    setlocale = os.setlocale,
+    time = os.time,
+    tmpname = os.tmpname
+};
+
 local os = {}
+for n,v in pairs(os_funcs) do
+    os[n] = v;
+end
+
 
 local unistd = require 'posix.unistd';
 local stringx = require('pl.stringx');
@@ -183,7 +200,7 @@ os.open_file = function(filename, oflags, mode)
     return fd;
 end
 
-os.html_to_pdf = function(filename)
+os.html_to_pdf = function(filename, props)
     assert(type(filename) == 'string', "Invalid input to os.html_to_pdf");
 
     local temp_name = ffi.C.tempnam("/tmp", "outfile");
@@ -200,15 +217,25 @@ os.html_to_pdf = function(filename)
         error('Error while executing ['..command..']: '.. msg.. ':[ret='..ret..']');
     end
 
+    --[[
     local fd = os.open_file(out_file_name);
     local file_data = os.fd_read(fd);
     ffi.C.close(fd);
+    os.system("/usr/bin/rm "..out_file_name);
+    ]]
+    local file, err = io.open(out_file_name, "rb");
+    if (not file) then
+        error("Failed to open file: " .. err);
+    end
+
+    local file_data = file:read("*all");
+    file:close();
     os.system("/usr/bin/rm "..out_file_name);
 
     return file_data;
 end
 
-os.string_html_to_pdf = function(s_html)
+os.string_html_to_pdf = function(s_html, props)
     assert(type(s_html) == 'string', "Invalid input to os.string_html_to_pdf");
 
     local fd, filename = os.open_temp_file("/tmp/temp", ".html");
@@ -219,8 +246,16 @@ os.string_html_to_pdf = function(s_html)
         error('Error writing to fd '.. msg);
     end
     ffi.C.close(fd);
+    --[[
+    local file, err = io.open(filename, "w");
+    if (not file) then
+        error("Cannot open file: " .. err);
+    end
+    file:write(s_html);
+    file:close();
+    --]]
 
-    local out_file_data = os.html_to_pdf(filename);
+    local out_file_data = os.html_to_pdf(filename, props);
 
     os.system("/usr/bin/rm "..filename);
 

@@ -36,7 +36,8 @@ local compute_accept = function(key)
 	assert(key ~= nil and type(key) == 'string');
 	local accept = key .. ws.WEBSOCKET_GUID;
 
-	return core_utils.base64_encode(core_utils.hex_decode(evl_crypto.s_sha1_hash(accept)));
+    local sha1_of_accept = core_utils.hex_decode(evl_crypto.s_sha1_hash(accept));
+	return core_utils.base64_encode(sha1_of_accept);
 end
 
 local function split_path(uri_obj)
@@ -52,7 +53,7 @@ local function split_path(uri_obj)
 end
 
 local create_key = function()
-	local rnd = utils.get_rand_bytes(4);
+	local rnd = utils.get_rand_bytes(16);
 	return core_utils.base64_encode(rnd);
 end
 
@@ -148,7 +149,10 @@ ws.connect = function(inp)
 	local hdrs = inp.hdrs;
 
 	local uri = client_factory.deduce_details(url);
-	local conn = client_factory.new(uri._host, uri._port, inp.secure, inp.external, inp.timeout);
+	local conn = inp.conn;
+    if (conn == nil) then
+        conn = client_factory.new(uri._host, uri._port, inp.secure, inp.external, inp.timeout);
+    end
 
 	hdrs.method = "GET";
 	hdrs.Connection = "Upgrade";
@@ -174,15 +178,20 @@ ws.connect = function(inp)
 			return nil, "No Upgrade: websocket header in handshake response";
 		end
 		local accept = resp_hdrs["Sec-WebSocket-Accept"];
-		if (accept == nil or string.lower(stringx.strip(accept)) ~= string.lower(compute_accept(nonce))) then
+		if (accept == nil or (stringx.strip(accept)) ~= (compute_accept(nonce))) then
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+            print(stringx.strip(accept), compute_accept(nonce));
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 			return nil, "Invalid or missing Sec-WebSocket-Accept header in handshake response";
 		end
 	end
-	platform.track_ss_as_websocket(conn._ss, msg_handler);
 
-	conn.msg_handler = inp.msg_handler;
+    if (msg_handler ~= nil) then
+        platform.track_ss_as_websocket(conn._ss, msg_handler);
+        conn.msg_handler = inp.msg_handler;
+    end
 
-	return conn, resp_status, resp_hdrs
+	return conn, resp_status, resp_hdrs;
 end
 
 ws.handle_msg = function(request, response)
@@ -203,10 +212,14 @@ ws.handle_msg = function(request, response)
 		else
 			print(ffi.string(msg.buf));
 		end
-		ws_util.send_frame({ss = ss, size = msg.payload_len,
-				flags = ws_const.FRAME_OP_PONG,
-				buf = msg.buf,
-				use_mask = true});
+		ws_util.send_frame({
+            ss = ss,
+            size = msg.payload_len,
+            flags = ws_const.FRAME_OP_PONG,
+            buf = msg.buf,
+            use_mask = true,
+            acc_sock = true,
+        });
 	elseif (msg.op_code == ws_const.FRAME_OP_PONG) then
 		local ws_msg_handler = platform.get_ws_recvd_msg_handler();
 		local handler;
