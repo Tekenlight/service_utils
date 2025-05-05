@@ -38,23 +38,6 @@ local generate_items = function (count)
     return items;
 end
 
-local po_data = {
-  order_number =  'PO-98765',
-  date = tostring(date_utils.today(true)),
-  customer_name =  'XYZ Corporation',
-  items =  generate_items(50),
-};
-local first_page_size = 28;
-local items_per_page = 34;
-
-local my_env = {
-    _parent = _G,
-    _debug = true,
-    items_per_page = items_per_page,
-    item_chunks = chunk_array(po_data.items, first_page_size, items_per_page),
-    po_data = po_data,
-};
-
 local html = [==[
 # local page_count;
 # local global_index = 0;
@@ -124,13 +107,13 @@ local html = [==[
 </html>
 ]==];
 
-local generate_html = function()
+local generate_html = function(my_env)
     local a, b, c = template.substitute(html, my_env);
     return a;
 end
 
-local generate_pdf = function()
-    local str = generate_html();
+local generate_pdf = function(my_env)
+    local str = generate_html(my_env);
     local pdf_data = chrome_pdf.generate(str, {
         display_header_footer = true,
         header_template = [[
@@ -162,5 +145,22 @@ local generate_pdf = function()
 
 end
 
-generate_pdf();
+local po_data = {
+  order_number =  'PO-98765',
+  date = tostring(date_utils.today(true)),
+  customer_name =  'XYZ Corporation',
+  items =  generate_items(50),
+};
+local first_page_size = 28;
+local items_per_page = 34;
+
+local my_env = {
+    _parent = _G,
+    _debug = true,
+    items_per_page = items_per_page,
+    item_chunks = chunk_array(po_data.items, first_page_size, items_per_page),
+    po_data = po_data,
+};
+
+generate_pdf(my_env);
 
