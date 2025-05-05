@@ -21,7 +21,7 @@ Part of the [`service_utils`](https://github.com/Tekenlight/service_utils) proje
 ## 📦 Requirements
 
 * **Google Chrome** or **Chromium** installed (version 59+)
-* **Lua 5.1+** (tested with LuaJIT and Lua 5.3)
+* **Lua 5.3+** (tested with Lua 5.3)
 * Lua dependencies:
 
   * evlua framework
