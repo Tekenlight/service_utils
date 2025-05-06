@@ -1,6 +1,6 @@
 # 📄 `service_utils.chrome_pdf`
 
-Simple Lua utility to **generate PDFs from HTML** using **Chrome DevTools Protocol** directly over WebSocket.
+Simple evlua utility to **generate PDFs from HTML** using **Chrome DevTools Protocol** directly over WebSocket.
 
 Part of the [`service_utils`](https://github.com/Tekenlight/service_utils) project under the [`evlua`](https://github.com/Tekenlight) ecosystem.
 
@@ -21,7 +21,7 @@ Part of the [`service_utils`](https://github.com/Tekenlight/service_utils) proje
 ## 📦 Requirements
 
 * **Google Chrome** or **Chromium** installed (version 59+)
-* **Lua 5.3+** (tested with Lua 5.3)
+* **evlua** (tested with evlua (with Lua 5.3 libraries))
 * Lua dependencies:
 
   * evlua framework

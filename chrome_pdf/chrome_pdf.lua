@@ -246,7 +246,8 @@ chrome_pdf.generate = function(s_html, i_params)
         end
         counter = counter - 1;
         if (counter == 0) then
-            break;
+            cleanup(chrome_pid, filename);
+            error("Did not Page.loadEventFired in 100 responses");
         end
     end
 
@@ -270,7 +271,8 @@ chrome_pdf.generate = function(s_html, i_params)
         end
         counter = counter - 1;
         if (counter == 0) then
-            break;
+            cleanup(chrome_pid, filename);
+            error("Did not find proper reply to Page.printToPDF in 100 responses");
         end
     end
 
