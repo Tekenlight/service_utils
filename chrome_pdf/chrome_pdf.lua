@@ -106,7 +106,7 @@ local function get_websocket_debugger_url(conn, chrome_pid, html_url)
 end
 
 -- 3. Connect to WebSocket
-local function connect_to_chrome(conn, ws_url, chrome_pid)
+local function connect_to_chrome(conn, ws_url, chrome_pid, filename)
     -- Connect to Chrome DevTools
     print("Connecting WebSocket...")
     local ws_conn, resp_status, resp_hdrs = ws.connect({
@@ -116,7 +116,7 @@ local function connect_to_chrome(conn, ws_url, chrome_pid)
         conn = conn,
     });
     if (ws_conn == nil) then
-        cleanup(chrhome_pid, filename);
+        cleanup(chrome_pid, filename);
         error("Failed to connect WebSocket: " .. resp_status);
     end
     print("WebSocket connected!")
@@ -196,7 +196,7 @@ chrome_pdf.generate = function(s_html, i_params)
     local ws_url = get_websocket_debugger_url(conn, chrome_pid, html_url);
     print("WebSocket URL:", ws_url);
 
-    local ws_conn = connect_to_chrome(conn, ws_url, chrome_pid);
+    local ws_conn = connect_to_chrome(conn, ws_url, chrome_pid, filename);
     print("Connected to Chrome DevTools!");
 
     stat, id_counter = pcall(send, ws_conn, "Target.createTarget", {url = html_url}, id_counter);
