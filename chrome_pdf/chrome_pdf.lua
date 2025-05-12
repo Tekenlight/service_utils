@@ -149,6 +149,10 @@ end
 
 local chrome_pdf = {};
 
+--[[
+Options that can be passed.
+]]
+
 chrome_pdf.generate = function(s_html, i_params)
     if (i_params == nil) then i_params = {}; end
     local params = {};
@@ -277,7 +281,9 @@ chrome_pdf.generate = function(s_html, i_params)
     end
 
     local base64_pdf = obj.result.data
-    local pdf_data = core_utils.str_base64_decode(base64_pdf)
+    local pdf_data = base64_pdf;
+    if (i_params.return_type == 'binary') then
+        pdf_data = core_utils.str_base64_decode(base64_pdf)
 
     print("Target.closeTarget");
     stat, id_counter = pcall(send, ws_conn, "Target.closeTarget", {
