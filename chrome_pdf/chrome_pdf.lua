@@ -282,7 +282,7 @@ chrome_pdf.generate = function(s_html, i_params)
 
     local base64_pdf = obj.result.data
     local pdf_data = base64_pdf;
-    if (i_params.return_type == 'binary') then
+    if (i_params.output_format == 'binary') then
         pdf_data = core_utils.str_base64_decode(base64_pdf)
 
     print("Target.closeTarget");
