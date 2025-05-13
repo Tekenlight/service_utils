@@ -10,6 +10,7 @@ local date_utils = require('lua_schema.date_utils');
 local template = require 'pl.template';
 local s_os = require('service_utils.os');
 local chrome_pdf = require('service_utils.chrome_pdf');
+local ffi = require('ffi');
 
 -- Utility to split array into chunks
 local chunk_array = function(array, first_page_size, chunk_size) 
@@ -133,14 +134,15 @@ local generate_pdf = function(my_env)
         margin_right = 0.5,
         print_background = true,
         paper_width = 8.27,
-        paper_height = 11.69
+        paper_height = 11.69,
+        output_format = 'binary',
     });
 
     local file, err = io.open("purchase_order_with_page_totals.pdf", "wb")
     if not file then
         error("Failed to open file: " .. err)
     end
-    file:write(pdf_data);
+    file:write(ffi.string(pdf_data.value, pdf_data.size));
     file:close();
 
 end
