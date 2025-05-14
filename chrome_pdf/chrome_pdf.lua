@@ -33,6 +33,7 @@ local port_locker = require('service_utils.os.port_locker');
 local cjson = require('cjson.safe');
 local json_parser = cjson.new();
 local core_utils = require('lua_schema.core_utils');
+local properties_funcs = platform.properties_funcs();
 
 ffi.cdef[[
 int close(int fd);
@@ -195,7 +196,9 @@ chrome_pdf.generate = function(s_html, i_params)
     local id_counter = 1;
     local stat;
 
-    local port_number = port_locker.reserve_port();
+    local start_port = properties_funcs.get_int_property("service_utils.chrome_pdf.startDebugPort");
+    local end_port = properties_funcs.get_int_property("service_utils.chrome_pdf.endDebugPort");
+    local port_number = port_locker.reserve_port(start_port, end_port);
     local chrome_pid = launch_chrome(port_number);
 
     local conn = make_connection(chrome_pid, port_number);

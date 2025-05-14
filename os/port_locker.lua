@@ -39,6 +39,9 @@ port_locker.reserve_port = function(start_port, end_port)
     start_port = start_port or 30000
     end_port = end_port or 31000
 
+    assert(start_port ~= nil and type(start_port) == 'number', "Start port not sepcified or it is invalid: "..tostring(start_port));
+    assert(end_port ~= nil and type(end_port) == 'number', "End port not sepcified or it is invalid: "..tostring(start_port));
+
     for port = start_port, end_port do
         local lock_file = lock_prefix .. port .. lock_suffix
         if try_create_lock_file(lock_file) then
