@@ -189,12 +189,12 @@ os.open_file = function(filename, oflags, mode)
 
     if (oflags == nil) then oflags = fcntl.O_RDONLY; end
     if (mode == nil and (oflags&fcntl.O_CREAT ~= 0)) then
-        mode = sys_stat.S_IRUSR | sys_stat.S_IRUSR | sys_stat.S_IRUSR | sys_stat.S_IRUSR;
+        mode = sys_stat.S_IRUSR | sys_stat.S_IWUSR | sys_stat.S_IRGRP | sys_stat.S_IROTH;
     end
 
     local fd, msg, err = fcntl.open(filename, oflags, mode);
     if (fd == nil) then
-        error("Error opening file "..filename.." : "..msg..":"..n);
+        error("Error opening file "..filename.." : "..msg..":"..err);
     end
 
     return fd;

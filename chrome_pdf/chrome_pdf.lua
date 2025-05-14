@@ -29,6 +29,7 @@ local sc = require('service_utils.REST.external_service_client');
 local os = require('service_utils.os');
 local ws = require('service_utils.WS.web_socket');
 local wu = require('service_utils.WS.ws_util');
+local port_locker = require('service_utils.os.port_locker');
 local cjson = require('cjson.safe');
 local json_parser = cjson.new();
 local core_utils = require('lua_schema.core_utils');
@@ -39,10 +40,10 @@ ssize_t write(int fd, const void *buf, size_t count);
 ]]
 
 -- 1. Launch Chrome with remote debugging
-local function launch_chrome()
+local function launch_chrome(port_number)
     local chrome_path = "/usr/bin/google-chrome";  -- or "chromium-browser"
     local cmd =
-    string.format("%s --headless --disable-gpu --remote-debugging-port=9222 --no-sandbox about:blank 2>/dev/null & echo $!", chrome_path);
+    string.format("%s --headless --disable-gpu --remote-debugging-port="..port_number.." --no-sandbox about:blank 2>/dev/null & echo $!", chrome_path);
 
     local handle = io.popen(cmd);
     local chrome_pid = tonumber(handle:read("l"));
@@ -59,22 +60,23 @@ local function launch_chrome()
     return chrome_pid;
 end
 
-local function make_connection(chrome_pid)
+local function make_connection(chrome_pid, port_number)
     local conn, msg = sc.make_connection({
         url = 'localhost',
-        port = 9222,
+        port = port_number,
     });
     if (conn == nil) then
-        os.execute("kill " .. chrome_pid)
-        error("Failed to connect to chrome : "..msg)
+        os.execute("kill " .. chrome_pid);
+        error("Failed to connect to chrome : "..msg);
     end
 
     return conn;
 end
 
-local function cleanup(chrome_pid, filename)
-    os.execute("kill " .. chrome_pid)
-    os.execute("rm -f " .. filename)
+local function cleanup(chrome_pid, filename, port_number)
+    os.execute("kill " .. chrome_pid);
+    os.execute("rm -f " .. filename);
+    port_locker.release_port(port_number);
 end
 
 local function from_json(str)
@@ -193,9 +195,10 @@ chrome_pdf.generate = function(s_html, i_params)
     local id_counter = 1;
     local stat;
 
-    local chrome_pid = launch_chrome();
+    local port_number = port_locker.reserve_port();
+    local chrome_pid = launch_chrome(port_number);
 
-    local conn = make_connection(chrome_pid);
+    local conn = make_connection(chrome_pid, port_number);
 
     local ws_url = get_websocket_debugger_url(conn, chrome_pid, html_url);
     print("WebSocket URL:", ws_url);
@@ -205,13 +208,13 @@ chrome_pdf.generate = function(s_html, i_params)
 
     stat, id_counter = pcall(send, ws_conn, "Target.createTarget", {url = html_url}, id_counter);
     if (not stat) then
-        cleanup(chrome_pid, filename);
+        cleanup(chrome_pid, filename, port_number);
         error(id_counter);
     end
 
     local stat, obj = pcall(receive, ws_conn);
     if (not stat) then
-        cleanup(chrome_pid, filename);
+        cleanup(chrome_pid, filename, port_number);
         error(obj);
     end
 
@@ -219,13 +222,13 @@ chrome_pdf.generate = function(s_html, i_params)
 
     stat, id_counter = pcall(send, ws_conn, "Target.attachToTarget", {targetId = target_id, flatten = true}, id_counter);
     if (not stat) then
-        cleanup(chrome_pid, filename);
+        cleanup(chrome_pid, filename, port_number);
         error(id_counter);
     end
 
     local stat, obj = pcall(receive, ws_conn);
     if (not stat) then
-        cleanup(chrome_pid, filename);
+        cleanup(chrome_pid, filename, port_number);
         error(obj);
     end
 
@@ -233,7 +236,7 @@ chrome_pdf.generate = function(s_html, i_params)
 
     stat, id_counter = pcall(send, ws_conn, "Page.enable", {}, id_counter, session_id);
     if (not stat) then
-        cleanup(chrome_pid, filename);
+        cleanup(chrome_pid, filename, port_number);
         error(id_counter);
     end
 
@@ -242,7 +245,7 @@ chrome_pdf.generate = function(s_html, i_params)
     while true do
         stat, obj = pcall(receive, ws_conn);
         if (not stat) then
-            cleanup(chrome_pid, filename);
+            cleanup(chrome_pid, filename, port_number);
             error(obj);
         end
         if (obj.method == "Page.loadEventFired" and obj.sessionId == session_id) then
@@ -250,14 +253,14 @@ chrome_pdf.generate = function(s_html, i_params)
         end
         counter = counter - 1;
         if (counter == 0) then
-            cleanup(chrome_pid, filename);
+            cleanup(chrome_pid, filename, port_number);
             error("Did not Page.loadEventFired in 100 responses");
         end
     end
 
     stat, id_counter = pcall(send, ws_conn, "Page.printToPDF", params, id_counter, session_id);
     if (not stat) then
-        cleanup(chrome_pid, filename);
+        cleanup(chrome_pid, filename, port_number);
         error(id_counter);
     end
 
@@ -265,7 +268,7 @@ chrome_pdf.generate = function(s_html, i_params)
     while true do
         stat, obj = pcall(receive, ws_conn);
         if (not stat) then
-            cleanup(chrome_pid, filename);
+            cleanup(chrome_pid, filename, port_number);
             error(obj);
         end
         if (obj.id == (id_counter - 1)) then
@@ -275,7 +278,7 @@ chrome_pdf.generate = function(s_html, i_params)
         end
         counter = counter - 1;
         if (counter == 0) then
-            cleanup(chrome_pid, filename);
+            cleanup(chrome_pid, filename, port_number);
             error("Did not find proper reply to Page.printToPDF in 100 responses");
         end
     end
@@ -291,14 +294,14 @@ chrome_pdf.generate = function(s_html, i_params)
         targetId = target_id
     }, id_counter, session_id);
     if (not stat) then
-        cleanup(chrome_pid, filename);
+        cleanup(chrome_pid, filename, port_number);
         error(id_counter);
     end
 
     print("Ack: Target.closeTarget");
     local stat, obj = pcall(receive, ws_conn);
     if (not stat) then
-        cleanup(chrome_pid, filename);
+        cleanup(chrome_pid, filename, port_number);
         error(obj);
     end
 
@@ -306,7 +309,7 @@ chrome_pdf.generate = function(s_html, i_params)
     wu.close(ws_conn);
 
     print("Clean up");
-    cleanup(chrome_pid, filename);
+    cleanup(chrome_pid, filename, port_number);
 
     return pdf_data;
 end

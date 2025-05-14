@@ -150,6 +150,7 @@ build = {
 		["service_utils.unitt.harness"] = 'unitt/harness.lua',
 
 		["service_utils.os"] = 'os/os.lua',
+		["service_utils.os.port_locker"] = 'os/port_locker.lua',
 
 		["service_utils.chrome_pdf"] = 'chrome_pdf/chrome_pdf.lua',
 
