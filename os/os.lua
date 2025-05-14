@@ -200,6 +200,7 @@ os.open_file = function(filename, oflags, mode)
     return fd;
 end
 
+--[=[
 os.html_to_pdf = function(filename, props)
     assert(type(filename) == 'string', "Invalid input to os.html_to_pdf");
 
@@ -263,6 +264,7 @@ os.string_html_to_pdf = function(s_html, props)
 
 end
 
+]=]
 
 --[[
 local ret, fd = os.r_popen('ls -lrt');
