@@ -95,13 +95,16 @@ local function to_json(obj)
 end
 
 -- 2. Discover the WebSocket Debugger URL
-local function get_websocket_debugger_url(conn, chrome_pid, html_url)
+local function get_websocket_debugger_url(conn, chrome_pid, html_url, port_number)
     print("Fetch WebSocket URL");
 
     local status, result, http_status, hdrs, client = 
         sc.generic_transceive(conn, {method = "PUT"}, {}, "/json/version")
     if (not status or http_status ~= 200) then
-        cleanup(chrhome_pid, filename);
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+        print(debug.traceback());
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+        cleanup(chrhome_pid, filename, port_number);
         error("Failed to fetch Chrome tabs: "..tabs)
     end
 
@@ -109,7 +112,7 @@ local function get_websocket_debugger_url(conn, chrome_pid, html_url)
 end
 
 -- 3. Connect to WebSocket
-local function connect_to_chrome(conn, ws_url, chrome_pid, filename)
+local function connect_to_chrome(conn, ws_url, chrome_pid, filename, port_number)
     -- Connect to Chrome DevTools
     print("Connecting WebSocket...")
     local ws_conn, resp_status, resp_hdrs = ws.connect({
@@ -119,7 +122,10 @@ local function connect_to_chrome(conn, ws_url, chrome_pid, filename)
         conn = conn,
     });
     if (ws_conn == nil) then
-        cleanup(chrome_pid, filename);
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+        print(debug.traceback());
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+        cleanup(chrome_pid, filename, port_number);
         error("Failed to connect WebSocket: " .. resp_status);
     end
     print("WebSocket connected!")
@@ -203,20 +209,26 @@ chrome_pdf.generate = function(s_html, i_params)
 
     local conn = make_connection(chrome_pid, port_number);
 
-    local ws_url = get_websocket_debugger_url(conn, chrome_pid, html_url);
+    local ws_url = get_websocket_debugger_url(conn, chrome_pid, html_url, port_number);
     print("WebSocket URL:", ws_url);
 
-    local ws_conn = connect_to_chrome(conn, ws_url, chrome_pid, filename);
+    local ws_conn = connect_to_chrome(conn, ws_url, chrome_pid, filename, port_number);
     print("Connected to Chrome DevTools!");
 
     stat, id_counter = pcall(send, ws_conn, "Target.createTarget", {url = html_url}, id_counter);
     if (not stat) then
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+        print(debug.traceback());
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
         cleanup(chrome_pid, filename, port_number);
         error(id_counter);
     end
 
     local stat, obj = pcall(receive, ws_conn);
     if (not stat) then
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+        print(debug.traceback());
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
         cleanup(chrome_pid, filename, port_number);
         error(obj);
     end
@@ -225,12 +237,18 @@ chrome_pdf.generate = function(s_html, i_params)
 
     stat, id_counter = pcall(send, ws_conn, "Target.attachToTarget", {targetId = target_id, flatten = true}, id_counter);
     if (not stat) then
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+        print(debug.traceback());
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
         cleanup(chrome_pid, filename, port_number);
         error(id_counter);
     end
 
     local stat, obj = pcall(receive, ws_conn);
     if (not stat) then
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+        print(debug.traceback());
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
         cleanup(chrome_pid, filename, port_number);
         error(obj);
     end
@@ -239,6 +257,9 @@ chrome_pdf.generate = function(s_html, i_params)
 
     stat, id_counter = pcall(send, ws_conn, "Page.enable", {}, id_counter, session_id);
     if (not stat) then
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+        print(debug.traceback());
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
         cleanup(chrome_pid, filename, port_number);
         error(id_counter);
     end
@@ -248,6 +269,9 @@ chrome_pdf.generate = function(s_html, i_params)
     while true do
         stat, obj = pcall(receive, ws_conn);
         if (not stat) then
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+            print(debug.traceback());
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
             cleanup(chrome_pid, filename, port_number);
             error(obj);
         end
@@ -256,6 +280,9 @@ chrome_pdf.generate = function(s_html, i_params)
         end
         counter = counter - 1;
         if (counter == 0) then
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+            print(debug.traceback());
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
             cleanup(chrome_pid, filename, port_number);
             error("Did not Page.loadEventFired in 100 responses");
         end
@@ -263,6 +290,9 @@ chrome_pdf.generate = function(s_html, i_params)
 
     stat, id_counter = pcall(send, ws_conn, "Page.printToPDF", params, id_counter, session_id);
     if (not stat) then
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+        print(debug.traceback());
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
         cleanup(chrome_pid, filename, port_number);
         error(id_counter);
     end
@@ -271,6 +301,9 @@ chrome_pdf.generate = function(s_html, i_params)
     while true do
         stat, obj = pcall(receive, ws_conn);
         if (not stat) then
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+            print(debug.traceback());
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
             cleanup(chrome_pid, filename, port_number);
             error(obj);
         end
@@ -281,6 +314,9 @@ chrome_pdf.generate = function(s_html, i_params)
         end
         counter = counter - 1;
         if (counter == 0) then
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+            print(debug.traceback());
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
             cleanup(chrome_pid, filename, port_number);
             error("Did not find proper reply to Page.printToPDF in 100 responses");
         end
@@ -297,6 +333,9 @@ chrome_pdf.generate = function(s_html, i_params)
         targetId = target_id
     }, id_counter, session_id);
     if (not stat) then
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+        print(debug.traceback());
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
         cleanup(chrome_pid, filename, port_number);
         error(id_counter);
     end
@@ -304,6 +343,9 @@ chrome_pdf.generate = function(s_html, i_params)
     print("Ack: Target.closeTarget");
     local stat, obj = pcall(receive, ws_conn);
     if (not stat) then
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+        print(debug.traceback());
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
         cleanup(chrome_pid, filename, port_number);
         error(obj);
     end
