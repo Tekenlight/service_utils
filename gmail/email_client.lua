@@ -153,7 +153,7 @@ email_client.get_email_list = function(connection, email_id, token, crit)
         assert(stat, inc_list);
         assert(inc_list ~= nil, err);
 
-        if (type(inc_list.messages) == 'table') then tablecat(messages, inc_list.messages); end
+        if (type(inc_list.messages) == 'table') then utils.tablecat(messages, inc_list.messages); end
     end
 
     local list = { messages = messages };
