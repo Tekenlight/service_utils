@@ -138,8 +138,8 @@ return ]=]..package_parts[n]..[=[;
 				code = code .. [=[
 	if (]=] .. v.assertion._attr.condition..[=[) then
 		validations_array[j] = {};
-		validations_array[j].val_func = function(context, obj, addnl_obj)
 		validations_array[j].val_func_name = "generated_condition_check";
+		validations_array[j].val_func = function(context, obj, addnl_obj)
 			if (not (]=]..v.assertion._contained_value..[=[)) then
 ]=];
 				local error_msg_inp_elements = '';
