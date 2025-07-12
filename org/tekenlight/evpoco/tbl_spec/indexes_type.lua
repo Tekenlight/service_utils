@@ -43,11 +43,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
+        top_level_group = true,
+        group_type = 'S',
         max_occurs = 1,
         generated_subelement_name = '_sequence_group',
         min_occurs = 1,
-        group_type = 'S',
-        top_level_group = true,
         'index',
     };
 end

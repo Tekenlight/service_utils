@@ -9,6 +9,7 @@ targetNamespace="http://evpoco.tekenlight.org/tbl_spec" xmlns:ns="http://evpoco.
 		<xsd:attribute name="type" type="xsd:token" use="required"/>
 		<xsd:attribute name="key_column" type="xsd:boolean" use="optional"/>
 		<xsd:attribute name="default_value" type="xsd:token" use="optional"/>
+		<xsd:attribute name="memory_data_type" type="xsd:token" use="optional"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="columns_type">

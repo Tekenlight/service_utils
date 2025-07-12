@@ -2,6 +2,7 @@ local ffi = require('ffi');
 local schema_processor = require("schema_processor");
 local transaction = require("service_utils.orm.transaction");
 local master_db_cache = require('service_utils.orm.master_db_cache');
+local primitives = require('service_utils.common.primitives');
 
 local tao = {}
 
@@ -403,9 +404,14 @@ tao.insert = function(self, context, obj, col_map)
             data[col] = elemet_val;
         else
             local default_value = tbl_def.declared_columns[col].default_value;
+            local data_type = tbl_def.declared_columns[col].memory_data_type;
             if(default_value ~= nil) then
-                inputs[count] = default_value;
-                data[col] = default_value;
+                local stat, dv = pcall(primitives.new, data_type, default_value);
+                if (not stat) then
+                    error(dv);
+                end
+                inputs[count] = dv;
+                data[col] = dv;
             else
                 inputs[count] = nil;
                 data[col] = nil;
