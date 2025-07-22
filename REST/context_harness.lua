@@ -105,7 +105,7 @@ local upd_token_contents = function(context, jwt_token, token_header, token_body
 			return nil, msg;
 		end
 	end
-	--token_body.verified = true;
+	token_body.verified = true;
 	context.access_token = jwt.encode(token_body, key, token_header.alg);;
 	context.orig_token = jwt_token;
 	--context.verified_jwt_token = jwt.encode(token_body, key, token_header.alg);
