@@ -473,6 +473,7 @@ rest_controller.handle_service_request = function (request, response)
             obj = nil;
             msg = "Invalid function ".. class_name .. "."..func .. ":"..error_cond;
             print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+            print(request:get_uri());
             print(interface_class_name);
             print(func)
             print(json_input);
@@ -484,6 +485,7 @@ rest_controller.handle_service_request = function (request, response)
             obj = nil;
             msg = "Invalid function "..func .. ":"..error_cond;
             print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+            print(request:get_uri());
             print(interface_class_name);
             print(func)
             print(json_input);
@@ -498,6 +500,7 @@ rest_controller.handle_service_request = function (request, response)
                 msg = qp;
                 error_cond = 3;
                 print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                print(request:get_uri());
                 print(interface_class_name);
                 print(func)
                 print(json_input);
@@ -514,6 +517,7 @@ rest_controller.handle_service_request = function (request, response)
                             msg = "Unable to find message schema handler";
                             error_cond = 4;
                             print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                            print(request:get_uri());
                             print(interface_class_name);
                             print(func)
                             print(json_input);
@@ -529,6 +533,7 @@ rest_controller.handle_service_request = function (request, response)
                                 flg = false;
                                 error_cond = 6;
                                 print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                                print(request:get_uri());
                                 print(interface_class_name);
                                 print(func)
                                 print(json_input);
@@ -541,6 +546,7 @@ rest_controller.handle_service_request = function (request, response)
                                 flg = false;
                                 error_cond = 6;
                                 print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                                print(request:get_uri());
                                 print(interface_class_name);
                                 print(func)
                                 print(json_input);
@@ -559,6 +565,7 @@ rest_controller.handle_service_request = function (request, response)
                         obj = nil;
                         msg = "Unable to derserialize JSON, schema not specified";
                         print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                        print(request:get_uri());
                         print(interface_class_name);
                         print(func)
                         print(json_input);
@@ -572,6 +579,7 @@ rest_controller.handle_service_request = function (request, response)
                         msg = "NULL Message received, while expecting one";
                         error_cond = 8;
                         print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                        print(request:get_uri());
                         print(interface_class_name);
                         print(func)
                         print(json_input);
@@ -588,6 +596,7 @@ rest_controller.handle_service_request = function (request, response)
     local successfully_processed = false;
     if (not flg) then
         print(debug.getinfo(1).source, debug.getinfo(1).currentline, "deserialization of json request failed");
+        print(request:get_uri());
         print("error_cond = "..error_cond);
         require 'pl.pretty'.dump(output_obj);
         print(debug.getinfo(1).source, debug.getinfo(1).currentline);
@@ -609,6 +618,7 @@ rest_controller.handle_service_request = function (request, response)
         ]]
         local status, table_output, ret = invoke_func(request, req_processor_interface, req_processor, func, url_parts, qp, obj, class_name)
         if (type(ret) ~= 'number' or ret < 200 or ret > 550) then
+            print(request:get_uri());
             error('Invalid error code returned '..ret);
         end
         if (not status) then
@@ -644,6 +654,7 @@ rest_controller.handle_service_request = function (request, response)
                         successfully_processed = true;
                     else
                         print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                        print(request:get_uri());
                         print(msg);
                         require 'pl.pretty'.dump(table_output);
                         print(debug.getinfo(1).source, debug.getinfo(1).currentline);
@@ -652,6 +663,7 @@ rest_controller.handle_service_request = function (request, response)
                     -- OOPS function returned outut in an unexpected format
                     local msg = [=[Invalid output from function {]=]..class_name.."."..func..[=[}]=];
                     print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                    print(request:get_uri());
                     print(msg);
                     print(debug.getinfo(1).source, debug.getinfo(1).currentline);
                     output_obj.error_message = msg;
