@@ -20,6 +20,11 @@ decimal.tostring = function(x)
     return tostring(x);
 end
 
+decimal.set_digits = function(n)
+    assert(type(n) == 'number');
+    bc.digits(n);
+end
+
 decimal.ceil = function(x)
     assert(is_type(x), "Invalid decimal input");
     local digits = bc.digits();
