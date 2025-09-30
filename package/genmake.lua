@@ -13,6 +13,10 @@ local src_sources_tbl = {};
 local csrc_sources_tbl = {};
 local sql_targets_tbl = {};
 local sql_sources_tbl = {};
+local db_setup_targets_tbl = {};
+local db_setup_sources_tbl = {};
+local squence_targets_tbl = {};
+local squence_sources_tbl = {};
 local idl_targets_tbl = {};
 local idl_sources_tbl = {};
 local xsd_targets_tbl = {};
@@ -126,6 +130,38 @@ function add_idl_targets(directory)
 	return;
 end
 
+function add_sequence_targets(directory)
+    local i, t = 0, {};
+    local pfile = io.popen([[ls -1 ]] .. directory);
+    for filename in pfile:lines() do
+        i = i + 1;
+        t[i] = filename;
+        local source_filename = directory .. filename;
+        local target_filename = "build/" .. directory .. filename;
+		target_filename = target_filename:gsub("/sequences/","/sql/");
+        table.insert(squence_targets_tbl, target_filename);
+        table.insert(squence_sources_tbl, source_filename);
+    end
+    pfile:close()
+    return;
+end
+
+function add_db_setup_targets(directory)
+    local i, t = 0, {};
+    local pfile = io.popen([[ls -1 ]] .. directory);
+    for filename in pfile:lines() do
+        i = i + 1;
+        t[i] = filename;
+        local source_filename = directory .. filename;
+        local target_filename = "build/" .. directory .. filename;
+		target_filename = target_filename:gsub("/db_setup/","/sql/");
+        table.insert(db_setup_targets_tbl, target_filename);
+        table.insert(db_setup_sources_tbl, source_filename);
+    end
+    pfile:close()
+    return;
+end
+
 function add_sql_targets(directory)
     local i, t = 0, {};
     local pfile = io.popen([[ls -1 ]] .. directory .. [[ |grep '\.sql$']]);
@@ -154,9 +190,17 @@ function add_targets(directory)
 	if (folder_exists(directory.."ddl/") == true) then
     	add_ddl_targets(directory.."ddl/");
     	table.insert(all_targets_tbl, ddl_targets_tbl);
-    	add_sql_targets(directory.."ddl/");
-    	table.insert(all_targets_tbl, sql_targets_tbl);
 	end
+
+	if (folder_exists(directory.."sequences/") == true) then
+    	add_sequence_targets(directory.."sequences/");
+    	table.insert(all_targets_tbl, squence_targets_tbl);
+    end
+
+	if (folder_exists(directory.."db_setup/") == true) then
+    	add_db_setup_targets(directory.."db_setup/");
+    	table.insert(all_targets_tbl, db_setup_targets_tbl);
+    end
 
 	if (folder_exists(directory.."src/") == true) then
     	add_src_targets(directory.."src/");
@@ -258,6 +302,28 @@ function write_makefile()
         file:write("#Copying handcoded C sources into build\n\n")
         for i, source in ipairs(csrc_sources_tbl) do
             local target = "build/" .. source;
+			local t_path = returnpath(target)
+            file:write(target .. " : " .. source .. "\n\tmkdir -p " ..t_path .."\n");
+            file:write("\tcp " .. source .. " " .. target .. "\n")
+            file:write("\ttouch build/rockspec.out\n\n");
+        end
+    end
+    if (folder_exists("db_setup/") == true) then
+        file:write("#Copying db_setup files into build \n\n")
+        for i, source in ipairs(db_setup_sources_tbl) do
+            local target = "build/".. source;
+			target = target:gsub("/db_setup/","/sql/");
+			local t_path = returnpath(target)
+            file:write(target .. " : " .. source .. "\n\tmkdir -p " ..t_path .."\n");
+            file:write("\tcp " .. source .. " " .. target .. "\n")
+            file:write("\ttouch build/rockspec.out\n\n");
+        end
+    end
+    if (folder_exists("sequences/") == true) then
+        file:write("#Copying sequence files into build \n\n")
+        for i, source in ipairs(squence_sources_tbl) do
+            local target = "build/".. source;
+			target = target:gsub("/sequences/","/sql/");
 			local t_path = returnpath(target)
             file:write(target .. " : " .. source .. "\n\tmkdir -p " ..t_path .."\n");
             file:write("\tcp " .. source .. " " .. target .. "\n")
