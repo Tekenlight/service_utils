@@ -22,8 +22,11 @@ external_service_client.make_connection = function(inp)
     local client = rest_client_factory.new(inp.url, tonumber(inp.port), inp.secure,
                                     true, constants.RECV_TIMEOUT_EXTERNAL_SOCKETS, inp.peer_name);
     if (client ~= nil) then
-        client._recv_timeout = constants.RECV_TIMEOUT_EXTERNAL_SOCKETS;
-        client._send_timeout = constants.SEND_TIMEOUT_EXTERNAL_SOCKETS;
+        local recv_timeout = (inp.recv_timeout ~= nil) and  inp.recv_timeout or constants.RECV_TIMEOUT_EXTERNAL_SOCKETS;
+        local send_timeout = (inp.send_timeout ~= nil) and  inp.send_timeout or constants.SEND_TIMEOUT_EXTERNAL_SOCKETS;
+
+        client._recv_timeout = recv_timeout;
+        client._send_timeout = send_timeout;
     end
 
     return client;

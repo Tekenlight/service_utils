@@ -37,7 +37,7 @@ end
 
 local ws_util = {};
 
-ws_util.recv_bytes = function(ss, n, mode)
+ws_util.recv_bytes = function(ss, n, mode, conn)
 	assert(type(mode) == 'number');
 	assert(n ~= nil and type(n) == 'number' and n > 0);
 	if (not platform.socket_active(ss)) then
@@ -45,6 +45,9 @@ ws_util.recv_bytes = function(ss, n, mode)
         print(debug.traceback());
 		error("SOCKET INACTIVE");
 	end
+
+    local recv_timeout = (conn ~= nil and conn._recv_timeout ~= nil) and  conn._recv_timeout or constants.RECV_TIMEOUT_EXTERNAL_SOCKETS;
+    local send_timeout = (conn ~= nil and conn._send_timeout ~= nil) and  conn._send_timeout or constants.SEND_TIMEOUT_EXTERNAL_SOCKETS;
 
 	local buf = ffi.new("unsigned char[?]", n);
 	local buf1 = buf;
@@ -62,7 +65,7 @@ ws_util.recv_bytes = function(ss, n, mode)
 				n1 = n1 + 1;
 			end
 		end
-		status, ret1 = pcall(platform.recv_data_from_socket, ss, ffi.getptr(buf1), n1, constants.RECV_TIMEOUT_EXTERNAL_SOCKETS);
+		status, ret1 = pcall(platform.recv_data_from_socket, ss, ffi.getptr(buf1), n1, recv_timeout);
 		if (not status) then
 			if (mode == 0) then
 				platform.shutdown_websocket(ss, 3);
@@ -86,7 +89,7 @@ ws_util.recv_bytes = function(ss, n, mode)
 
 end
 
-ws_util.send_bytes = function(ss, buf, n, acc_sock)
+ws_util.send_bytes = function(ss, buf, n, acc_sock, conn)
 	assert(n ~= nil and type(n) == 'number' and n > 0);
 	assert(buf ~= nil and type(buf) == 'cdata');
     assert(acc_sock ~= nil and type(acc_sock) == 'boolean');
@@ -94,11 +97,15 @@ ws_util.send_bytes = function(ss, buf, n, acc_sock)
 	if (not platform.socket_active(ss)) then
 		error("SOCKET INACTIVE");
 	end
+
+    local recv_timeout = (conn ~= nil and conn._recv_timeout ~= nil) and  conn._recv_timeout or constants.RECV_TIMEOUT_EXTERNAL_SOCKETS;
+    local send_timeout = (conn ~= nil and conn._send_timeout ~= nil) and  conn._send_timeout or constants.SEND_TIMEOUT_EXTERNAL_SOCKETS;
+
 	local status, ret;
     if (acc_sock) then
         status, ret = pcall(platform.send_data_on_acc_socket, ss, ffi.getptr(buf), n);
     else
-        status, ret = pcall(platform.send_data_on_socket, ss, ffi.getptr(buf), n, constants.SEND_TIMEOUT_SMTP_SOCKETS);
+        status, ret = pcall(platform.send_data_on_socket, ss, ffi.getptr(buf), n, send_timeout);
     end
 	if (not status) then
 		error(ret);
@@ -110,10 +117,10 @@ ws_util.send_bytes = function(ss, buf, n, acc_sock)
 	return ret;
 end
 
-ws_util.recv_header = function(ss, mode)
+ws_util.recv_header = function(ss, mode, conn)
 	local payload_len, use_mask, buf, mask = 0, false;
 
-	buf = ws_util.recv_bytes(ss, 2, mode);
+	buf = ws_util.recv_bytes(ss, 2, mode, conn);
 
 	local flags = tonumber(buf[0]);
 	local len_byte = tonumber(buf[1]);
@@ -122,12 +129,12 @@ ws_util.recv_header = function(ss, mode)
 	len_byte = len_byte & 0X7F;
 
 	if (len_byte == 127) then
-		buf = ws_util.recv_bytes(ss, 8, mode);
+		buf = ws_util.recv_bytes(ss, 8, mode, conn);
 		local be_len = ffi.new("uint64_t [?]", 1);
 		ffi.C.memcpy(be_len, buf, 8);
 		payload_len = net_to_host_uint64(be_len[0]);
 	elseif (len_byte == 126) then
-		buf = ws_util.recv_bytes(ss, 2, mode);
+		buf = ws_util.recv_bytes(ss, 2, mode, conn);
 		local be_len = ffi.new("uint16_t [?]", 1);
 		ffi.C.memcpy(be_len, buf, 2);
 		payload_len = net_to_host_uint16(be_len[0]);
@@ -136,7 +143,7 @@ ws_util.recv_header = function(ss, mode)
 	end
 
 	if (use_mask) then
-		mask = ws_util.recv_bytes(ss, 4, mode);
+		mask = ws_util.recv_bytes(ss, 4, mode, conn);
 	end
 
 	local op_code = flags & 0X0F
@@ -144,8 +151,8 @@ ws_util.recv_header = function(ss, mode)
 	return { payload_len=payload_len, use_mask=use_mask, mask=mask, flags = flags, op_code = op_code};
 end
 
-ws_util.recv_payload = function(ss, inps, mode)
-	local buf = ws_util.recv_bytes(ss, inps.payload_len, mode);
+ws_util.recv_payload = function(ss, inps, mode, conn)
+	local buf = ws_util.recv_bytes(ss, inps.payload_len, mode, conn);
 	if (inps.use_mask) then
 		for i = 1, inps.payload_len, 1 do
 			local m = tonumber(inps.mask[(i-1)%4]);
@@ -156,15 +163,15 @@ ws_util.recv_payload = function(ss, inps, mode)
 	return buf;
 end
 
-ws_util.__recv_frame = function(ss, mode)
+ws_util.__recv_frame = function(ss, mode, conn)
 	do
 		if (mode == nil) then mode = 0; end
 		assert(ss ~= nil);
 		local s = (require("pl.stringx")).split(tostring(ss), ":");
 		assert(s[1] ~= nil and s[1] == 'streamsocket');
 	end
-	local msg_meta = ws_util.recv_header(ss, mode)
-	msg_meta.buf = ws_util.recv_payload(ss, msg_meta, mode);
+	local msg_meta = ws_util.recv_header(ss, mode, conn)
+	msg_meta.buf = ws_util.recv_payload(ss, msg_meta, mode, conn);
 
 	return msg_meta;
 end
@@ -178,7 +185,7 @@ ws_util.recv_frame = function(conn)
 		error("Cannot invoke ws_util.recv_frame when message_handler is set for the websocket");
 	end
 	ss = conn._ss
-	return ws_util.__recv_frame(ss);
+	return ws_util.__recv_frame(ss, nil, conn);
 end
 
 ws_util.form_header = function(inp, buf)
@@ -266,7 +273,7 @@ ws_util.send_frame = function(inp)
 	local buf = ffi.new("unsigned char [?]", (inp.size + ws_const.MAX_HEADER_LENGTH));
 	ws_util.form_header(inp, buf);
 	ws_util.form_payload(inp, buf);
-	ws_util.send_bytes(inp.ss, buf, inp.total_len, inp.acc_sock);
+	ws_util.send_bytes(inp.ss, buf, inp.total_len, inp.acc_sock, inp.conn);
 
 	return inp;
 end
@@ -297,6 +304,7 @@ ws_util.send_msg = function(conn, msg, options)
         buf = buf,
         use_mask = true,
         acc_sock = (conn.msg_handler ~= nil),
+        conn = conn
     });
 end
 

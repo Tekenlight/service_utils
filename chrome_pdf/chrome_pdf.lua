@@ -65,6 +65,8 @@ local function make_connection(chrome_pid, port_number)
     local conn, msg = sc.make_connection({
         url = 'localhost',
         port = port_number,
+        recv_timeout = 5,
+        send_timeout = 5,
     });
     if (conn == nil) then
         os.execute("kill " .. chrome_pid);
@@ -162,7 +164,7 @@ local chrome_pdf = {};
 Options that can be passed.
 ]]
 
-chrome_pdf.generate = function(s_html, i_params)
+chrome_pdf.low_generate = function(s_html, i_params)
     if (i_params == nil) then i_params = {}; end
     local params = {};
 
@@ -357,6 +359,19 @@ chrome_pdf.generate = function(s_html, i_params)
     cleanup(chrome_pid, filename, port_number);
 
     return pdf_data;
+end
+
+chrome_pdf.generate = function(s_html, i_params)
+    local retry_count = 3;
+    while (retry_count > 0) do
+        retry_count = retry_count - 1;
+        local stat, pdf_data = pcall(chrome_pdf.low_generate, s_html, i_params);
+        if (stat == true) then
+            return pdf_data;
+        else
+            print(pdf_data);
+        end
+    end
 end
 
 return chrome_pdf;
