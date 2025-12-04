@@ -499,9 +499,34 @@ local get_email_message = function(connection, email_id, token, mail_item, inclu
                 --[[Attachments here are not interesting ]]
             end
         end
+    elseif (payload.mimeType == 'multipart/report') then
+        for i,v in ipairs(payload.parts) do
+            if (v.filename == "") then
+                if (string.sub(v.mimeType, 1, 9) == 'multipart') then
+                    props.message_body, props.html_body = find_body_text(v.parts);
+                else
+                    if (v.mimeType == 'text/plain') then
+                        props.message_body = get_plain_text_mail_body(v);
+                    elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then
+                        props.message_body = get_plain_text_mail_body(v);
+                    end
+                    if (string.sub(v.mimeType, 1, 4) == 'text') then
+                        props[string.sub(v.mimeType, 5).."_body"] = get_plain_text_mail_body(v);
+                    end
+                end
+            else
+                local attachment = get_attachment(connection, email_id, mail_item.id, v);
+                attachment.file_name = v.filename;
+                attachment.mime_type = v.mimetype;
+                if (attachment.size == nil) then
+                    attachment.size = v.body.size;
+                end
+                props.attachments[#(props.attachments)+1] = attachment;
+            end
+        end
     else
         print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-        print(payload.mimeType);
+        print("Fetching of mail did not complete, encountered payload.mimeType: "..payload.mimeType);
         print(debug.getinfo(1).source, debug.getinfo(1).currentline);
         --local msg = msf:format_with_string(INCORRECT_MAIL_FORMAT_MSG, payload.mimeType);
         --send_error_response(connection, email_id, token, mail_item.id, msg, props)

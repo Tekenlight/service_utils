@@ -348,12 +348,12 @@ local invoke_func = function(request, req_processor_interface, req_processor, fu
             message_validation_context.status.error_no = 500;
             message_validation_context.status.err_type  = 'E';
         end
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
         require 'pl.pretty'.dump(message_validation_context);
         require 'pl.pretty'.dump(req_processor);
         --require 'pl.pretty'.dump(req_processor_interface);
         require 'pl.pretty'.dump(url_parts);
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
         out_obj = {};
         out_obj.err_type = message_validation_context.status.err_type;
         if (message_validation_context.excp_obj ~= nil) then
@@ -432,7 +432,7 @@ rest_controller.handle_service_request = function (request, response)
     local flg, json_input = pcall(request.get_message_body_str, request);
     local uri = URI_CLASS:new(request:get_uri());
     if (uri == nil) then
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline, request:get_uri());
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date(), request:get_uri());
         error('Badly formed URL ['..request:get_uri()..']');
     end
     local url_parts = split_path(uri);
@@ -447,7 +447,7 @@ rest_controller.handle_service_request = function (request, response)
     local class_name, func = deduce_action(url_parts, qp);
     if (class_name == nil or func == nil) then
         local err = 'Unable to deduce Controller class name and/or method';
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline, err);
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date(), err);
         response:set_status(400);
         response:set_chunked_trfencoding(true);
         response:set_content_type("application/json");
@@ -472,25 +472,25 @@ rest_controller.handle_service_request = function (request, response)
             flg = false;
             obj = nil;
             msg = "Invalid function ".. class_name .. "."..func .. ":"..error_cond;
-            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
             print(request:get_uri());
             print(interface_class_name);
             print(func)
             print(json_input);
             print(msg);
-            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
         elseif (req_processor_interface.methods[func].message == nil) then
             error_cond = 2;
             flg = false;
             obj = nil;
             msg = "Invalid function "..func .. ":"..error_cond;
-            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
             print(request:get_uri());
             print(interface_class_name);
             print(func)
             print(json_input);
             print(msg);
-            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
         else
             --local t = req_processor.message[func][1];
             flg, qp = validate_query_params(req_processor_interface, qp, func);
@@ -499,13 +499,13 @@ rest_controller.handle_service_request = function (request, response)
                 obj = nil;
                 msg = qp;
                 error_cond = 3;
-                print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
                 print(request:get_uri());
                 print(interface_class_name);
                 print(func)
                 print(json_input);
                 print(msg);
-                print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
             else
                 local t = req_processor_interface.methods[func].message.in_out[1];
                 if (json_input ~= nil) then
@@ -516,14 +516,14 @@ rest_controller.handle_service_request = function (request, response)
                             obj = nil;
                             msg = "Unable to find message schema handler";
                             error_cond = 4;
-                            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                            print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
                             print(request:get_uri());
                             print(interface_class_name);
                             print(func)
                             print(json_input);
                             print(msg);
                             require 'pl.pretty'.dump(t);
-                            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                            print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
                         else
                             local stat = true;
                             flg = true;
@@ -532,27 +532,27 @@ rest_controller.handle_service_request = function (request, response)
                             if (not stat) then
                                 flg = false;
                                 error_cond = 6;
-                                print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                                print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
                                 print(request:get_uri());
                                 print(interface_class_name);
                                 print(func)
                                 print(json_input);
                                 print(msg);
                                 require 'pl.pretty'.dump(t);
-                                print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                                print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
                                 error(obj);
                             end
                             if (obj == nil) then
                                 flg = false;
                                 error_cond = 6;
-                                print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                                print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
                                 print(request:get_uri());
                                 print(interface_class_name);
                                 print(func)
                                 print(json_input);
                                 print(msg);
                                 require 'pl.pretty'.dump(t);
-                                print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                                print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
                             end
                         end
                     else
@@ -564,13 +564,13 @@ rest_controller.handle_service_request = function (request, response)
                         flg = false;
                         obj = nil;
                         msg = "Unable to derserialize JSON, schema not specified";
-                        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
                         print(request:get_uri());
                         print(interface_class_name);
                         print(func)
                         print(json_input);
                         print(msg);
-                        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
                         error_cond = 7;
                     end
                 else
@@ -578,13 +578,13 @@ rest_controller.handle_service_request = function (request, response)
                         flg = false;
                         msg = "NULL Message received, while expecting one";
                         error_cond = 8;
-                        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
                         print(request:get_uri());
                         print(interface_class_name);
                         print(func)
                         print(json_input);
                         print(msg);
-                        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
                     else
                         flg = true;
                     end
@@ -595,11 +595,11 @@ rest_controller.handle_service_request = function (request, response)
     end --}
     local successfully_processed = false;
     if (not flg) then
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline, "deserialization of json request failed");
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date(), "deserialization of json request failed");
         print(request:get_uri());
         print("error_cond = "..error_cond);
         require 'pl.pretty'.dump(output_obj);
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
         output_obj.error_message = msg;
         local flg, json_output, err = pcall(json_parser.encode, output_obj);
         local status = 400;
@@ -612,9 +612,9 @@ rest_controller.handle_service_request = function (request, response)
     else
         --[[
         local hdr_flds = request:get_hdr_fields();
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
         require 'pl.pretty'.dump(hdr_flds);
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
         ]]
         local status, table_output, ret = invoke_func(request, req_processor_interface, req_processor, func, url_parts, qp, obj, class_name)
         if (type(ret) ~= 'number' or ret < 200 or ret > 550) then
@@ -653,19 +653,19 @@ rest_controller.handle_service_request = function (request, response)
                         ]]
                         successfully_processed = true;
                     else
-                        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
                         print(request:get_uri());
                         print(msg);
                         require 'pl.pretty'.dump(table_output);
-                        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
                     end
                 else
                     -- OOPS function returned outut in an unexpected format
                     local msg = [=[Invalid output from function {]=]..class_name.."."..func..[=[}]=];
-                    print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                    print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
                     print(request:get_uri());
                     print(msg);
-                    print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+                    print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
                     output_obj.error_message = msg;
                     msg = nil;
                     flg, json_output, msg = pcall(json_parser.encode, output_obj);
