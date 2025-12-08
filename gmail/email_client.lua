@@ -177,7 +177,6 @@ local get_plain_text_mail_body = function(payload)
 end
 
 local get_attachment = function(connection, email_id, token, id, payload)
-
     local uri = '/gmail/v1/users/'..email_id..'/messages/'..id..'/attachments/'.. payload.body.attachmentId;
     local uri = service_client.complete_uri_with_qp(uri, {});
     local headers = {
@@ -340,7 +339,7 @@ local function find_body_text(parts)
     return plain_text, html_text;
 end
 
-local get_email_message = function(connection, email_id, token, mail_item, including_attachments) 
+local get_email_message = function(connection, email_id, token, mail_item, including_attachments) --{
     local payload = mail_item.payload
     local props = {
         id = mail_item.id,
@@ -350,181 +349,181 @@ local get_email_message = function(connection, email_id, token, mail_item, inclu
         fetch_complete = true;
     };
 
-    for i,v in ipairs(payload.headers) do
-        if (v.name == 'Date') then
+    for i,v in ipairs(payload.headers) do --{
+        if (v.name == 'Date') then --{
             local tzo;
             local tz_part = v.value:match("[+-][0-9][0-9][0-9][0-9].*");
-            if (tz_part ~= nil) then
+            if (tz_part ~= nil) then --{
                 local sign = tz_part:sub(1, 1);
-                if (sign == '-') then
+                if (sign == '-') then --{
                     sign = -1;
-                else
+                else --} {
                     sign = 1;
-                end
+                end --}
                 local hh = tonumber(tz_part:sub(2, 3));
                 local mi = tonumber(tz_part:sub(4, 5));
                 tzo = sign * hh*60 + mi;
-            end
+            end --}
             props.date = date_utils.date_time_from_dto(date(v.value), tzo);
-        elseif (v.name == 'From') then
+        elseif (v.name == 'From') then --} {
             props.from = stringx.strip(v.value);
             local n,e = parse_from(props.from);
             props.from_s = {
                 real_name = n,
                 address = e
             };
-        elseif (v.name == 'To') then
+        elseif (v.name == 'To') then --} {
             props.to = v.value;
             props.to_s = parse_to(props.to);
-        elseif (v.name == 'Delivered-To') then
+        elseif (v.name == 'Delivered-To') then --} {
             props.delivered_to = v.value;
-        elseif (v.name == 'Return-Path') then
+        elseif (v.name == 'Return-Path') then --} {
             props.return_path = v.value;
             props.return_path_address = parse_return_path(v.value);
-        elseif (v.name == 'Subject') then
+        elseif (v.name == 'Subject') then --} {
             props.subject = v.value;
-        elseif (v.name == 'Content-Type') then
+        elseif (v.name == 'Content-Type') then --} {
             props.content_type = v.value;
-        elseif (v.name == 'Cc') then
+        elseif (v.name == 'Cc') then --} {
             props.cc = v.value;
             props.cc_recipients = parse_to(props.cc);
-        elseif (v.name == 'Message-ID') then
+        elseif (v.name == 'Message-ID') then --} {
             props.header_message_id = v.value;
-        end
-    end
+        end --}
+    end --}
     props.mime_type = payload.mimeType;
 
-    if (payload.mimeType == 'text/plain') then
+    if (payload.mimeType == 'text/plain') then --{
         props.message_body = get_plain_text_mail_body(payload);
-    elseif (payload.mimeType == 'text/html') then
+    elseif (payload.mimeType == 'text/html') then --} {
         props.message_body = get_plain_text_mail_body(payload);
         props.html_body = get_plain_text_mail_body(payload);
-    elseif (string.sub(payload.mimeType, 1, 4) == 'text') then
+    elseif (string.sub(payload.mimeType, 1, 4) == 'text') then --} {
         props.message_body = get_plain_text_mail_body(payload);
         props[string.sub(v.mimeType, 5).."_body"] = get_plain_text_mail_body(v);
-    elseif (payload.mimeType == 'multipart/alternative') then
-        for i,v in ipairs(payload.parts) do
-            if (v.filename == "") then
-                if (string.sub(v.mimeType, 1, 9) == 'multipart') then
+    elseif (payload.mimeType == 'multipart/alternative') then --} {
+        for i,v in ipairs(payload.parts) do --{
+            if (v.filename == "") then --{
+                if (string.sub(v.mimeType, 1, 9) == 'multipart') then --{
                     props.message_body, props.html_body = find_body_text(v.parts);
-                else
+                else --} {
                     props.parts[#(props.parts)+1] = v;
-                    if (v.mimeType == 'text/plain') then
+                    if (v.mimeType == 'text/plain') then --{
                         props.message_body = get_plain_text_mail_body(v);
-                    elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then
+                    elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then --} {
                         props.message_body = get_plain_text_mail_body(v);
-                    end
-                    if (string.sub(v.mimeType, 1, 4) == 'text') then
+                    end --}
+                    if (string.sub(v.mimeType, 1, 4) == 'text') then --{
                         props[string.sub(v.mimeType, 5).."_body"] = get_plain_text_mail_body(v);
-                    end
-                end
-            end
-        end
-        if (props.message_body == nil) then
+                    end --}
+                end --}
+            end --}
+        end --}
+        if (props.message_body == nil) then --{
             print("=====================");
             print("Could not locate message body for this email");
             print("=====================");
             props.message_body = "Could not locate message body for this email";
-        end
-    elseif (payload.mimeType == 'multipart/mixed') then
-        for i,v in ipairs(payload.parts) do
-            if (v.filename == "") then
-                if (string.sub(v.mimeType, 1, 9) == 'multipart') then
+        end --}
+    elseif (payload.mimeType == 'multipart/mixed') then --} {
+        for i,v in ipairs(payload.parts) do --{
+            if (v.filename == "") then --{
+                if (string.sub(v.mimeType, 1, 9) == 'multipart') then --{
                     props.message_body, props.html_body = find_body_text(v.parts);
-                else
-                    if (v.mimeType == 'text/plain') then
+                else --} {
+                    if (v.mimeType == 'text/plain') then --{
                         props.message_body = get_plain_text_mail_body(v);
-                    elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then
+                    elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then --} {
                         props.message_body = get_plain_text_mail_body(v);
-                    end
-                    if (string.sub(v.mimeType, 1, 4) == 'text') then
+                    end --}
+                    if (string.sub(v.mimeType, 1, 4) == 'text') then --{
                         props[string.sub(v.mimeType, 5).."_body"] = get_plain_text_mail_body(v);
-                    end
-                end
-            else
+                    end --}
+                end --}
+            else --} {
                 local attachment = {}
-                if (including_attachments) then
+                if (including_attachments) then --{
                     attachment = get_attachment(connection, email_id, token, mail_item.id, v, including_attachments);
-                end
+                end --}
                 attachment.attachment_id = v.body.attachmentId;
                 attachment.file_name = v.filename;
                 attachment.mime_type = v.mimeType;
-                if (attachment.size == nil) then
+                if (attachment.size == nil) then --{
                     attachment.size = v.body.size;
-                end
+                end --}
                 props.attachments[#(props.attachments)+1] = attachment;
-            end
-        end
-    elseif (payload.mimeType == 'multipart/parallel') then
-        for i,v in ipairs(payload.parts) do
-            if (v.filename == "") then
-                if (string.sub(v.mimeType, 1, 9) == 'multipart') then
+            end --}
+        end --}
+    elseif (payload.mimeType == 'multipart/parallel') then --} {
+        for i,v in ipairs(payload.parts) do --{
+            if (v.filename == "") then --{
+                if (string.sub(v.mimeType, 1, 9) == 'multipart') then --{
                     props.message_body, props.html_body = find_body_text(v.parts);
-                else
-                    if (v.mimeType == 'text/plain') then
+                else --} {
+                    if (v.mimeType == 'text/plain') then --{
                         props.message_body = get_plain_text_mail_body(v);
-                    elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then
+                    elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then --} {
                         props.message_body = get_plain_text_mail_body(v);
-                    end
-                    if (string.sub(v.mimeType, 1, 4) == 'text') then
+                    end --}
+                    if (string.sub(v.mimeType, 1, 4) == 'text') then --{
                         props[string.sub(v.mimeType, 5).."_body"] = get_plain_text_mail_body(v);
-                    end
-                end
-            else
+                    end --}
+                end --}
+            else --} {
                 local attachment = get_attachment(connection, email_id, mail_item.id, v);
                 attachment.file_name = v.filename;
                 attachment.mime_type = v.mimetype;
-                if (attachment.size == nil) then
+                if (attachment.size == nil) then --{
                     attachment.size = v.body.size;
-                end
+                end --}
                 props.attachments[#(props.attachments)+1] = attachment;
-            end
-        end
-    elseif (payload.mimeType == 'multipart/related') then
-        for i,v in ipairs(payload.parts) do
-            if (v.filename == "") then
-                if (string.sub(v.mimeType, 1, 9) == 'multipart') then
+            end --}
+        end --}
+    elseif (payload.mimeType == 'multipart/related') then --} {
+        for i,v in ipairs(payload.parts) do --{
+            if (v.filename == "") then --{
+                if (string.sub(v.mimeType, 1, 9) == 'multipart') then --{
                     props.message_body = find_body_text(v.parts);
-                else
-                    if (v.mimeType == 'text/plain') then
+                else --} {
+                    if (v.mimeType == 'text/plain') then --{
                         props.message_body, props.html_body = get_plain_text_mail_body(v);
-                    elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then
+                    elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then --} {
                         props.message_body = get_plain_text_mail_body(v);
-                    end
-                    if (string.sub(v.mimeType, 1, 4) == 'text') then
+                    end --}
+                    if (string.sub(v.mimeType, 1, 4) == 'text') then --{
                         props[string.sub(v.mimeType, 5).."_body"] = get_plain_text_mail_body(v);
-                    end
-                end
-            else
+                    end --}
+                end --}
+            else --} {
                 --[[Attachments here are not interesting ]]
-            end
-        end
-    elseif (payload.mimeType == 'multipart/report') then
-        for i,v in ipairs(payload.parts) do
-            if (v.filename == "") then
-                if (string.sub(v.mimeType, 1, 9) == 'multipart') then
+            end --}
+        end --}
+    elseif (payload.mimeType == 'multipart/report') then --} {
+        for i,v in ipairs(payload.parts) do --{
+            if (v.filename == "") then --{
+                if (string.sub(v.mimeType, 1, 9) == 'multipart') then --{
                     props.message_body, props.html_body = find_body_text(v.parts);
-                else
-                    if (v.mimeType == 'text/plain') then
+                else --} {
+                    if (v.mimeType == 'text/plain') then --{
                         props.message_body = get_plain_text_mail_body(v);
-                    elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then
+                    elseif (props.message_body == nil and string.sub(v.mimeType, 1, 4) == 'text') then --} {
                         props.message_body = get_plain_text_mail_body(v);
-                    end
-                    if (string.sub(v.mimeType, 1, 4) == 'text') then
+                    end --}
+                    if (string.sub(v.mimeType, 1, 4) == 'text') then --{
                         props[string.sub(v.mimeType, 5).."_body"] = get_plain_text_mail_body(v);
-                    end
-                end
-            else
+                    end --}
+                end --}
+            else --} {
                 local attachment = get_attachment(connection, email_id, mail_item.id, v);
                 attachment.file_name = v.filename;
                 attachment.mime_type = v.mimetype;
-                if (attachment.size == nil) then
+                if (attachment.size == nil) then --{
                     attachment.size = v.body.size;
-                end
+                end --}
                 props.attachments[#(props.attachments)+1] = attachment;
-            end
-        end
-    else
+            end --}
+        end --}
+    else --} {
         print(debug.getinfo(1).source, debug.getinfo(1).currentline);
         print("Fetching of mail did not complete, encountered payload.mimeType: "..payload.mimeType);
         print(debug.getinfo(1).source, debug.getinfo(1).currentline);
@@ -532,10 +531,10 @@ local get_email_message = function(connection, email_id, token, mail_item, inclu
         --send_error_response(connection, email_id, token, mail_item.id, msg, props)
         props.message_body = "";
         props.fetch_complete = false;
-    end
+    end --}
 
     return props;
-end
+end --}
 
 email_client.get_message = function(connection, email_id, token, message_id, including_attachments)
     assert(type(connection) == 'table');
@@ -568,6 +567,32 @@ email_client.get_message = function(connection, email_id, token, message_id, inc
     end
 
     return message;
+end
+
+email_client.get_rfc2822_message = function(connection, email_id, token, message_id)
+    assert(type(connection) == 'table');
+    assert(type(email_id) == 'string');
+    assert(type(token) == 'table');
+    assert(type(message_id) == 'string');
+
+    local uri = service_client.complete_uri_with_qp('/gmail/v1/users/'..email_id..'/messages/'..message_id,
+        {format="raw"}
+    );
+
+    local headers = {
+        method = "GET",
+        Authorization = "Bearer " .. token.access_token
+    };
+    local status, response_str, http_status, hdrs = service_client.send_and_receive(connection, uri, headers, nil);
+    assert(status, response_str);
+
+    local stat, mail_item, err = pcall(json_parser.decode, response_str);
+    assert(stat, mail_item);
+    assert(mail_item ~= nil, err);
+
+    mail_item.raw = core_utils.str_url_base64_decode(mail_item.raw);
+
+    return mail_item;
 end
 
 --[[
