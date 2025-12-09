@@ -126,6 +126,39 @@ local function find_body_text(parts)
     return plain_text, html_text;
 end
 
+--[[
+
+These MIME types define how multiple parts within a single message relate to each other and should be interpreted by the receiving application.
+
+1.  multipart/alternative: The parts are alternative versions of the same content
+    (e.g., a plain text and an HTML version of an email); the recipient displays the "best" format it supports.
+2.  multipart/mixed: The parts are independent content bundled together
+    (e.g., a message body and separate file attachments) and are generally displayed sequentially.
+3.  multipart/parallel: The parts should be displayed simultaneously
+    (e.g., an image displayed while an audio file plays), though this is less common in modern usage.
+4.  multipart/related: The parts are components of an aggregate whole
+    (e.g., an HTML document and its embedded images referenced by Content-IDs) and are not meant to be displayed individually.
+5.  multipart/report: Defined for returning machine-readable delivery status or message disposition notifications,
+    often with a human-readable text part and a machine-readable status part.
+
+
+We have not implemented support for the following types
+
+1.  multipart/signed: Used for email security (S/MIME and OpenPGP), this type ensures message integrity and
+    authenticity through digital signatures. It has exactly two parts: the first contains the actual message
+    content (which can be nested MIME types), and the second contains the digital signature data.
+2.  multipart/encrypted: Also used for email security, this subtype provides confidentiality (privacy) by
+    encrypting the message body. It has two parts: the first contains control information needed for decryption
+    (like the protocol used), and the second is the encrypted data, typically with a Content-Type of application/octet-stream.
+3.  multipart/digest: This is essentially a list of messages, where the default Content-Type for each part is
+    message/rfc822 (a full email message). It's typically used by mailing list software to send a compilation
+    of several messages in one digest email.
+4.  multipart/form-data: While technically not part of standard email display, this MIME type is crucial for
+    web applications. It is used when data, especially files, is submitted via an HTML form using the POST method
+    over HTTP, bundling the form fields and file contents into separate parts.
+
+]]
+
 local get_email_message = function(mail_item) --{
     local payload = mail_item;
     local props = {

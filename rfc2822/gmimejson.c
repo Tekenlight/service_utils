@@ -486,6 +486,17 @@ static cJSON* convert(GMimeObject *obj, bool start)
     return node;
 }
 
+char *decode_header(const char *hdr)
+{
+    GMimeParserOptions *opts = g_mime_parser_options_get_default();
+
+    char *decoded = g_mime_utils_header_decode_text(opts, hdr);
+
+    /* opts not freed because it is created using g_mime_parser_options_get_default */
+
+    return decoded;   // free with g_free()
+}
+
 //
 // LUA WRAPPER
 //
@@ -504,7 +515,7 @@ static int l_parse(lua_State *L)
     GMimeMessage *msg = g_mime_parser_construct_message(parser, opts);
 
     GMimeObject *root = g_mime_message_get_mime_part(msg);
-    walk_mime_object(root, 0);
+    //walk_mime_object(root, 0);
 
     cJSON *json = convert(root, true);
 
@@ -514,9 +525,10 @@ static int l_parse(lua_State *L)
     for (int i=0; i<headers.count; i++) {
         cJSON *h = cJSON_CreateObject();
         cJSON_AddStringToObject(h, "name", headers.items[i].name);
-        cJSON_AddStringToObject(h, "value", headers.items[i].value);
+        char * decoded_value = decode_header(headers.items[i].value);
+        cJSON_AddStringToObject(h, "value", decoded_value);
+        g_free(decoded_value);
         cJSON_AddItemToArray(ha, h);
-
     }
     free_header_list(&headers);
 
@@ -529,6 +541,9 @@ static int l_parse(lua_State *L)
     g_object_unref(msg);
     g_object_unref(parser);
     g_object_unref(stream);
+
+    /* opts not freed because it is created using g_mime_parser_options_get_default */
+    /* root not freed because it is part of msg and not an owned object */
 
     return 1;
 }
