@@ -161,7 +161,7 @@ build = {
         ["service_utils.os.port_locker"] = 'os/port_locker.lua',
 
         ["service_utils.chrome_pdf"] = 'chrome_pdf/chrome_pdf.lua',
-        ["service_utils.rfc2822_parser"] = 'rfc2822/parser.lua',
+        ["service_utils.rfc2822.parser"] = 'rfc2822/parser.lua',
         ["service_utils.gmimejson"] = {
             sources = { "rfc2822/gmimejson.c" },
             incdirs = {
