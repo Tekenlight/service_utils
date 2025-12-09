@@ -400,7 +400,7 @@ local get_email_message = function(connection, email_id, token, mail_item, inclu
         props.html_body = get_plain_text_mail_body(payload);
     elseif (string.sub(payload.mimeType, 1, 4) == 'text') then --} {
         props.message_body = get_plain_text_mail_body(payload);
-        props[string.sub(v.mimeType, 5).."_body"] = get_plain_text_mail_body(v);
+        props[string.sub(v.mimeType, 6).."_body"] = get_plain_text_mail_body(v);
     elseif (payload.mimeType == 'multipart/alternative') then --} {
         for i,v in ipairs(payload.parts) do --{
             if (v.filename == "") then --{
@@ -414,7 +414,7 @@ local get_email_message = function(connection, email_id, token, mail_item, inclu
                         props.message_body = get_plain_text_mail_body(v);
                     end --}
                     if (string.sub(v.mimeType, 1, 4) == 'text') then --{
-                        props[string.sub(v.mimeType, 5).."_body"] = get_plain_text_mail_body(v);
+                        props[string.sub(v.mimeType, 6).."_body"] = get_plain_text_mail_body(v);
                     end --}
                 end --}
             end --}
@@ -437,7 +437,7 @@ local get_email_message = function(connection, email_id, token, mail_item, inclu
                         props.message_body = get_plain_text_mail_body(v);
                     end --}
                     if (string.sub(v.mimeType, 1, 4) == 'text') then --{
-                        props[string.sub(v.mimeType, 5).."_body"] = get_plain_text_mail_body(v);
+                        props[string.sub(v.mimeType, 6).."_body"] = get_plain_text_mail_body(v);
                     end --}
                 end --}
             else --} {
@@ -466,7 +466,7 @@ local get_email_message = function(connection, email_id, token, mail_item, inclu
                         props.message_body = get_plain_text_mail_body(v);
                     end --}
                     if (string.sub(v.mimeType, 1, 4) == 'text') then --{
-                        props[string.sub(v.mimeType, 5).."_body"] = get_plain_text_mail_body(v);
+                        props[string.sub(v.mimeType, 6).."_body"] = get_plain_text_mail_body(v);
                     end --}
                 end --}
             else --} {
@@ -491,7 +491,7 @@ local get_email_message = function(connection, email_id, token, mail_item, inclu
                         props.message_body = get_plain_text_mail_body(v);
                     end --}
                     if (string.sub(v.mimeType, 1, 4) == 'text') then --{
-                        props[string.sub(v.mimeType, 5).."_body"] = get_plain_text_mail_body(v);
+                        props[string.sub(v.mimeType, 6).."_body"] = get_plain_text_mail_body(v);
                     end --}
                 end --}
             else --} {
@@ -510,7 +510,7 @@ local get_email_message = function(connection, email_id, token, mail_item, inclu
                         props.message_body = get_plain_text_mail_body(v);
                     end --}
                     if (string.sub(v.mimeType, 1, 4) == 'text') then --{
-                        props[string.sub(v.mimeType, 5).."_body"] = get_plain_text_mail_body(v);
+                        props[string.sub(v.mimeType, 6).."_body"] = get_plain_text_mail_body(v);
                     end --}
                 end --}
             else --} {
