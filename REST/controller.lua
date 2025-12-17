@@ -609,6 +609,8 @@ rest_controller.handle_service_request = function (request, response)
         response:set_hdr_field("X-msg", json_output);
         response:send();
         response:write(json_output);
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
     else
         --[[
         local hdr_flds = request:get_hdr_fields();
