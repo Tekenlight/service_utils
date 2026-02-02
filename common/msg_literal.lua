@@ -5,7 +5,6 @@ local ffi = require('ffi');
 
 ffi.cdef[[
 int sprintf(char * restrict str, const char * restrict format, ...);
-void free(void *ptr);
 void * memset(void *b, int c, size_t len);
 int snprintf(char * restrict str, size_t size, const char * restrict format, ...);
 ]]

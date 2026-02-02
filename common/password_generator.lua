@@ -5,7 +5,6 @@ local symbols = {"!","@","#","$","%","^","&","*","/"}
 local ffi = require('ffi');
 ffi.cdef[[
 int getentropy(void *buf, size_t buflen);
-void * malloc(size_t size);
 ]]
 
 local function get_ran_num(modulo_base)

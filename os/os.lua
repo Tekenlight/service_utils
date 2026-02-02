@@ -12,7 +12,6 @@ void *memset(void *s, int c, size_t n);
 void *realloc(void *ptr, size_t size);
 int mkstemps(char *template, int suffixlen);
 char* tempnam(const char *dir, const char *pfx);
-void free(void *ptr);
 ]]
 
 local os_funcs = {

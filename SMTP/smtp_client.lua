@@ -9,7 +9,6 @@ local error_handler = require("lua_schema.error_handler");
 
 ffi.cdef [[
 char * strcpy(char * dst, const char * src);
-void * malloc(size_t size);
 void* pthread_self(void);
 int printf(const char * restrict format, ...);
 ]]
