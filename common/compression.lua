@@ -4,7 +4,7 @@ local compression = {};
 
 compression.compress_data = function(data)
 	assert(type(data) == 'string' or
-			( type(data) == 'cdata' and
+			( type(data) == 'table' and
 			  cu.is_binary_buffer(data)));
 
 	local out = cu.new_binary_buffer();
@@ -24,7 +24,7 @@ compression.compress_data = function(data)
 end
 
 compression.uncompress_text_data = function(buffer)
-	assert( type(buffer) == 'cdata' and
+	assert( type(buffer) == 'table' and
 			cu.is_binary_buffer(buffer));
 
 	local text_data = platform.uncompress_text_data(ffi.getptr(buffer.value), tonumber(buffer.size));
@@ -33,7 +33,7 @@ compression.uncompress_text_data = function(buffer)
 end
 
 compression.uncompress_binary_data = function(buffer)
-	assert( type(buffer) == 'cdata' and
+	assert( type(buffer) == 'table' and
 			cu.is_binary_buffer(buffer));
 
 	local o_data, sz = platform.uncompress_binary_data(ffi.getptr(buffer.value), tonumber(buffer.size));

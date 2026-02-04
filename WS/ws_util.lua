@@ -240,7 +240,7 @@ ws_util.form_payload = function(inp, buf)
 		local mask = inp.mask;
 		local hdr_len = inp.hdr_len;
 		for i = 1, inp.size, 1 do
-			local m = tonumber(mask.value[(i-1)%4]);
+			local m = tonumber(ffi.cast("char*", mask.value)[(i-1)%4]);
 			local n = m ~ tonumber(inp.buf[i-1]);
 			buf[hdr_len+(i-1)] = ffi.cast("unsigned char", n);
 		end

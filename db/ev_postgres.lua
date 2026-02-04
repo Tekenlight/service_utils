@@ -96,14 +96,14 @@ ev_postgres_stmt.vexecute = function(self, inp_count, inp_args, return_errors)
             bind_var.val = ffi.getptr(nullptr);
             bind_var.size = 8;
             args[i] = ffi.getptr(bind_var);
+        elseif (type(v) == 'table' and cu.is_binary_buffer(v)) then
+            local bind_var = ffi.new("lua_bind_variable_s", 0);
+            bind_var.type = types.name_to_id.binary;
+            bind_var.val = ffi.getptr(v.value);
+            bind_var.size = v.size;
+            args[i] = ffi.getptr(bind_var);
         elseif (type(v) == 'cdata') then
-            if (cu.is_binary_buffer(v)) then
-                local bind_var = ffi.new("lua_bind_variable_s", 0);
-                bind_var.type = types.name_to_id.binary;
-                bind_var.val = ffi.getptr(v.value);
-                bind_var.size = v.size;
-                args[i] = ffi.getptr(bind_var);
-            elseif (ffi.istype("dt_s_type", v)) then
+            if (ffi.istype("dt_s_type", v)) then
                 local bind_var = ffi.new("lua_bind_variable_s", 0);
                 bind_var.type = types.name_to_id[du.tid_name_map[v.type]];
                 if (bind_var.type == ffi.C.ev_lua_date) then
