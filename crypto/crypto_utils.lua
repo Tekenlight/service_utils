@@ -1,5 +1,11 @@
 local ffi = require('ffi');
 local cu = require('lua_schema.core_utils');
+ffi.cdef[[
+struct cipher_text_s {
+     unsigned char * buffer;
+     size_t len;
+ };
+]]
 
 --[[ Supported ciphers in openssl => from man page
  base64             Base 64
@@ -315,8 +321,7 @@ crypto_utils.encrypt_plain_text = function(plain_text, symmetric_key)
 		error(ct);
 	end
 
-	local ct_s = cu.new_hex_data_s_type();
-	ct_s.buf_mem_managed = 1; -- In order to overcome freeing of pointers twice
+	local ct_s = cu.new_binary_buffer(1);
 	ct_s.value = ptr;
 	ct_s.size = ffi.cast("size_t", len);
 	return ct, len, ct_s;
@@ -331,8 +336,7 @@ crypto_utils.b64_encrypt_plain_text = function(plain_text, symmetric_key)
 		error(ct);
 	end
 
-	local ct_s = cu.new_hex_data_s_type();
-	ct_s.buf_mem_managed = 1; -- In order to overcome freeing of pointers twice
+	local ct_s = cu.new_binary_buffer(1);
 	local ctp = ffi.cast("cipher_text_s*", ct);
 	ct_s.value = ctp.buffer;
 	ct_s.size = ctp.len;
@@ -355,7 +359,7 @@ end
 
 crypto_utils.decrypt_hex_s_cipher_text = function(ct_s, symmetric_key)
 	assert(type(ct_s) == 'cdata');
-	assert(ffi.istype("hex_data_s_type", ct_s));
+	assert(cu.is_binary_buffer(ct_s));
 	assert(type(symmetric_key) == 'userdata');
 
 	local ptr = ffi.getptr(ct_s.value);
@@ -394,8 +398,7 @@ crypto_utils.rsa_encrypt_symmetric_key = function(symmetric_key, rsa_pub_key)
 		error(e_symm_key);
 	end
 
-	local ct_s = cu.new_hex_data_s_type();
-	ct_s.buf_mem_managed = 1; -- In order to overcome freeing of pointers twice
+	local ct_s = cu.new_binary_buffer(1);
 	ct_s.value = ptr;
 	ct_s.size = ffi.cast("size_t", len);
 	return e_symm_key, len, ct_s;
@@ -410,8 +413,7 @@ crypto_utils.rsa_b64_encrypt_symmetric_key = function(symmetric_key, rsa_pub_key
 		error(e_symm_key);
 	end
 
-	local ct_s = cu.new_hex_data_s_type();
-	ct_s.buf_mem_managed = 1; -- In order to overcome freeing of pointers twice
+	local ct_s = cu.new_binary_buffer(1);
 	local ctp = ffi.cast("cipher_text_s*", e_symm_key);
 	ct_s.value = ctp.buffer;
 	ct_s.size = ctp.len;
@@ -434,7 +436,7 @@ end
 
 crypto_utils.rsa_decrypt_hex_s_enc_symmetric_key = function(e_symm_key_s, rsa_prv_key)
 	assert(type(e_symm_key_s) == 'cdata');
-	assert(ffi.istype("hex_data_s_type", e_symm_key_s));
+	assert(cu.is_binary_buffer(e_symm_key_s));
 	assert(type(rsa_prv_key) == 'userdata');
 
 	local ptr = ffi.getptr(e_symm_key_s.value);

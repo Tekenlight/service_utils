@@ -1,5 +1,5 @@
 local ffi = require('ffi');
-local core_utils = require('lua_schema.core_utils');
+local cu = require('lua_schema.core_utils');
 
 ffi.cdef[[
 int pipe(int pipefd[2]);
@@ -72,7 +72,7 @@ end
 
 os.r_popen = function(cmd, inp_data)
     assert(type(cmd) == 'string', 'Invalid input to os.r_popen');
-    assert((inp_data == nil or ffi.istype("hex_data_s_type", inp_data) == true), 'Invalid input to os.r_popen');
+    assert((inp_data == nil or cu.is_binary_buffer(inp_data) == true), 'Invalid input to os.r_popen');
 
     local r_pipefd = ffi.new('int [2]')
     ffi.C.pipe(r_pipefd);
@@ -138,8 +138,7 @@ os.fd_read = function(fd)
         end
     until (tonumber(n[0]) == 0)
 
-    local ddata = ffi.new("hex_data_s_type", 0);
-    ddata.buf_mem_managed = 1;
+    local ddata = cu.new_binary_buffer(1);
     ddata.size = ffi.cast("size_t", n[1]);
     ddata.value = c_buf;
 
@@ -157,7 +156,7 @@ os.r_pclose = function(fd)
 end
 
 os.chrome_name = function()
-    local os = core_utils.os_name();
+    local os = cu.os_name();
     if (os == 'Darwin') then
         return [[/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome]];
     elseif (os == 'Linux') then
@@ -199,7 +198,6 @@ os.open_file = function(filename, oflags, mode)
     return fd;
 end
 
---[=[
 os.html_to_pdf = function(filename, props)
     assert(type(filename) == 'string', "Invalid input to os.html_to_pdf");
 
@@ -263,7 +261,6 @@ os.string_html_to_pdf = function(s_html, props)
 
 end
 
-]=]
 
 --[[
 local ret, fd = os.r_popen('ls -lrt');

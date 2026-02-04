@@ -17,9 +17,9 @@ primitive_serde.serialize = function(v)
 	assert(v ~= nil);
 
 	if (type(v) == 'cdata') then
-		if (ffi.istype("hex_data_s_type", v)) then
+		if (cu.is_binary_buffer(v)) then
 			sv = cu.base64_encode(v);
-			tn = "binary";
+			tn = cu.binary_buffer_name;
 			sz = tonumber(v.size);
 		elseif (ffi.istype("dt_s_type", v)) then
 			local var_type = types.name_to_id[du.tid_name_map[v.type]];
@@ -107,7 +107,7 @@ primitive_serde.deserialize = function(sv, tn, sz)
 
 	local value;
 
-	if (tn == "hex_data_s_type") then
+	if (tn == cu.binary_buffer_name) then
 		value = cu.base64_decode(sv);
 	elseif (tn == "date") then
 		value = du.from_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATE, sv);

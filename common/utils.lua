@@ -21,10 +21,10 @@ function utils.get_rand_bytes(size)
 	local cp = ffi.new("unsigned char [?]", size);
 	ffi.C.getentropy(cp, size);
 
-	local bin_inp = core_utils.new_hex_data_s_type();
+	local bin_inp = core_utils.new_binary_buffer();
 	bin_inp.size = size;
 
-	bin_inp.value = ffi.C.malloc(size+1);
+	bin_inp.value = core_utils.alloc(size+1);
 	ffi.C.memset(bin_inp.value, 0, (bin_inp.size+1));
 	ffi.C.memcpy(bin_inp.value, cp, bin_inp.size);
 

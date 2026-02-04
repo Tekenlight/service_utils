@@ -5,9 +5,9 @@ local compression = {};
 compression.compress_data = function(data)
 	assert(type(data) == 'string' or
 			( type(data) == 'cdata' and
-			  ffi.istype("hex_data_s_type", data)));
+			  cu.is_binary_buffer(data)));
 
-	local out = cu.new_hex_data_s_type();
+	local out = cu.new_binary_buffer();
 	local buf, out_len;
 	if (type(data) == 'string') then
 		buf, out_len = platform.compress_data(data);
@@ -25,7 +25,7 @@ end
 
 compression.uncompress_text_data = function(buffer)
 	assert( type(buffer) == 'cdata' and
-			ffi.istype("hex_data_s_type", buffer));
+			cu.is_binary_buffer(buffer));
 
 	local text_data = platform.uncompress_text_data(ffi.getptr(buffer.value), tonumber(buffer.size));
 
@@ -34,11 +34,11 @@ end
 
 compression.uncompress_binary_data = function(buffer)
 	assert( type(buffer) == 'cdata' and
-			ffi.istype("hex_data_s_type", buffer));
+			cu.is_binary_buffer(buffer));
 
 	local o_data, sz = platform.uncompress_binary_data(ffi.getptr(buffer.value), tonumber(buffer.size));
 
-	local out = cu.new_hex_data_s_type();
+	local out = cu.new_binary_buffer();
 	out.size = sz;
 	out.value = cu.alloc(out.size);
 	ffi.C.memcpy(out.value, o_data, out.size);
