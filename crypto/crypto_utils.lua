@@ -358,9 +358,9 @@ crypto_utils.decrypt_cipher_text = function(cipher_text, symmetric_key)
 end
 
 crypto_utils.decrypt_hex_s_cipher_text = function(ct_s, symmetric_key)
-	assert(type(ct_s) == 'cdata');
+	assert(type(ct_s) == 'table', 'expected table in ct_s got:'..type(ct_s));
 	assert(cu.is_binary_buffer(ct_s));
-	assert(type(symmetric_key) == 'userdata');
+	assert(type(symmetric_key) == 'userdata', 'expected userdata in symmetric_key got:' .. type(symmetric_key));
 
 	local ptr = ffi.getptr(ct_s.value);
 	local size = tonumber(ct_s.size);
@@ -435,9 +435,9 @@ crypto_utils.rsa_decrypt_enc_symmetric_key = function(e_symm_key, rsa_prv_key)
 end
 
 crypto_utils.rsa_decrypt_hex_s_enc_symmetric_key = function(e_symm_key_s, rsa_prv_key)
-	assert(type(e_symm_key_s) == 'cdata');
-	assert(cu.is_binary_buffer(e_symm_key_s));
-	assert(type(rsa_prv_key) == 'userdata');
+	assert(type(e_symm_key_s) == 'table', 'table expected in e_symm_key_s got:'..type(e_symm_key_s));
+	assert(cu.is_binary_buffer(e_symm_key_s), 'e_symm_key_s is not a binary buffer');
+	assert(type(rsa_prv_key) == 'userdata', 'userdata expected in rsa_prv_key got:'..type(rsa_prv_key));
 
 	local ptr = ffi.getptr(e_symm_key_s.value);
 	local size = tonumber(e_symm_key_s.size);
