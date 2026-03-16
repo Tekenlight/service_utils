@@ -207,24 +207,30 @@ service_client.complete_uri_with_qp = function(uri, query_params, encode)
 end
 
 service_client.prepare_uri = function(context, inp)
-    assert(type(inp) == 'table');
-    assert(inp.module_name ~= nil and type(inp.module_name) == 'string');
-    assert(inp.product_name ~= nil and type(inp.product_name) == 'string');
-    assert(inp.query_params == nil or type(inp.query_params) == 'table');
-    if (inp.query_params == nil) then
-        inp.query_params = {};
-    end
-
     local uri;
-    local properties_funcs = platform.properties_funcs();
-    local app_base_path_not_to_be_used = properties_funcs.get_bool_property("service_utils.REST.controller.appBasePathNotToBeUsed");
-    if (app_base_path_not_to_be_used == nil) then app_base_path_not_to_be_used = false; end
-    if (app_base_path_not_to_be_used) then
-        uri = "/"..inp.product_name.."/"..string.gsub(inp.module_name, "%.", "/");
+
+    assert(type(inp) == 'table');
+    assert(inp.uri == nil or type(inp.uri) == 'string');
+    if (inp.uri ~= nil) then
+        uri = unp.uri;
     else
-        uri = "/"..string.gsub(inp.module_name, "%.", "/");
+        assert(inp.module_name ~= nil and type(inp.module_name) == 'string');
+        assert(inp.product_name ~= nil and type(inp.product_name) == 'string');
+        assert(inp.query_params == nil or type(inp.query_params) == 'table');
+        if (inp.query_params == nil) then
+            inp.query_params = {};
+        end
+
+        local properties_funcs = platform.properties_funcs();
+        local app_base_path_not_to_be_used = properties_funcs.get_bool_property("service_utils.REST.controller.appBasePathNotToBeUsed");
+        if (app_base_path_not_to_be_used == nil) then app_base_path_not_to_be_used = false; end
+        if (app_base_path_not_to_be_used) then
+            uri = "/"..inp.product_name.."/"..string.gsub(inp.module_name, "%.", "/");
+        else
+            uri = "/"..string.gsub(inp.module_name, "%.", "/");
+        end
+        uri = uri.."/"..inp.class_name.."/"..inp.method_name;
     end
-    uri = uri.."/"..inp.class_name.."/"..inp.method_name;
 
     uri = service_client.complete_uri_with_qp(uri, inp.query_params);
 
