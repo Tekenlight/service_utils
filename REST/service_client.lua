@@ -212,7 +212,7 @@ service_client.prepare_uri = function(context, inp)
     assert(type(inp) == 'table');
     assert(inp.uri == nil or type(inp.uri) == 'string');
     if (inp.uri ~= nil) then
-        uri = unp.uri;
+        uri = inp.uri;
     else
         assert(inp.module_name ~= nil and type(inp.module_name) == 'string');
         assert(inp.product_name ~= nil and type(inp.product_name) == 'string');
