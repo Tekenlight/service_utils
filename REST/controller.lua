@@ -653,6 +653,10 @@ rest_controller.handle_service_request = function (request, response)
                         successfully_processed is true because processing is already done
                         optionally be commit is also done
                         ]]
+                        local wrapper_tag = request:get_hdr_field(request, "X-Resp-Json-Wrapper-Tag");
+                        if (wrapper_tag ~= nil and wrapper_tag ~= "") then
+                            json_output = "{" .. '"'..wrapper_tag .. '"'.. ": " .. json_output .. "}";
+                        end
                         successfully_processed = true;
                     else
                         print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
