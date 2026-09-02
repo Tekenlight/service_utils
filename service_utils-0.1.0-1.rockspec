@@ -30,6 +30,9 @@ external_dependencies = {
 	["google-chrome"] = {
 		["program"] = "google-chrome"
 	},
+	pdftotext = {
+		program = "pdftotext"
+	},
     ["libcjson"] = {
         header = "cjson/cJSON.h",
         library = "cjson",
