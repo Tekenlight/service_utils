@@ -136,5 +136,42 @@ utils.starts_with = function(str, prefix)
     return (string.sub(str, 1, #prefix) == prefix)
 end
 
+utils.pdf_to_text = function(pdf_path, txt_path, err_log_path)
+    assert(type(pdf_path) == 'string', "Invalid pdf_path");
+    assert(type(txt_path) == 'string', "Invalid txt_path");
+    assert(type(err_log_path) == 'string', "Invalid err_log_path");
+
+    local ok
+    local a = os.execute(string.format('pdftotext -layout "%s" "%s" 2>"%s"', pdf_path, txt_path, err_log_path));
+    if type(a) == "number" then
+        ok = (a == 0);
+    else
+        ok = (a == true);
+    end
+    os.remove(pdf_path);
+
+    if not ok then
+        local err_log = "";
+        local f = io.open(err_log_path, "r");
+        if f then
+            err_log = f:read("*a");
+            f:close();
+        end
+        os.remove(err_log_path);
+        os.remove(txt_path);
+        return false, nil, "pdftotext failed (is poppler-utils installed?): " .. err_log;
+    end
+    os.remove(err_log_path);
+
+    local text = "";
+    local tf = io.open(txt_path, "r");
+    if tf then
+        text = tf:read("*a");
+        tf:close();
+    end
+    os.remove(txt_path);
+
+    return true, text, nil;
+end
 
 return utils;
