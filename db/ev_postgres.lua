@@ -261,26 +261,12 @@ ev_postgres_stmt.map = function(q_out, fields, sng_lvl)
 end
 
 
-ev_postgres_stmt.fetch_result = function(self, one_time)
-    if (one_time == nil) then one_time = 1; end
-
-    local t = os.clock();
-    if (one_time == 0) then
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
-        print("before cursor fetch:",t - t);
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
-    end
+ev_postgres_stmt.fetch_result = function(self)
     local lua_values, n_col, c_row = self._stmt:fetch();
     if (lua_values == nil) then
         return nil;
     end
 
-    if (one_time == 0) then
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
-        print("after cursor fetch:",os.clock() - t);
-        t = os.clock();
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
-    end
     local row = ffi.cast("lua_bind_variable_s*", c_row);
     local i = 0;
     local out = {};
@@ -339,104 +325,54 @@ ev_postgres_stmt.fetch_result = function(self, one_time)
         end
         i = i+1;
     end
-    if (one_time == 0) then
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
-        print("while loop for each column:",os.clock() - t);
-        t = os.clock();
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
-    end
     ffi.C.free(c_row);
     return out;
 end
 
-ev_postgres_stmt.fetch_result_row = function(self, one_time)
-    if (one_time == nil) then one_time = 1; end
-
-    local t = os.clock();
-    if (one_time == 0) then
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
-        print("before cursor fetch:", t - t);
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
-    end
-
+ev_postgres_stmt.fetch_result_row = function(self)
     local row = self._stmt:tbl_fetch();
     if (row == nil) then
         return nil;
-    end
-
-    if (one_time == 0) then
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
-        print("after cursor fetch:", os.clock() - t);
-        t = os.clock();
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
     end
 
     local i = 1;
     local out = {};
     while (i <= #row) do
         if (row[i].type == ffi.C.ev_lua_string) then
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
             out[i] = row[i].value;
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
         elseif (row[i].type == ffi.C.ev_lua_date) then
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
             out[i] = du.dtt_from_long(row[i].value, 'date', nil);
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
         elseif (row[i].type == ffi.C.ev_lua_datetime) then
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
             out[i] = du.dtt_from_long(row[i].value, 'dateTime', nil);
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
         elseif (row[i].type == ffi.C.ev_lua_time) then
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
             out[i] = du.dtt_from_long(row[i].value, 'time', nil);
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
         elseif (row[i].type == ffi.C.ev_lua_number) then
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
             out[i] = row[i].value;
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
         elseif (row[i].type == ffi.C.ev_lua_float) then
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
             out[i] = row[i].value;
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
         elseif (row[i].type == ffi.C.ev_lua_decimal) then
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
             local v = bc.new(row[i].value);
             out[i] = v;
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
         elseif (row[i].type == ffi.C.ev_lua_binary) then
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
             local v = cu.new_binary_buffer();
             v.size = row[i].size;
             v.value = cu.alloc(v.size);
             ffi.C.memcpy(v.value, row[i].value, v.size);
             out[i] = v;
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
         elseif (row[i].type == ffi.C.ev_lua_boolean) then
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
             out[i] = row[i].value;
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
         elseif (row[i].type == ffi.C.ev_lua_int16_t) then
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
             out[i] = row[i].value;
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
         elseif (row[i].type == ffi.C.ev_lua_int32_t) then
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
             out[i] = row[i].value;
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
         elseif (row[i].type == ffi.C.ev_lua_int64_t) then
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
             out[i] = row[i].value;
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
         elseif (row[i].type == ffi.C.ev_lua_duration) then
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
             local v = ffi.new("interval_p_type", row[i].value);
             local dur = du.dur_from_bin(v);
             out[i] = dur;
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
         elseif (row[i].type == ffi.C.ev_lua_nullptr) then
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
             out[i] = ffi.NULL;
-            --print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
         else
             print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
             print(i);
@@ -445,12 +381,6 @@ ev_postgres_stmt.fetch_result_row = function(self, one_time)
             error('Unsupported type ' ..  tostring(row[i].type));
         end
         i = i + 1;
-    end
-    if (one_time == 0) then
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
-        print("while loop for each column:", os.clock() - t);
-        t = os.clock();
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
     end
 
     return out;
@@ -654,14 +584,14 @@ ev_postgres_cursor.fetch_next_set = function(self, props)
     return cu_res;
 end
 
-ev_postgres_cursor_res.fetch_rec = function(self, one_time)
+ev_postgres_cursor_res.fetch_rec = function(self)
     assert(cur_r_mt == getmetatable(self));
-    return self._stmt:fetch_result(one_time);
+    return self._stmt:fetch_result();
 end
 
-ev_postgres_cursor_res.fetch_row = function(self, one_time)
+ev_postgres_cursor_res.fetch_row = function(self)
     assert(cur_r_mt == getmetatable(self));
-    return self._stmt:fetch_result_row(one_time);
+    return self._stmt:fetch_result_row();
 end
 
 ev_postgres_cursor_res.map = function(self, rec, map, sng_lvl)
