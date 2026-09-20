@@ -386,6 +386,131 @@ ev_postgres_stmt.fetch_result_row = function(self)
     return out;
 end
 
+ev_postgres_stmt.fetch_result_row_v2 = function(self)
+    local types, values, sizes = self._stmt:tbl_fetch_v2();
+    if (types == nil or values == nil) then
+        return nil;
+    end
+
+    local i = 1;
+    local out = {};
+    while (i <= #values) do
+        if (types[i] == ffi.C.ev_lua_string) then
+            out[i] = values[i];
+        elseif (types[i] == ffi.C.ev_lua_date) then
+            out[i] = du.dtt_from_long(values[i], 'date', nil);
+        elseif (types[i] == ffi.C.ev_lua_datetime) then
+            out[i] = du.dtt_from_long(values[i], 'dateTime', nil);
+        elseif (types[i] == ffi.C.ev_lua_time) then
+            out[i] = du.dtt_from_long(values[i], 'time', nil);
+        elseif (types[i] == ffi.C.ev_lua_number) then
+            out[i] = values[i];
+        elseif (types[i] == ffi.C.ev_lua_float) then
+            out[i] = values[i];
+        elseif (types[i] == ffi.C.ev_lua_decimal) then
+            local v = bc.new(values[i]);
+            out[i] = v;
+        elseif (types[i] == ffi.C.ev_lua_binary) then
+            local v = cu.new_binary_buffer();
+            v.size = sizes[i];
+            v.value = cu.alloc(v.size);
+            ffi.C.memcpy(v.value, values[i], v.size);
+            out[i] = v;
+        elseif (types[i] == ffi.C.ev_lua_boolean) then
+            out[i] = values[i];
+        elseif (types[i] == ffi.C.ev_lua_int16_t) then
+            out[i] = values[i];
+        elseif (types[i] == ffi.C.ev_lua_int32_t) then
+            out[i] = values[i];
+        elseif (types[i] == ffi.C.ev_lua_int64_t) then
+            out[i] = values[i];
+        elseif (types[i] == ffi.C.ev_lua_duration) then
+            local v = ffi.new("interval_p_type", values[i]);
+            local dur = du.dur_from_bin(v);
+            out[i] = dur;
+        elseif (types[i] == ffi.C.ev_lua_nullptr) then
+            out[i] = ffi.NULL;
+        else
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+            print(i);
+            require 'pl.pretty'.dump(types);
+            require 'pl.pretty'.dump(values);
+            require 'pl.pretty'.dump(sizes);
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+            error('Unsupported type ' ..  tostring(types[i]));
+        end
+        i = i + 1;
+    end
+
+    return out;
+end
+
+ev_postgres_stmt.fetch_result_row_all = function(self)
+    local result = self._stmt:tbl_fetch_all();
+    if (result == nil) then
+        return {};
+    end
+
+    local rows = {}
+    for index, row in ipairs(result) do
+        local types = row[1];
+        local values = row[2];
+        local sizes = row[3];
+        local i = 1;
+        local out = {};
+        while (i <= #values) do
+            if (types[i] == ffi.C.ev_lua_string) then
+                out[i] = values[i];
+            elseif (types[i] == ffi.C.ev_lua_date) then
+                out[i] = du.dtt_from_long(values[i], 'date', nil);
+            elseif (types[i] == ffi.C.ev_lua_datetime) then
+                out[i] = du.dtt_from_long(values[i], 'dateTime', nil);
+            elseif (types[i] == ffi.C.ev_lua_time) then
+                out[i] = du.dtt_from_long(values[i], 'time', nil);
+            elseif (types[i] == ffi.C.ev_lua_number) then
+                out[i] = values[i];
+            elseif (types[i] == ffi.C.ev_lua_float) then
+                out[i] = values[i];
+            elseif (types[i] == ffi.C.ev_lua_decimal) then
+                local v = bc.new(values[i]);
+                out[i] = v;
+            elseif (types[i] == ffi.C.ev_lua_binary) then
+                local v = cu.new_binary_buffer();
+                v.size = sizes[i];
+                v.value = cu.alloc(v.size);
+                ffi.C.memcpy(v.value, values[i], v.size);
+                out[i] = v;
+            elseif (types[i] == ffi.C.ev_lua_boolean) then
+                out[i] = values[i];
+            elseif (types[i] == ffi.C.ev_lua_int16_t) then
+                out[i] = values[i];
+            elseif (types[i] == ffi.C.ev_lua_int32_t) then
+                out[i] = values[i];
+            elseif (types[i] == ffi.C.ev_lua_int64_t) then
+                out[i] = values[i];
+            elseif (types[i] == ffi.C.ev_lua_duration) then
+                local v = ffi.new("interval_p_type", values[i]);
+                local dur = du.dur_from_bin(v);
+                out[i] = dur;
+            elseif (types[i] == ffi.C.ev_lua_nullptr) then
+                out[i] = ffi.NULL;
+            else
+                print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+                print(i);
+                require 'pl.pretty'.dump(types);
+                require 'pl.pretty'.dump(values);
+                require 'pl.pretty'.dump(sizes);
+                print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+                error('Unsupported type ' ..  tostring(types[i]));
+            end
+            i = i + 1;
+        end
+        rows[index] = out;
+    end
+
+    return rows;
+end
+
 local turn_autocommit_off = function(self)
     local flg, msg = self:begin();
     return flg, msg;
@@ -592,6 +717,16 @@ end
 ev_postgres_cursor_res.fetch_row = function(self)
     assert(cur_r_mt == getmetatable(self));
     return self._stmt:fetch_result_row();
+end
+
+ev_postgres_cursor_res.fetch_row_v2 = function(self)
+    assert(cur_r_mt == getmetatable(self));
+    return self._stmt:fetch_result_row_v2();
+end
+
+ev_postgres_cursor_res.fetch_row_all = function(self)
+    assert(cur_r_mt == getmetatable(self));
+    return self._stmt:fetch_result_row_all();
 end
 
 ev_postgres_cursor_res.map = function(self, rec, map, sng_lvl)
