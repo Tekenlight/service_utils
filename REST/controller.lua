@@ -645,9 +645,26 @@ rest_controller.handle_service_request = function (request, response)
 
             if (req_processor_interface.methods[func].message.in_out[2] ~= nil) then
                 if (table_output ~= nil) then
+                    local tt = os.clock();
+                    if (_gdbg) then
+                        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+                        print("befre JSON ENCODE:",tt - tt);
+                        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+                    end
                     local t = req_processor_interface.methods[func].message.in_out[2];
                     local msg_handler = schema_processor:get_message_handler(t.name, t.ns);
-                    json_output, msg = msg_handler:to_json(table_output);
+                    local validate_response_json = properties_funcs.get_bool_property("service_utils.REST.controller.validateResponseJSON");
+                    if (validate_response_json) then
+                        json_output, msg = msg_handler:to_json(table_output);
+                    else
+                        json_output, msg = msg_handler:fast_to_json_v2(table_output);
+                    end
+                    if (_gdbg) then
+                        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+                        print("after JSON ENCODE:",(os.clock() - tt));
+                        tt = os.clock();
+                        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+                    end
                     if (json_output ~= nil) then
                         --[[
                         successfully_processed is true because processing is already done
