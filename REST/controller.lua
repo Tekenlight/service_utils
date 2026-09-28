@@ -657,7 +657,7 @@ rest_controller.handle_service_request = function (request, response)
                     if (validate_response_json) then
                         json_output, msg = msg_handler:to_json(table_output);
                     else
-                        json_output, msg = msg_handler:fast_to_json_v2(table_output);
+                        json_output, msg = msg_handler:fast_to_json_v2(table_output, false);
                     end
                     if (_gdbg) then
                         print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
