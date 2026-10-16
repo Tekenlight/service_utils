@@ -445,6 +445,10 @@ ev_postgres_stmt.fetch_result_row_v2 = function(self)
     return out;
 end
 
+--[[ Routing all calls to fetch_result to this imlementation.
+--]]
+ev_postgres_stmt.fetch_result = ev_postgres_stmt.fetch_result_row_v2;
+
 ev_postgres_stmt.fetch_result_row_all = function(self)
     local result = self._stmt:tbl_fetch_all();
     if (result == nil) then
