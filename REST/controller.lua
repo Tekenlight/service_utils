@@ -670,6 +670,22 @@ rest_controller.handle_service_request = function (request, response)
                         successfully_processed is true because processing is already done
                         optionally be commit is also done
                         ]]
+                        local handler_name = request:get_hdr_field(request, "X-Resp-Obj-Post-Proc-Handler");
+                        if (handler_name ~= nil and handler_name ~= "") then
+                            local stat, handler = pcall(require, handler_name);
+                            if (stat) then
+                                local obj = json_parser.decode(json_output);
+                                if (obj ~= nil) then
+                                    local ok, processed_obj = pcall(handler, obj);
+                                    if (ok and processed_obj ~= nil) then
+                                        local flg, encoded = pcall(json_parser.encode, processed_obj);
+                                        if (flg and encoded ~= nil) then
+                                            json_output = encoded;
+                                        end
+                                    end
+                                end
+                            end
+                        end
                         local wrapper_tag = request:get_hdr_field(request, "X-Resp-Json-Wrapper-Tag");
                         if (wrapper_tag ~= nil and wrapper_tag ~= "") then
                             json_output = "{" .. '"'..wrapper_tag .. '"'.. ": " .. json_output .. "}";
