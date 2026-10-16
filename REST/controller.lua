@@ -666,7 +666,7 @@ rest_controller.handle_service_request = function (request, response)
                         print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
                     end
                     if (json_output ~= nil) then
-                                                --[[
+                        --[[
                         successfully_processed is true because processing is already done
                         optionally be commit is also done
                         ]]
