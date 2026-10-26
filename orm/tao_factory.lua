@@ -17,13 +17,9 @@ local low_prepare_str_key = function(tbl_def, rec)
     assert(rec ~= nil and type(rec) == 'table');
 
     local key_columns = tbl_def.key_col_names;
-    local key = {};
-    for i = 1, #key_columns do
-        local obj_key = key_columns[i]
-        key[obj_key] = rec[obj_key];
-    end
-    local str = ""
-    for k, v in pairs(key) do
+    local str = "";
+    for i, k in ipairs(key_columns) do
+        local v = rec[k];
         str = str .. k .. "~" .. tostring(v) .. "~~"
     end
     return string.sub(str, 1, -3);
