@@ -217,7 +217,8 @@ chrome_pdf.low_generate = function(s_html, i_params)
     local ws_conn = connect_to_chrome(conn, ws_url, chrome_pid, filename, port_number);
     print("Connected to Chrome DevTools!");
 
-    stat, id_counter = pcall(send, ws_conn, "Target.createTarget", {url = html_url}, id_counter);
+    --stat, id_counter = pcall(send, ws_conn, "Target.createTarget", {url = html_url}, id_counter);
+    stat, id_counter = pcall(send, ws_conn, "Target.createTarget", {url = "about:blank"}, id_counter);
     if (not stat) then
         print(debug.getinfo(1).source, debug.getinfo(1).currentline);
         print(debug.traceback());
@@ -226,13 +227,37 @@ chrome_pdf.low_generate = function(s_html, i_params)
         error(id_counter);
     end
 
-    local stat, obj = pcall(receive, ws_conn);
-    if (not stat) then
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-        print(debug.traceback());
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+    local stat, obj;
+    local counter = 100;
+    while true do
+        stat, obj = pcall(receive, ws_conn);
+        if (not stat) then
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+            print(debug.traceback());
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+            cleanup(chrome_pid, filename, port_number);
+            error(obj);
+        end
+        --[[
+        if (obj.method == "Page.loadEventFired" and obj.sessionId == session_id) then
+            break
+        end
+        ]]
+        if (obj.id == (id_counter -1)) then
+            break;
+        end
+        counter = counter - 1;
+        if (counter == 0) then
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+            print(debug.traceback());
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+            cleanup(chrome_pid, filename, port_number);
+            error("Did not receive reply to Target.createTarget for about:blank in 100 responses");
+        end
+    end
+    if (obj.error ~= nil) then
         cleanup(chrome_pid, filename, port_number);
-        error(obj);
+        error("Target.createTarget failed: " ..  tostring(obj.error.code) .. ": " ..  tostring(obj.error.message));
     end
 
     local target_id = obj.result.targetId;
@@ -246,16 +271,41 @@ chrome_pdf.low_generate = function(s_html, i_params)
         error(id_counter);
     end
 
-    local stat, obj = pcall(receive, ws_conn);
-    if (not stat) then
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-        print(debug.traceback());
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+    local stat, obj;
+    local counter = 100;
+    while true do
+        stat, obj = pcall(receive, ws_conn);
+        if (not stat) then
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+            print(debug.traceback());
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+            cleanup(chrome_pid, filename, port_number);
+            error(obj);
+        end
+        --[[
+        if (obj.method == "Page.loadEventFired" and obj.sessionId == session_id) then
+            break
+        end
+        ]]
+        if (obj.id == (id_counter -1)) then
+            break;
+        end
+        counter = counter - 1;
+        if (counter == 0) then
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+            print(debug.traceback());
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+            cleanup(chrome_pid, filename, port_number);
+            error("Did not receive reply to Target.attachToTarget in 100 responses");
+        end
+    end
+    if (obj.error ~= nil) then
         cleanup(chrome_pid, filename, port_number);
-        error(obj);
+        error("Target.attachToTarget failed: " ..  tostring(obj.error.code) .. ": " ..  tostring(obj.error.message));
     end
 
-    local session_id = obj.params.sessionId;
+    --local session_id = obj.params.sessionId;
+    local session_id = obj.result.sessionId;
 
     stat, id_counter = pcall(send, ws_conn, "Page.enable", {}, id_counter, session_id);
     if (not stat) then
@@ -277,8 +327,56 @@ chrome_pdf.low_generate = function(s_html, i_params)
             cleanup(chrome_pid, filename, port_number);
             error(obj);
         end
-        if (obj.method == "Page.loadEventFired" and obj.sessionId == session_id) then
-            break
+        if (obj.id == (id_counter -1)) then
+            break;
+        end
+        counter = counter - 1;
+        if (counter == 0) then
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+            print(debug.traceback());
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+            cleanup(chrome_pid, filename, port_number);
+            error("Did not receive reply to Page.enable for about:blank in 100 responses");
+        end
+    end
+    if (obj.error ~= nil) then
+        cleanup(chrome_pid, filename, port_number);
+        error("Page.enable failed: " ..  tostring(obj.error.code) .. ": " ..  tostring(obj.error.message));
+    end
+
+    stat, id_counter = pcall(send, ws_conn, "Page.navigate", {url = html_url}, id_counter, session_id);
+    if (not stat) then
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+        print(debug.traceback());
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+        cleanup(chrome_pid, filename, port_number);
+        error(id_counter);
+    end
+
+    local stat, obj, temp_obj;
+    local navigate_response_received = false;
+    local load_event_received = false;
+    local counter = 100;
+    while true do
+        stat, temp_obj = pcall(receive, ws_conn);
+        if (not stat) then
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+            print(debug.traceback());
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+            cleanup(chrome_pid, filename, port_number);
+            error(temp_obj);
+        end
+        if (not navigate_response_received and temp_obj.id == (id_counter -1)) then
+            navigate_response_received = true;
+            obj = temp_obj;
+        end
+
+        if (not load_event_received and temp_obj.method == "Page.loadEventFired" and temp_obj.sessionId == session_id) then
+            load_event_received = true;
+        end
+
+        if (navigate_response_received and load_event_received) then
+            break;
         end
         counter = counter - 1;
         if (counter == 0) then
@@ -288,6 +386,10 @@ chrome_pdf.low_generate = function(s_html, i_params)
             cleanup(chrome_pid, filename, port_number);
             error("Did not Page.loadEventFired in 100 responses");
         end
+    end
+    if (obj.error ~= nil) then
+        cleanup(chrome_pid, filename, port_number);
+        error("Page.navigate failed: " ..  tostring(obj.error.code) .. ": " ..  tostring(obj.error.message));
     end
 
     stat, id_counter = pcall(send, ws_conn, "Page.printToPDF", params, id_counter, session_id);
@@ -312,7 +414,7 @@ chrome_pdf.low_generate = function(s_html, i_params)
         if (obj.id == (id_counter - 1)) then
             break;
         else
-            print("Received event: " .. obj.method);
+            print("Received event: " .. tostring(obj.method));
         end
         counter = counter - 1;
         if (counter == 0) then
@@ -322,6 +424,10 @@ chrome_pdf.low_generate = function(s_html, i_params)
             cleanup(chrome_pid, filename, port_number);
             error("Did not find proper reply to Page.printToPDF in 100 responses");
         end
+    end
+    if (obj.error ~= nil) then
+        cleanup(chrome_pid, filename, port_number);
+        error("Page.printToPDF failed: " ..  tostring(obj.error.code) .. ": " ..  tostring(obj.error.message));
     end
 
     local base64_pdf = obj.result.data
