@@ -222,7 +222,7 @@ function add_targets(directory)
 	    table.insert(all_targets_tbl, xsd_targets_tbl);
 	end
 
-end	
+end
 
 add_targets();
 
@@ -245,8 +245,41 @@ end
 
 
 function write_makefile()
+    -- Optional client graph. genmake describes work; it never parses IDL XML or
+    -- generates client code. A grouped rule lets ONE gidl invocation own all of
+    -- its outputs, including recovery when only a .js/.d.ts/receipt is missing.
+    local client_rules, client_targets, client_generators = {}, {}, {};
+    if (file_exists("api-clients.lua")) then
+        local clients = require('biop_clients');
+        client_generators = clients.generator_sources();
+        for _, target in ipairs(clients.client_targets()) do
+            client_rules[target.source] = target;
+            table.insert(client_targets, target.javascript);
+            table.insert(client_targets, target.declaration);
+            table.insert(client_targets, target.receipt);
+        end
+
+        -- The legacy Lua build mapping is named by IDL basename. Two sources
+        -- cannot own the same grouped target; fail clearly instead of racing.
+        local mapping_owners = {};
+        for _, source in ipairs(idl_sources_tbl) do
+            local basename = returnfile(source);
+            local previous = mapping_owners[basename];
+            assert(previous == nil or (client_rules[previous] == nil and client_rules[source] == nil),
+                'Client IDLs share a legacy Lua mapping filename: ' .. source .. ' and ' .. tostring(previous));
+            mapping_owners[basename] = source;
+        end
+        local discovered = {};
+        for _, source in ipairs(idl_sources_tbl) do discovered[source] = true; end
+        for source in pairs(client_rules) do
+            assert(discovered[source], 'Client IDL directory is outside the existing genmake IDL layout: ' .. source);
+        end
+    end
     local file = io.open("Makefile", "w+");
     file:write("all_targets :");
+    if (file_exists("api-clients.lua")) then
+        file:write(" api-clients");
+    end
     for i, v in ipairs(all_targets_tbl) do
         for k, l in ipairs(v) do
             file:write("  " .. l .. " \\\n");
@@ -255,6 +288,13 @@ function write_makefile()
     file:write("  build/" .. basic_file.package .. "-" .. basic_file.version .. ".rockspec\n\n");
 
     file:write("all: $(all_targets)\n\n");
+    if (file_exists("api-clients.lua")) then
+        -- Grouped targets require GNU make 4.3+. Restrict that requirement to
+        -- opted-in repositories; legacy repositories retain their old rules.
+        file:write("ifeq ($(filter grouped-target,$(.FEATURES)),)\n$(error API clients require GNU make 4.3 or newer)\nendif\n\n");
+        file:write(".PHONY: api-clients\napi-clients: " .. table.concat(client_targets, " ") .. "\n");
+        file:write("\tbiop-clients build\n\n");
+    end
 
     if (folder_exists("val/") == true) then
         file:write("#generating validation lua files in build \n\n");
@@ -346,8 +386,19 @@ function write_makefile()
         for i, source in ipairs(idl_sources_tbl) do
             local parts = stringx.split(source, "/");
             local target = "build/output_files/" .. parts[1] .. "/" .. parts[3]:gsub(".xml$", "") .. "_xml.lua";
-            file:write(target .. " : " .. source .. "\n");
-            file:write("\tgidl " .. source .. " -b 1 -d build\n")
+            local client = client_rules[source];
+            if (client ~= nil) then
+                -- Lua mapping, JS, declarations and receipt belong to the same
+                -- IDL. Package assembly above waits for these outputs, so it
+                -- cannot run halfway through generation (including make -j).
+                file:write(target .. " " .. client.javascript .. " " .. client.declaration .. " " .. client.receipt
+                    .. " &: " .. source .. " api-clients.lua " .. table.concat(client_generators, " ") .. "\n");
+                file:write("\tgidl " .. source .. " -b 1 -d build -j " .. client.javascript
+                    .. " -m " .. client.runtime .. " -r " .. client.receipt .. "\n");
+            else
+                file:write(target .. " : " .. source .. "\n");
+                file:write("\tgidl " .. source .. " -b 1 -d build\n")
+            end
             file:write("\ttouch build/rockspec.out\n\n");
         end
     end
