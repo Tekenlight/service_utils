@@ -62,6 +62,8 @@ build = {
         ["service_utils.REST.host_utils"] = 'REST/host_utils.lua',
         ["service_utils.REST.context_harness"] = 'REST/context_harness.lua',
         ["idl_gen"] = 'REST/idl_gen.lua',
+        ["idl_gen_javascript_clients"] = 'REST/idl_gen_javascript_clients.lua',
+        ["biop_clients"] = 'package/biop_clients.lua',
 
         ['service_utils.WS.web_socket'] = 'WS/web_socket.lua',
         ['service_utils.WS.ws_util'] = 'WS/ws_util.lua',
@@ -194,6 +196,7 @@ build = {
             gappinfo = 'schemarules/gappinfo',
             gval = 'schemarules/gval',
             gidl = 'REST/gidl',
+            ['biop-clients'] = 'package/biop-clients',
             gentbl = 'orm/gentbl',
             build = 'package/build',
             deploy = 'package/deploy',
