@@ -21,6 +21,10 @@ if (idl_struct == nil) then
 	error(msg);
 end
 
+-- XML is parsed once above. The optional JavaScript stage at the end reuses this
+-- exact interface, after the existing Lua interface/mapping generation succeeds.
+-- Arguments 3..5 are supplied only by gidl's -j/-m/-r options.
+
 local class_name = idl_struct._attr.name..'_interface';
 
 local code = '';
@@ -179,4 +183,8 @@ do
 	end
 end
 
-
+if (arg[3] ~= nil and arg[3] ~= '') then
+    assert(arg[4] ~= nil and arg[4] ~= '' and arg[5] ~= nil and arg[5] ~= '',
+        'JavaScript generation requires output, runtime module, and receipt paths')
+    require('biop_clients').generate_client(idl_struct, idl_file_name, arg[3], arg[4], arg[5]);
+end

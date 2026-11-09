@@ -17,25 +17,45 @@ fi
 
 if [ $# -lt 1 ]
 then
-    echo "Usage: gidl <interface_xml_file> [<output_directory>]"
+    echo "Usage: gidl file [-b 0/1] [-d directory] [-j output.js -m runtime-module -r receipt.json]"
     exit 1
 fi
 
 file=$1
 shift
 output_directory=
+javascript_output=
+javascript_module=
+javascript_receipt=
 # while getopts b:d: flag
-while getopts b:d: opt
+while getopts b:d:j:m:r: opt
 do
 	case $opt in
 		d) output_directory=$OPTARG;;
 		b) build_mode=$OPTARG;;
-		\?) echo >&2 "usage: gidl [-b 0/1] [-d <output_directory>] file"
+		j) javascript_output=$OPTARG;;
+		m) javascript_module=$OPTARG;;
+		r) javascript_receipt=$OPTARG;;
+		\?) echo >&2 "Usage: gidl file [-b 0/1] [-d directory] [-j output.js -m runtime-module -r receipt.json]"
 			exit 1;;
 	esac
 	#echo $OPTIND
 done
 shift `expr $OPTIND - 1`
+
+# Optional client outputs are resolved before changing into the Lua build directory.
+# Existing calls without -j keep the original server-only generation path.
+if [ -n "$javascript_output" ]; then
+    if [ -z "$javascript_module" ] || [ -z "$javascript_receipt" ]; then
+        echo "JavaScript generation requires -j output.js -m runtime-module -r receipt.json" >&2
+        exit 1
+    fi
+    case "$javascript_output" in /*) ;; *) javascript_output="$PWD/$javascript_output";; esac
+    case "$javascript_receipt" in /*) ;; *) javascript_receipt="$PWD/$javascript_receipt";; esac
+elif [ -n "$javascript_module$javascript_receipt" ]; then
+    echo "-m and -r require -j" >&2
+    exit 1
+fi
 
 echo "Generating IDL:"$file
 echo "--------------"
@@ -60,9 +80,9 @@ if [ "$output_directory" != "" ]
 then
     mkdir -p $output_directory
     cd $output_directory
-	lua $LUA_FILE ../$file $build_mode
+	lua "$LUA_FILE" "../$file" "${build_mode:-0}" "$javascript_output" "$javascript_module" "$javascript_receipt"
 else
-	lua $LUA_FILE $file $build_mode
+	lua "$LUA_FILE" "$file" "${build_mode:-0}" "$javascript_output" "$javascript_module" "$javascript_receipt"
 fi
 
 if [ $? -ne 0 ]

@@ -21,3 +21,9 @@ else
 	cd build
 	luarocks make
 fi
+
+RET=$?
+if [ "$RET" -ne 0 ]; then exit "$RET"; fi
+if [ -f ../api-clients.lua ]; then
+    (cd .. && biop-clients publish)
+fi

@@ -1,0 +1,16 @@
+#!/bin/sh
+# The adjacent path supports checkout testing; installed tools use Lua's module path.
+LUA_PATH="./?.lua;${HOME}/.luarocks/share/lua/5.3/?.lua;${LUA_PATH:-;;}"
+if [ -n "${INSTALL_DIRECTORY:-}" ]; then
+    LUA_PATH="${INSTALL_DIRECTORY}/usr/share/lua/5.3/?.lua;$LUA_PATH"
+fi
+export LUA_PATH
+adjacent=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+if [ -f "$adjacent/biop_clients.lua" ]; then
+    LUA_PATH="$adjacent/?.lua;$adjacent/../REST/?.lua;$LUA_PATH"
+    export LUA_PATH
+    script="$adjacent/biop_clients.lua"
+else
+    script=$(lua -e 'local path = assert(package.searchpath("biop_clients", package.path), "Install updated service_utils first"); io.write(path)') || exit 1
+fi
+exec lua "$script" "$@"
