@@ -82,18 +82,19 @@ function add_ddl_targets(directory)
 end
 
 function add_src_targets(directory)
-    local i, t = 0, {};
-    local pfile = io.popen([[ls -1 ]] .. directory .. [[ |grep '\.lua$']])
-    for filename in pfile:lines() do
-        i = i + 1
-        t[i] = filename;
-        local source_filename = directory .. filename;
-        local target_filename = "build/" .. directory .. filename;
+    local pfile = io.popen(
+        [[find ]] .. directory .. [[ -type f -name '*.lua']]
+    )
+
+    for source_filename in pfile:lines() do
+        local target_filename = "build/" .. source_filename;
+
         table.insert(src_targets_tbl, target_filename);
         table.insert(src_sources_tbl, source_filename);
     end
+
     pfile:close()
-	return;
+    return;
 end
 
 function add_csrc_targets(directory)

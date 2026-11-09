@@ -30,38 +30,57 @@ function include_files(directory)
 		local mapping = require(formatted_directory.."."..filename:gsub(".lua",""));
 		for i, v in pairs(mapping) do
 			mapping = "[\""..i.."\"] = ".."\""..v.."\"";
-			table.insert(basic_file.build.modules, mapping);	
+			table.insert(basic_file.build.modules, mapping);
 		end
 	end
     pfile:close()
 end
 
 function include_src_files(directory, submodule)
-	local dir;
-	local package_name;
-	if(submodule ~= nil) then
-		package_name = basic_file.package.."."..submodule;
-		dir = submodule.."/";
-	else 
-		package_name = basic_file.package;
-		dir = "";
-	end
-    local i, t = 0, {}
-    local pfile = io.popen([[ls -1 ]]..directory..[[ |grep '.lua']]);
-	for filename in pfile:lines() do
-        i = i + 1
-        t[i] = filename;
-		local src_mapping;
-		if (basic_file.product ~= nil) then
-			src_mapping = '[\"'..basic_file.product..'.'..
-				package_name.."."..filename:gsub("%.lua", "").."\"] = ".."\""..dir.."src/"..filename.."\"";
-		else
-			src_mapping = '[\"'..
-				package_name.."."..filename:gsub("%.lua", "").."\"] = ".."\""..dir.."src/"..filename.."\"";
-		end
+    local dir;
+    local package_name;
+
+    if (submodule ~= nil) then
+        package_name = basic_file.package .. "." .. submodule;
+        dir = submodule .. "/";
+    else
+        package_name = basic_file.package;
+        dir = "";
+    end
+
+    -- Recursively discover Lua files.
+    local pfile = io.popen(
+        [[find ]] .. directory .. [[ -type f -name '*.lua']]
+    );
+
+    for filepath in pfile:lines() do
+        -- Remove the build directory prefix.
+        local relative_path = filepath:gsub("^" .. directory .. "/", "");
+
+        -- Convert the relative file path into a Lua module namespace.
+        local module_name = relative_path
+            :gsub("%.lua$", "")
+            :gsub("/", ".");
+
+        local src_mapping;
+
+        if (basic_file.product ~= nil) then
+            src_mapping = '["' ..
+                basic_file.product .. "." ..
+                package_name .. "." ..
+                module_name ..
+                '"] = "' .. dir .. "src/" .. relative_path .. '"';
+        else
+            src_mapping = '["' ..
+                package_name .. "." ..
+                module_name ..
+                '"] = "' .. dir .. "src/" .. relative_path .. '"';
+        end
+
         table.insert(basic_file.build.modules, src_mapping);
     end
-    pfile:close()
+
+    pfile:close();
 end
 
 local function write_rockspec(basic_file, filename)
@@ -124,7 +143,7 @@ local function write_rockspec(basic_file, filename)
 	end
 
 	file:write("\n  }\n}");
-  
+
 	print("Rockspec created "..filename);
 	return;
 end
@@ -164,5 +183,3 @@ write_rockspec(basic_file, File);
 
 
 return;
-
-
