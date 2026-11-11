@@ -355,7 +355,7 @@ function write_makefile()
     file:write("build/" .. basic_file.package .. "-" .. basic_file.version .. ".rockspec : build/rockspec.out\n");
     file:write("\tgrockspec build/" .. basic_file.package .. "-" .. basic_file.version .. ".rockspec" .. "\n\n");
     file:write("clean :\n");
-    file:write("\trm -f $all_targets)");
+    file:write("\trm -f $(all_targets)");
 end
 
 write_makefile();
